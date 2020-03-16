@@ -89,7 +89,6 @@ along with ao-persistence.  If not, see <http://www.gnu.org/licenses />.
 			<scope>test</scope>
 		</dependency>
 		<!-- Direct -->
-		<!-- TODO: Analyze -->
 		<dependency>
 			<groupId>com.aoindustries</groupId><artifactId>ao-lang</artifactId>
 		</dependency>
