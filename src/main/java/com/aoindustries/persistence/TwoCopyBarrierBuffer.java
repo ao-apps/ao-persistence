@@ -461,6 +461,10 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
+	/**
+     * @deprecated The finalization mechanism is inherently problematic.
+	 */
+    @Deprecated // Java 9: (since="9")
 	@Override
 	// @ThreadSafe
 	protected void finalize() throws Throwable {

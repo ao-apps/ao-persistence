@@ -114,6 +114,10 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
 		return closed;
 	}
 
+	/**
+     * @deprecated The finalization mechanism is inherently problematic.
+	 */
+    @Deprecated // Java 9: (since="9")
 	@Override
 	// @NotThreadSafe
 	protected void finalize() throws Throwable {

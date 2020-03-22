@@ -1446,6 +1446,10 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 		}
 	}
 
+	/**
+     * @deprecated The finalization mechanism is inherently problematic.
+	 */
+    @Deprecated // Java 9: (since="9")
 	// @NotThreadSafe
 	@Override
 	protected void finalize() throws Throwable {
