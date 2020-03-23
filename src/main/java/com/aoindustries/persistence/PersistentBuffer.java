@@ -187,7 +187,7 @@ public interface PersistentBuffer {
 	/**
 	 * Gets an input stream that reads from this buffer.  Bounds checking is performed.
 	 *
-	 * @throws BufferUnderflowException
+	 * @exception  BufferUnderflowException on end of file
 	 */
 	// @NotThreadSafe
 	InputStream getInputStream(long position, long length) throws IOException, BufferUnderflowException;
@@ -195,7 +195,7 @@ public interface PersistentBuffer {
 	/**
 	 * Gets an output stream that writes to this buffer.  Bounds checking is performed.
 	 *
-	 * @throws BufferOverflowException
+	 * @exception  BufferUnderflowException on end of file
 	 */
 	// @NotThreadSafe
 	OutputStream getOutputStream(long position, long length) throws IOException, BufferOverflowException;
