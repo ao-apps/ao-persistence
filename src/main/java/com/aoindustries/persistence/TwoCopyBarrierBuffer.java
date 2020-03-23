@@ -177,30 +177,25 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 				try {
 					for(int c=0;c<size;c++) {
 						final TwoCopyBarrierBuffer buffer = toClose.get(c);
-						executorService.submit(
-							new Runnable() {
-								@Override
-								public void run() {
-									synchronized(fieldLock) {
-										long currentTime = System.currentTimeMillis();
-										long timeSince = currentTime - startTime[0];
-										if(timeSince<=-60000 || timeSince>=60000) {
-											logger.info(size==1 ? "Closing the TwoCopyBarrierBuffer." : "Closing TwoCopyBarrierBuffer "+counter[0]+" of "+size+".");
-											wrote[0] = true;
-											startTime[0] = currentTime;
-										}
-										counter[0]++;
-									}
-									try {
-										buffer.close();
-									} catch(ThreadDeath TD) {
-										throw TD;
-									} catch(Throwable T) {
-										logger.log(Level.WARNING, null, T);
-									}
+						executorService.submit(() -> {
+							synchronized(fieldLock) {
+								long currentTime = System.currentTimeMillis();
+								long timeSince = currentTime - startTime[0];
+								if(timeSince<=-60000 || timeSince>=60000) {
+									logger.info(size==1 ? "Closing the TwoCopyBarrierBuffer." : "Closing TwoCopyBarrierBuffer "+counter[0]+" of "+size+".");
+									wrote[0] = true;
+									startTime[0] = currentTime;
 								}
+								counter[0]++;
 							}
-						);
+							try {
+								buffer.close();
+							} catch(ThreadDeath TD) {
+								throw TD;
+							} catch(Throwable T) {
+								logger.log(Level.WARNING, null, T);
+							}
+						});
 					}
 				} finally {
 					executorService.shutdown();
