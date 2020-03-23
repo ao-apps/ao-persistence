@@ -64,6 +64,7 @@ import java.util.logging.Logger;
  * </p>
  * <p>
  * The first block allocated is a header:
+ * </p>
  * <pre>
  *     Offset   Type  Description
  *      0- 3    ASCII "PLL\n"
@@ -71,9 +72,9 @@ import java.util.logging.Logger;
  *      8-15    long  block id of the head or <code>END_PTR</code> if empty.
  *     16-23    long  block id of the tail or <code>END_PTR</code> if empty.
  * </pre>
- * </p>
  * <p>
  * Each entry consists of:
+ * </p>
  * <pre>
  *     Offset   Name        Type     Description
  *       0- 7   next        long     block id of next, <code>END_PTR</code> for last element
@@ -81,7 +82,6 @@ import java.util.logging.Logger;
  *      16-23   dataSize    long     the size of the serialized data, <code>-1</code> means null element
  *      24+     data        data     the binary data
  * </pre>
- * </p>
  *
  * <pre>
  * TODO: Add corrupt flag, set on exceptions?  Cause immediate crash recovery?
@@ -474,13 +474,13 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 *   <li>if _head==END_PTR then _tail==END_PTR</li>
 	 *   <li>if _tail==END_PTR then _head==END_PTR</li>
 	 *   <li>Makes sure all pointers point to allocated blocks</li>
-	 *   <li>_head==END_PTR || _head->prev==END_PTR</li>
-	 *   <li>_tail==END_PTR || _tail->next==END_PTR</li>
+	 *   <li>{@code _head == END_PTR || _head->prev == END_PTR}</li>
+	 *   <li>{@code _tail == END_PTR || _tail->next == END_PTR}</li>
 	 *   <li>For each node:
 	 *     <ol type="a">
 	 *       <li>Only seen once (detect loops)</li>
-	 *       <li>node.prev->next==node</li>
-	 *       <li>node.next->prev==node</li>
+	 *       <li>{@code node.prev->next == node}</li>
+	 *       <li>{@code node.next->prev == node}</li>
 	 *     </ol>
 	 *   </li>
 	 *   <li>No unreferenced allocated blocks</li>

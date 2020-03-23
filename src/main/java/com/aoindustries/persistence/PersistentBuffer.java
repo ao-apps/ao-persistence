@@ -81,7 +81,6 @@ public interface PersistentBuffer {
 	 * position and for the designated number of bytes.
 	 *
 	 * @exception  BufferUnderflowException on end of file
-	 * @exception  IOException
 	 */
 	// @NotThreadSafe
 	void get(long position, byte[] buff, int off, int len) throws IOException;
@@ -92,7 +91,6 @@ public interface PersistentBuffer {
 	 * available.
 	 *
 	 * @exception  BufferUnderflowException on end of file
-	 * @exception  IOException
 	 */
 	// @NotThreadSafe
 	int getSome(long position, byte[] buff, int off, int len) throws IOException;

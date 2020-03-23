@@ -84,9 +84,6 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 	 * advantages to block sizes that are fractions of the system page size
 	 * or the physical media block size.  A good overall approach would be to
 	 * select even powers of two (1, 2, 4, 8, ...).
-	 *
-	 * @param pbuffer
-	 * @param blockSize
 	 */
 	public FixedPersistentBlockBuffer(PersistentBuffer pbuffer, long blockSize) throws IOException {
 		super(pbuffer);

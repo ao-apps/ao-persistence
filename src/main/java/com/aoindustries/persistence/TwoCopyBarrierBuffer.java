@@ -93,7 +93,9 @@ import java.util.logging.Logger;
  *   <li>Rename <code><i>filename</i></code> to <code><i>filename</i>.old</code></li>
  *   <li>Rename <code><i>filename</i>.new</code> to <code><i>filename</i></code></li>
  * </ol>
+ * <p>
  * The filename states, in order:
+ * </p>
  * <pre>
  *          Complete      Complete Old  Partial
  * Normal:  filename      filename.old
@@ -102,6 +104,7 @@ import java.util.logging.Logger;
  * Normal:  filename      filename.old
  *
  * </pre>
+ * <p>
  * This implementation assumes an atomic file rename for correct recovery.
  * </p>
  * <p>
@@ -317,14 +320,12 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 * @param file              The base filename, will be appended with ".old" and ".new" while committing changes.
 	 * @param protectionLevel   The protection level for this buffer.
 	 * @param sectorSize        The size of the sectors cached and written.  For best results this should
-	 *                          match the underlying filesystem block size.  Must be a power of two >= 1.
+	 *                          match the underlying filesystem block size.  Must be a power of two &gt;= 1.
 	 * @param asynchronousCommitDelay The number of milliseconds before a background thread syncs uncommitted data to
 	 *                                the underlying storage.  A value of <code>Long.MAX_VALUE</code> will avoid any
 	 *                                overhead of background thread management.
 	 * @param synchronousCommitDelay  The number of milliseconds before a the calling thread syncs uncommitted data to
 	 *                                the underlying storage.
-	 *
-	 * @throws java.io.IOException
 	 */
 	public TwoCopyBarrierBuffer(File file, ProtectionLevel protectionLevel, int sectorSize, long asynchronousCommitDelay, long synchronousCommitDelay) throws IOException {
 		super(protectionLevel);

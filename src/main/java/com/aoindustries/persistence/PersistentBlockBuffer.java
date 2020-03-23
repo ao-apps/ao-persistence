@@ -25,6 +25,7 @@ package com.aoindustries.persistence;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.BufferOverflowException;
 import java.util.Iterator;
 // import org.checkthread.annotations.NotThreadSafe;
 // import org.checkthread.annotations.ThreadSafe;
@@ -95,7 +96,7 @@ public interface PersistentBlockBuffer {
 	/**
 	 * <p>
 	 * Allocates a new block buffer that is at least as large as the requested space.
-	 * The id should always be >=0, higher level data structures may use the
+	 * The id should always be {@code >= 0}, higher level data structures may use the
 	 * negative values for other purposes, such as indicating <code>null</code>
 	 * with <code>-1</code>.
 	 * </p>
@@ -169,7 +170,7 @@ public interface PersistentBlockBuffer {
 	/**
 	 * Puts bytes to this block.  Bounds checking is performed only when assertions are enabled.
 	 *
-	 * @throws BufferOverflowException
+	 * @throws BufferOverflowException when out of range
 	 */
 	// @NotThreadSafe
 	void put(long id, long offset, byte[] buff, int off, int len) throws IOException;
@@ -177,7 +178,7 @@ public interface PersistentBlockBuffer {
 	/**
 	 * Puts an integer to this block.  Bounds checking is performed only when assertions are enabled.
 	 *
-	 * @throws BufferOverflowException
+	 * @throws BufferOverflowException when out of range
 	 */
 	// @NotThreadSafe
 	void putInt(long id, long offset, int value) throws IOException;
@@ -185,7 +186,7 @@ public interface PersistentBlockBuffer {
 	/**
 	 * Puts a long to this block.  Bounds checking is performed only when assertions are enabled.
 	 *
-	 * @throws BufferOverflowException
+	 * @throws BufferOverflowException when out of range
 	 */
 	// @NotThreadSafe
 	void putLong(long id, long offset, long value) throws IOException;
@@ -193,7 +194,7 @@ public interface PersistentBlockBuffer {
 	/**
 	 * Gets an output stream that writes to this buffer.  Bounds checking is performed only when assertions are enabled.
 	 *
-	 * @throws BufferOverflowException
+	 * @throws BufferOverflowException when out of range
 	 */
 	// @NotThreadSafe
 	OutputStream getOutputStream(long id, long offset, long length) throws IOException;
