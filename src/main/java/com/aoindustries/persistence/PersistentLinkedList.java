@@ -22,8 +22,8 @@
  */
 package com.aoindustries.persistence;
 
+import com.aoindustries.collections.AoArrays;
 import com.aoindustries.io.IoUtils;
-import com.aoindustries.util.AoArrays;
 import com.aoindustries.util.WrappedException;
 import java.io.IOException;
 import java.io.InputStream;

@@ -22,6 +22,7 @@
  */
 package com.aoindustries.persistence;
 
+import com.aoindustries.collections.AoArrays;
 import com.aoindustries.util.BufferManager;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -97,7 +98,7 @@ public class PersistentCollections {
 			if(count>0) {
 				raf.seek(position);
 				raf.readFully(buff, 0, (int)count);
-				if(!com.aoindustries.util.AoArrays.equals(buff, zeros, 0, (int)count)) {
+				if(!AoArrays.equals(buff, zeros, 0, (int)count)) {
 					raf.seek(position);
 					raf.write(zeros, 0, (int)count);
 					modified = true;
