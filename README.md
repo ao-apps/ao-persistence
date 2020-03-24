@@ -27,7 +27,7 @@ Highly efficient persistent collections for Java.
 * [Project Home](https://aoindustries.com/ao-persistence/)
 * [Changelog](https://aoindustries.com/ao-persistence/changelog)
 * [API Docs](https://aoindustries.com/ao-persistence/apidocs/)
-* [Maven Central Repository](https://search.maven.org/#search%7Cgav%7C1%7Cg:%22com.aoindustries%22%20AND%20a:%22ao-persistence%22)
+* [Maven Central Repository](https://search.maven.org/artifact/com.aoindustries/ao-persistence)
 * [GitHub](https://github.com/aoindustries/ao-persistence)
 
 ## Contact Us
