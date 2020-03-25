@@ -49,6 +49,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.NotImplementedException;
 // import org.checkthread.annotations.NotThreadSafe;
 // import org.checkthread.annotations.ThreadSafe;
 
@@ -733,9 +734,8 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 
 	@Override
 	// @ThreadSafe
-	@SuppressWarnings("deprecation")
 	public void ensureZeros(long position, long len) throws IOException {
-		throw new com.aoindustries.exception.NotImplementedException("TODO: Implement by using PersistentCollection.zero, passing to put sector aligned");
+		throw new NotImplementedException("TODO: Implement by using PersistentCollection.zero, passing to put sector aligned");
 	}
 
 	// @ThreadSafe

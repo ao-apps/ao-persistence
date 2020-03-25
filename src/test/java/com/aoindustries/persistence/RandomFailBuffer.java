@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import org.apache.commons.lang3.NotImplementedException;
 // import org.checkthread.annotations.NotThreadSafe;
 // import org.checkthread.annotations.ThreadSafe;
 
@@ -259,9 +260,8 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 
 	// @NotThreadSafe
 	@Override
-	@SuppressWarnings("deprecation")
 	public void ensureZeros(long position, long len) throws IOException {
-		throw new com.aoindustries.exception.NotImplementedException("Implement when first needed");
+		throw new NotImplementedException("Implement when first needed");
 	}
 
 	// @NotThreadSafe
