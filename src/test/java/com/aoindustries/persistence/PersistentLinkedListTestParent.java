@@ -25,7 +25,7 @@ package com.aoindustries.persistence;
 import com.aoindustries.io.FileUtils;
 import com.aoindustries.util.Sequence;
 import com.aoindustries.util.UnsynchronizedSequence;
-import com.aoindustries.util.WrappedException;
+import com.aoindustries.exception.WrappedException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;

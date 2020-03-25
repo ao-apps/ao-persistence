@@ -22,7 +22,7 @@
  */
 package com.aoindustries.persistence;
 
-import com.aoindustries.util.WrappedException;
+import com.aoindustries.exception.WrappedException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;

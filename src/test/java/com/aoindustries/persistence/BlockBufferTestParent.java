@@ -22,8 +22,8 @@
  */
 package com.aoindustries.persistence;
 
+import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.FileUtils;
-import com.aoindustries.util.WrappedException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;

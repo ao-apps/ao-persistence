@@ -127,7 +127,7 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 	@Override
 	@SuppressWarnings("deprecation")
 	public void ensureZeros(long position, long len) throws IOException {
-		throw new com.aoindustries.lang.NotImplementedException("Implement when first needed");
+		throw new com.aoindustries.exception.NotImplementedException("Implement when first needed");
 	}
 
 	// @NotThreadSafe

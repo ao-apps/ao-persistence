@@ -23,8 +23,8 @@
 package com.aoindustries.persistence;
 
 import com.aoindustries.collections.AoArrays;
+import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.IoUtils;
-import com.aoindustries.util.WrappedException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

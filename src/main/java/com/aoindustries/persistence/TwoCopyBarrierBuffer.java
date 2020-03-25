@@ -735,7 +735,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	// @ThreadSafe
 	@SuppressWarnings("deprecation")
 	public void ensureZeros(long position, long len) throws IOException {
-		throw new com.aoindustries.lang.NotImplementedException("TODO: Implement by using PersistentCollection.zero, passing to put sector aligned");
+		throw new com.aoindustries.exception.NotImplementedException("TODO: Implement by using PersistentCollection.zero, passing to put sector aligned");
 	}
 
 	// @ThreadSafe
