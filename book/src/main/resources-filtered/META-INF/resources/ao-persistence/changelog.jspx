@@ -38,7 +38,7 @@ along with ao-persistence.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-03-15T21:00:26-05:00"
-		dateModified="2020-03-28T21:06:33-05:00"
+		dateModified="2020-03-28T21:08:28-05:00"
 	>
 		<!-- The current snapshot, unreleased version -->
 		<c:set var="version" value="@{com.aoindustries:ao-persistence:pom.version}" />
@@ -59,7 +59,7 @@ along with ao-persistence.  If not, see <http://www.gnu.org/licenses />.
 		<changelog:release
 			projectName="@{documented.name}"
 			version="1.0.0"
-			datePublished="2020-03-28T21:06:33-05:00"
+			datePublished="2020-03-28T21:08:28-05:00"
 			groupId="@{project.groupId}"
 			artifactId="@{documented.artifactId}"
 			scmUrl="@{project.scm.url}"
