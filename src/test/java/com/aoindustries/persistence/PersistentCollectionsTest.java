@@ -36,6 +36,7 @@ import junit.framework.TestSuite;
  *
  * @author  AO Industries, Inc.
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class PersistentCollectionsTest extends TestCase {
 
 	private static final int ITERATIONS = 1000;
@@ -122,7 +123,9 @@ public class PersistentCollectionsTest extends TestCase {
 		PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(ENSURE_ZEROS_TEST_SIZE);
 		try {
 			smallBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);
-			for(int i=0; i<10; i++) doTestEnsureZeros(smallBuffer);
+			for(int i = 0; i < 10; i++) {
+				doTestEnsureZeros(smallBuffer);
+			}
 		} finally {
 			smallBuffer.close();
 		}
@@ -130,7 +133,9 @@ public class PersistentCollectionsTest extends TestCase {
 		PersistentBuffer largeBuffer = PersistentCollections.getPersistentBuffer(Long.MAX_VALUE);
 		try {
 			largeBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);
-			for(int i=0; i<10; i++) doTestEnsureZeros(largeBuffer);
+			for(int i = 0; i < 10; i++) {
+				doTestEnsureZeros(largeBuffer);
+			}
 		} finally {
 			largeBuffer.close();
 		}

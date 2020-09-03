@@ -34,6 +34,7 @@ import junit.framework.TestSuite;
 /**
  * @author  AO Industries, Inc.
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 
 	public static Test suite() {
@@ -65,7 +66,9 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 		tempFile.deleteOnExit();
 		PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile, ProtectionLevel.NONE));
 		try {
-			for(int c=0;c<1000000;c++) blockBuffer.allocate(1);
+			for(int c = 0; c < 1000000; c++) {
+				blockBuffer.allocate(1);
+			}
 		} finally {
 			blockBuffer.close();
 		}
@@ -79,7 +82,9 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 			final int numAdd = 1000000;
 			List<Long> ids = new ArrayList<>(numAdd);
 			long startNanos = System.nanoTime();
-			for(int c=0;c<numAdd;c++) ids.add(blockBuffer.allocate(1));
+			for(int c = 0; c < numAdd; c++) {
+				ids.add(blockBuffer.allocate(1));
+			}
 			long endNanos = System.nanoTime();
 			System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Allocating "+numAdd+" blocks in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
 			//System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Getting "+numAdd+" ids.");
@@ -107,12 +112,16 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 				//System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Shuffling.");
 				//Collections.shuffle(ids, new Random(random.nextLong()));
 				startNanos = System.nanoTime();
-				for(Long id : removeList) blockBuffer.deallocate(id);
+				for(Long id : removeList) {
+					blockBuffer.deallocate(id);
+				}
 				deallocCount += numRemove;
 				deallocTime += System.nanoTime() - startNanos;
 				int numAddBack = random.nextInt(10000);
 				startNanos = System.nanoTime();
-				for(int d=0;d<numAddBack;d++) ids.add(blockBuffer.allocate(1));
+				for(int d = 0; d < numAddBack; d++) {
+					ids.add(blockBuffer.allocate(1));
+				}
 				allocCount += numAddBack;
 				allocTime += System.nanoTime() - startNanos;
 			}

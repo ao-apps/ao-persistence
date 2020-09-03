@@ -22,10 +22,10 @@
  */
 package com.aoindustries.persistence;
 
+import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.FileUtils;
 import com.aoindustries.util.Sequence;
 import com.aoindustries.util.UnsynchronizedSequence;
-import com.aoindustries.exception.WrappedException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -41,6 +41,7 @@ import junit.framework.TestCase;
  *
  * @author  AO Industries, Inc.
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 abstract public class PersistentLinkedListTestParent extends TestCase {
 
 	private static final int TEST_LOOPS = 10;
@@ -58,7 +59,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 			len = random.nextInt(129);
 		}
 		StringBuilder SB = new StringBuilder(len);
-		for(int d=0;d<len;d++) SB.append((char)random.nextInt(Character.MAX_VALUE+1));
+		for(int d = 0; d < len; d++) {
+			SB.append((char)random.nextInt(Character.MAX_VALUE + 1));
+		}
 		return SB.toString();
 	}
 
@@ -158,7 +161,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testCorrectnessString() throws Exception {
 		doTestCorrectnessString(0);
 		doTestCorrectnessString(1);
-		for(int c=0; c<10; c++) doTestCorrectnessString(100 + random.nextInt(101));
+		for(int c = 0; c < 10; c++) {
+			doTestCorrectnessString(100 + random.nextInt(101));
+		}
 	}
 
 	private void doTestCorrectnessInteger(int numElements) throws Exception {
@@ -252,7 +257,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testCorrectnessInteger() throws Exception {
 		doTestCorrectnessInteger(0);
 		doTestCorrectnessInteger(1);
-		for(int c=0; c<10; c++) doTestCorrectnessInteger(100 + random.nextInt(101));
+		for(int c = 0; c < 10; c++) {
+			doTestCorrectnessInteger(100 + random.nextInt(101));
+		}
 	}
 
 	/**
@@ -265,10 +272,14 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 		try {
 			// Add in groups of 1000, timing the add
 			String[] toAdd = new String[1000];
-			for(int d=0;d<1000;d++) toAdd[d] = getRandomString(random, true);
+			for(int d = 0; d < 1000; d++) {
+				toAdd[d] = getRandomString(random, true);
+			}
 			for(int c=0;c<TEST_LOOPS;c++) {
 				long startNanos = System.nanoTime();
-				for(int d=0;d<1000;d++) linkedFileList.add(toAdd[d]);
+				for(int d = 0; d < 1000; d++) {
+					linkedFileList.add(toAdd[d]);
+				}
 				long endNanos = System.nanoTime();
 				System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 random strings in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
 			}
@@ -293,10 +304,14 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 		try {
 			// Add in groups of 1000, timing the add
 			Integer[] toAdd = new Integer[1000];
-			for(int d=0;d<1000;d++) toAdd[d] = random.nextInt();
+			for(int d = 0; d < 1000; d++) {
+				toAdd[d] = random.nextInt();
+			}
 			for(int c=0;c<TEST_LOOPS;c++) {
 				long startNanos = System.nanoTime();
-				for(int d=0;d<1000;d++) linkedFileList.add(toAdd[d]);
+				for(int d = 0; d < 1000; d++) {
+					linkedFileList.add(toAdd[d]);
+				}
 				long endNanos = System.nanoTime();
 				System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 random integers in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
 			}
@@ -322,7 +337,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 			// Add in groups of 1000, timing the add
 			for(int c=0;c<TEST_LOOPS;c++) {
 				long startNanos = System.nanoTime();
-				for(int d=0;d<1000;d++) linkedFileList.add(null);
+				for(int d = 0; d < 1000; d++) {
+					linkedFileList.add(null);
+				}
 				long endNanos = System.nanoTime();
 				System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 null Integer in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
 			}
@@ -345,8 +362,12 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 		tempFile.deleteOnExit();
 		PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), String.class);
 		try {
-			for(int c=0;c<=10;c++) {
-				if(c>0) for(int d=0;d<1000;d++) linkedFileList.add(getRandomString(random, true));
+			for(int c = 0; c <= 10; c++) {
+				if(c > 0) {
+					for(int d = 0; d < 1000; d++) {
+						linkedFileList.add(getRandomString(random, true));
+					}
+				}
 				long startNanos = System.nanoTime();
 				for(String value : linkedFileList) {
 					// Do nothing
@@ -372,8 +393,12 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 		tempFile.deleteOnExit();
 		PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), Integer.class);
 		try {
-			for(int c=0;c<=10;c++) {
-				if(c>0) for(int d=0;d<1000;d++) linkedFileList.add(random.nextInt());
+			for(int c = 0; c <= 10; c++) {
+				if(c > 0) {
+					for(int d = 0; d < 1000; d++) {
+						linkedFileList.add(random.nextInt());
+					}
+				}
 				long startNanos = System.nanoTime();
 				for(Integer value : linkedFileList) {
 					// Do nothing
@@ -505,6 +530,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 		assertFalse("Backward iteration mismatch", fileIter.hasNext());
 	}
 
+	@SuppressWarnings("UnusedAssignment")
 	private void doTestFailureRecovery(ProtectionLevel protectionLevel) throws Exception {
 		boolean allowFailure = true;
 		Sequence sequence = new UnsynchronizedSequence();
@@ -625,7 +651,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 							if(batchSize>linkedFileList.size()) batchSize = linkedFileList.size();
 							for(int d=0;d<batchSize;d++) {
 								// This assigned value *is* used in catch block - ignore NetBeans warning
-								partial = linkedFileList.getFirst();
+								partial = linkedFileList.getFirst(); // Removing this line causes tests to fail
 								assertEquals(linkedFileList.removeFirst(), heapList.removeFirst());
 								partial = null;
 							}

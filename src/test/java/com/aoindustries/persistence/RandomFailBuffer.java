@@ -64,6 +64,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 	private enum FailureMethod {
 		capacity {
 			@Override
+			@SuppressWarnings("AssertWithSideEffects")
 			int getFailInterval() {
 				int failInterval = 5000;
 				assert (failInterval=500000)!=0; // Intentional assertion side-effect to reduce failure frequency due to higher buffer access rates
@@ -78,6 +79,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 		},
 		getSome {
 			@Override
+			@SuppressWarnings("AssertWithSideEffects")
 			int getFailInterval() {
 				int failInterval = 5000;
 				assert (failInterval=50000)!=0; // Intentional assertion side-effect to reduce failure frequency due to higher buffer access rates

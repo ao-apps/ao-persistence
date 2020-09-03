@@ -40,7 +40,7 @@ import java.util.Iterator;
  * @author  AO Industries, Inc.
  */
 // TODO: @see  RandomAccessPersistentBlockBuffer
-public interface PersistentBlockBuffer {
+public interface PersistentBlockBuffer { // TODO: extends Closeable, check other places in this project
 
 	/**
 	 * Checks if this buffer is closed.

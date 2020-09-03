@@ -99,7 +99,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 			long smallestPowerOfTwo = 1L << (64-1-numZeros);
 			if(PersistentCollections.ASSERT) assert smallestPowerOfTwo==Long.highestOneBit(blockSize);
 			if(smallestPowerOfTwo!=blockSize) {
-				smallestPowerOfTwo <<= 1;
+				//smallestPowerOfTwo <<= 1;
 				numZeros--;
 			}
 			if(numZeros<=(64-1-30)) {

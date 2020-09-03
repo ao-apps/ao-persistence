@@ -42,6 +42,7 @@ import junit.framework.TestCase;
 /**
  * @author  AO Industries, Inc.
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 abstract public class BlockBufferTestParent extends TestCase {
 
 	public BlockBufferTestParent(String testName) {

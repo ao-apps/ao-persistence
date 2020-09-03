@@ -158,6 +158,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 *
 	 * Could the background commit thread take a similar strategy?
 	 */
+	@SuppressWarnings({"UseSpecificCatch", "TooBroadCatch"})
 	private static final Thread shutdownHook = new Thread("TwoCopyBarrierBuffer.shutdownHook") {
 		@Override
 		public void run() {
@@ -195,8 +196,8 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 							}
 							try {
 								buffer.close();
-							} catch(ThreadDeath TD) {
-								throw TD;
+							} catch(ThreadDeath td) {
+								throw td;
 							} catch(Throwable T) {
 								logger.log(Level.WARNING, null, T);
 							}
@@ -329,6 +330,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 * @param synchronousCommitDelay  The number of milliseconds before a the calling thread syncs uncommitted data to
 	 *                                the underlying storage.
 	 */
+	@SuppressWarnings("LeakingThisInConstructor")
 	public TwoCopyBarrierBuffer(File file, ProtectionLevel protectionLevel, int sectorSize, long asynchronousCommitDelay, long synchronousCommitDelay) throws IOException {
 		super(protectionLevel);
 		if(Integer.bitCount(sectorSize)!=1) throw new IllegalArgumentException("sectorSize is not a power of two: "+sectorSize);
@@ -456,20 +458,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 			clearFirstWriteTime();
 		} else {
 			if(isClosing) raf.close();
-		}
-	}
-
-	/**
-     * @deprecated The finalization mechanism is inherently problematic.
-	 */
-    @Deprecated // Java 9: (since="9")
-	@Override
-	// @ThreadSafe
-	protected void finalize() throws Throwable {
-		try {
-			close();
-		} finally {
-			super.finalize();
 		}
 	}
 
