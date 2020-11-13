@@ -53,10 +53,11 @@ public class PersistentLinkedListLargeMappedTest extends PersistentLinkedListTes
 	 */
 	/*
 	public void testLargeList() throws Exception {
-		File tempFile = File.createTempFile("LinkedFileListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<byte[]> linkedFileList = new PersistentLinkedList<byte[]>(getPersistentBuffer(tempFile), false, false);
-		try {
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("LinkedFileListTest");
+			PersistentLinkedList<byte[]> linkedFileList = new PersistentLinkedList<byte[]>(getPersistentBuffer(tempFile), false, false)
+		) {
 			byte[] buff = new byte[1024*1024];
 			System.out.println("Filling list");
 			for(int c=0;c<1024;c++) {
@@ -67,10 +68,6 @@ public class PersistentLinkedListLargeMappedTest extends PersistentLinkedListTes
 				linkedFileList.removeLast();
 				linkedFileList.addFirst(buff);
 			}
-		} finally {
-			linkedFileList.close();
-			linkedFileList = null;
-			tempFile.delete();
 		}
 	}*/
 }

@@ -25,6 +25,7 @@ package com.aoindustries.persistence;
 import com.aoindustries.collections.AoArrays;
 import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.IoUtils;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -90,7 +91,7 @@ import java.util.logging.Logger;
  *
  * @author  AO Industries, Inc.
  */
-public class PersistentLinkedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E> {
+public class PersistentLinkedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E>, Closeable {
 
 	private static final Logger logger = Logger.getLogger(PersistentLinkedList.class.getName());
 
@@ -177,6 +178,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 * The temporary file will be deleted at JVM shutdown.
 	 * Operates in linear time.
 	 */
+	@SuppressWarnings("OverridableMethodCallInConstructor")
 	public PersistentLinkedList(Class<E> type, Collection<? extends E> c) throws IOException {
 		this(type);
 		addAll(c);
@@ -507,6 +509,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	}
 
 	// @NotThreadSafe
+	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	private void dumpPointer(long ptr) throws IOException {
 		System.err.println("_head="+_head);
 		if(_head!=END_PTR) System.err.println("  _head->next="+getNext(_head));
@@ -559,7 +562,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
 			// Get the set of all allocated ids (except the meta data id).
 			Map<Long,Boolean> allocatedIds = new HashMap<>();
-			while(ids.hasNext()) allocatedIds.put(ids.next(), false);
+			while(ids.hasNext()) {
+				allocatedIds.put(ids.next(), false);
+			}
 
 			// _head is the correct value
 			{
@@ -930,7 +935,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	public boolean addAll(Collection<? extends E> c) {
 		if(c.isEmpty()) return false;
 		modCount++;
-		for(E element : c) addLast(element);
+		for(E element : c) {
+			addLast(element);
+		}
 		return true;
 	}
 
@@ -943,7 +950,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 		modCount++;
 		try {
 			long ptr = getPointerForIndex(index);
-			for(E element : c) addBefore(element, ptr);
+			for(E element : c) {
+				addBefore(element, ptr);
+			}
 			return true;
 		} catch(IOException err) {
 			throw new WrappedException(err);
@@ -1213,6 +1222,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
 	// @NotThreadSafe
 	@Override
+	@SuppressWarnings("element-type-mismatch")
 	public boolean removeFirstOccurrence(Object o) {
 		return remove(o);
 	}
@@ -1418,7 +1428,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			if(_size>Integer.MAX_VALUE) throw new RuntimeException("Too many elements in list to create Object[]: "+_size);
 			Object[] result = new Object[(int)_size];
 			int i = 0;
-			for (long ptr = getHead(); ptr != END_PTR; ptr = getNext(ptr)) result[i++] = getElement(ptr);
+			for (long ptr = getHead(); ptr != END_PTR; ptr = getNext(ptr)) {
+				result[i++] = getElement(ptr);
+			}
 			return result;
 		} catch(IOException err) {
 			throw new WrappedException(err);
@@ -1431,14 +1443,16 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	public <T> T[] toArray(T[] a) {
 		if(_size>Integer.MAX_VALUE) throw new RuntimeException("Too many elements in list to fill or create array: "+_size);
 		try {
-			if (a.length < _size)
-				a = (T[])java.lang.reflect.Array.newInstance(
-									a.getClass().getComponentType(), (int)_size);
+			if (a.length < _size) {
+				a = (T[])java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), (int)_size);
+			}
 			int i = 0;
+			@SuppressWarnings("MismatchedReadAndWriteOfArray")
 			Object[] result = a;
-			for (long ptr = getHead(); ptr != END_PTR; ptr = getNext(ptr)) result[i++] = getElement(ptr);
-			if (a.length > _size)
-			a[(int)_size] = null;
+			for (long ptr = getHead(); ptr != END_PTR; ptr = getNext(ptr)) {
+				result[i++] = getElement(ptr);
+			}
+			if (a.length > _size) a[(int)_size] = null;
 
 			return a;
 		} catch(IOException err) {
@@ -1452,6 +1466,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
     @Deprecated // Java 9: (since="9")
 	// @NotThreadSafe
 	@Override
+	@SuppressWarnings("FinalizeDeclaration")
 	protected void finalize() throws Throwable {
 		try {
 			close();
@@ -1461,9 +1476,10 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	}
 
 	/**
-	 * Closes the random access file backing this list.
+	 * Closes the {@linkplain PersistentBlockBuffer block buffer} backing this list.
 	 */
 	// @NotThreadSafe
+	@Override
 	public void close() throws IOException {
 		if(!blockBuffer.isClosed()) {
 			// if(PersistentCollections.ASSERT) assert isConsistent();

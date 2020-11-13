@@ -339,8 +339,8 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		if(synchronousCommitDelay<0) throw new IllegalArgumentException("synchronousCommitDelay<0: "+synchronousCommitDelay);
 		this.tempFileContext = null;
 		this.file = file;
-		newFile = new File(file.getPath()+".new");
-		oldFile = new File(file.getPath()+".old");
+		newFile = new File(file.getPath() + ".new");
+		oldFile = new File(file.getPath() + ".old");
 		this.sectorSize = sectorSize;
 		this.asynchronousCommitDelay = asynchronousCommitDelay;
 		this.synchronousCommitDelay = synchronousCommitDelay;

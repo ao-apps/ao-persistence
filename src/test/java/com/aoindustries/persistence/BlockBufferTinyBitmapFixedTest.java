@@ -22,6 +22,8 @@
  */
 package com.aoindustries.persistence;
 
+import com.aoindustries.tempfiles.TempFile;
+import com.aoindustries.tempfiles.TempFileContext;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -62,23 +64,23 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 	}
 
 	public void testAllocateOneMillion() throws Exception {
-		File tempFile = File.createTempFile("BlockBufferTinyBitmapFixedTest", null);
-		tempFile.deleteOnExit();
-		PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile, ProtectionLevel.NONE));
-		try {
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest");
+			PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
+		) {
 			for(int c = 0; c < 1000000; c++) {
 				blockBuffer.allocate(1);
 			}
-		} finally {
-			blockBuffer.close();
 		}
 	}
 
 	public void testAllocateDeallocateOneMillion() throws Exception {
-		File tempFile = File.createTempFile("BlockBufferTinyBitmapFixedTest", null);
-		tempFile.deleteOnExit();
-		PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile, ProtectionLevel.NONE));
-		try {
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest");
+			PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
+		) {
 			final int numAdd = 1000000;
 			List<Long> ids = new ArrayList<>(numAdd);
 			long startNanos = System.nanoTime();
@@ -127,8 +129,6 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 			}
 			System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Deallocated "+deallocCount+" blocks in "+BigDecimal.valueOf(deallocTime/1000, 3)+" ms");
 			System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Allocated "+allocCount+" blocks in "+BigDecimal.valueOf(allocTime/1000, 3)+" ms");
-		} finally {
-			blockBuffer.close();
 		}
 	}
 }

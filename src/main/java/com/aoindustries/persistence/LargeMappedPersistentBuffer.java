@@ -132,6 +132,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
     @Deprecated // Java 9: (since="9")
 	@Override
 	// @NotThreadSafe
+	@SuppressWarnings("FinalizeDeclaration")
 	protected void finalize() throws Throwable {
 		try {
 			close();

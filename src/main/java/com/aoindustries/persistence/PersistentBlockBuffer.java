@@ -22,6 +22,7 @@
  */
 package com.aoindustries.persistence;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,7 +41,7 @@ import java.util.Iterator;
  * @author  AO Industries, Inc.
  */
 // TODO: @see  RandomAccessPersistentBlockBuffer
-public interface PersistentBlockBuffer { // TODO: extends Closeable, check other places in this project
+public interface PersistentBlockBuffer extends Closeable {
 
 	/**
 	 * Checks if this buffer is closed.
@@ -52,6 +53,7 @@ public interface PersistentBlockBuffer { // TODO: extends Closeable, check other
 	 * Closes this buffer.
 	 */
 	// @NotThreadSafe
+	@Override
 	void close() throws IOException;
 
 	/**

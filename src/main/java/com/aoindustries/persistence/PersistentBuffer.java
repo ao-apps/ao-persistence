@@ -22,6 +22,7 @@
  */
 package com.aoindustries.persistence;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,7 +48,7 @@ import java.nio.BufferUnderflowException;
  *
  * @author  AO Industries, Inc.
  */
-public interface PersistentBuffer {
+public interface PersistentBuffer extends Closeable {
 
 	/**
 	 * Checks if this buffer is closed.
@@ -59,6 +60,7 @@ public interface PersistentBuffer {
 	 * Closes this buffer.  It is OK to close an already closed buffer.
 	 */
 	// @NotThreadSafe
+	@Override
 	void close() throws IOException;
 
 	/**

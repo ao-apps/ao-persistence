@@ -24,6 +24,8 @@ package com.aoindustries.persistence;
 
 import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.FileUtils;
+import com.aoindustries.tempfiles.TempFile;
+import com.aoindustries.tempfiles.TempFileContext;
 import com.aoindustries.util.Sequence;
 import com.aoindustries.util.UnsynchronizedSequence;
 import java.io.File;
@@ -71,87 +73,85 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	protected abstract PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception;
 
 	private void doTestCorrectnessString(int numElements) throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), String.class);
-		LinkedList<String> linkedList = new LinkedList<>();
-		try {
-			// Populate the list
-			for(int c=0;c<numElements;c++) {
-				String s = getRandomString(random, true);
-				assertEquals(linkedFileList.add(s), linkedList.add(s));
-			}
-			// Check size match
-			assertEquals(linkedFileList.size(), linkedList.size());
-			if(numElements>0) {
-				// Check first
-				assertEquals(linkedFileList.getFirst(), linkedList.getFirst());
-				// Check last
-				assertEquals(linkedFileList.getLast(), linkedList.getLast());
-				// Update random locations to random values
-				for(int c=0;c<numElements;c++) {
-					int index = random.nextInt(numElements);
-					String newVal = getRandomString(random, true);
-					assertEquals(linkedFileList.set(index, newVal), linkedList.set(index, newVal));
-				}
-			}
-			// Check equality
-			assertEquals(linkedFileList, linkedList);
-			// Remove random indexes
-			if(numElements>0) {
-				int numRemove = random.nextInt(numElements);
-				for(int c=0;c<numRemove;c++) {
-					assertEquals(linkedFileList.size(), linkedList.size());
-					int index = random.nextInt(linkedFileList.size());
-					assertEquals(
-						linkedFileList.remove(index),
-						linkedList.remove(index)
-					);
-				}
-			}
-			// Add random values to end
-			if(numElements>0) {
-				int numAdd = random.nextInt(numElements);
-				for(int c=0;c<numAdd;c++) {
-					assertEquals(linkedFileList.size(), linkedList.size());
-					String newVal = getRandomString(random, true);
-					assertEquals(linkedFileList.add(newVal), linkedList.add(newVal));
-				}
-			}
-			// Check equality
-			assertEquals(linkedFileList, linkedList);
-			// Add random values in middle
-			if(numElements>0) {
-				int numAdd = random.nextInt(numElements);
-				for(int c=0;c<numAdd;c++) {
-					assertEquals(linkedFileList.size(), linkedList.size());
-					int index = random.nextInt(linkedFileList.size());
-					String newVal = getRandomString(random, true);
-					linkedFileList.add(index, newVal);
-					linkedList.add(index, newVal);
-					assertEquals(
-						linkedFileList.remove(index),
-						linkedList.remove(index)
-					);
-				}
-			}
-			// Check equality
-			assertEquals(linkedFileList, linkedList);
-			// Save and restore, checking matches
-			linkedFileList.close();
-			PersistentLinkedList<String> newFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.READ_ONLY), String.class);
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
 			try {
-				assertEquals(newFileList, linkedList);
+				LinkedList<String> linkedList = new LinkedList<>();
+				try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
+					// Populate the list
+					for(int c=0;c<numElements;c++) {
+						String s = getRandomString(random, true);
+						assertEquals(linkedFileList.add(s), linkedList.add(s));
+					}
+					// Check size match
+					assertEquals(linkedFileList.size(), linkedList.size());
+					if(numElements>0) {
+						// Check first
+						assertEquals(linkedFileList.getFirst(), linkedList.getFirst());
+						// Check last
+						assertEquals(linkedFileList.getLast(), linkedList.getLast());
+						// Update random locations to random values
+						for(int c=0;c<numElements;c++) {
+							int index = random.nextInt(numElements);
+							String newVal = getRandomString(random, true);
+							assertEquals(linkedFileList.set(index, newVal), linkedList.set(index, newVal));
+						}
+					}
+					// Check equality
+					assertEquals(linkedFileList, linkedList);
+					// Remove random indexes
+					if(numElements>0) {
+						int numRemove = random.nextInt(numElements);
+						for(int c=0;c<numRemove;c++) {
+							assertEquals(linkedFileList.size(), linkedList.size());
+							int index = random.nextInt(linkedFileList.size());
+							assertEquals(
+								linkedFileList.remove(index),
+								linkedList.remove(index)
+							);
+						}
+					}
+					// Add random values to end
+					if(numElements>0) {
+						int numAdd = random.nextInt(numElements);
+						for(int c=0;c<numAdd;c++) {
+							assertEquals(linkedFileList.size(), linkedList.size());
+							String newVal = getRandomString(random, true);
+							assertEquals(linkedFileList.add(newVal), linkedList.add(newVal));
+						}
+					}
+					// Check equality
+					assertEquals(linkedFileList, linkedList);
+					// Add random values in middle
+					if(numElements>0) {
+						int numAdd = random.nextInt(numElements);
+						for(int c=0;c<numAdd;c++) {
+							assertEquals(linkedFileList.size(), linkedList.size());
+							int index = random.nextInt(linkedFileList.size());
+							String newVal = getRandomString(random, true);
+							linkedFileList.add(index, newVal);
+							linkedList.add(index, newVal);
+							assertEquals(
+								linkedFileList.remove(index),
+								linkedList.remove(index)
+							);
+						}
+					}
+					// Check equality
+					assertEquals(linkedFileList, linkedList);
+				}
+				// Save and restore, checking matches
+				try (PersistentLinkedList<String> newFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.READ_ONLY), String.class)) {
+					assertEquals(newFileList, linkedList);
+				}
 			} finally {
-				newFileList.close();
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -167,87 +167,85 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	}
 
 	private void doTestCorrectnessInteger(int numElements) throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), Integer.class);
-		LinkedList<Integer> linkedList = new LinkedList<>();
-		try {
-			// Populate the list
-			for(int c=0;c<numElements;c++) {
-				Integer I = random.nextInt();
-				assertEquals(linkedFileList.add(I), linkedList.add(I));
-			}
-			// Check size match
-			assertEquals(linkedFileList.size(), linkedList.size());
-			if(numElements>0) {
-				// Check first
-				assertEquals(linkedFileList.getFirst(), linkedList.getFirst());
-				// Check last
-				assertEquals(linkedFileList.getLast(), linkedList.getLast());
-				// Update random locations to random values
-				for(int c=0;c<numElements;c++) {
-					int index = random.nextInt(numElements);
-					Integer newVal = random.nextInt();
-					assertEquals(linkedFileList.set(index, newVal), linkedList.set(index, newVal));
-				}
-			}
-			// Check equality
-			assertEquals(linkedFileList, linkedList);
-			// Remove random indexes
-			if(numElements>0) {
-				int numRemove = random.nextInt(numElements);
-				for(int c=0;c<numRemove;c++) {
-					assertEquals(linkedFileList.size(), linkedList.size());
-					int index = random.nextInt(linkedFileList.size());
-					assertEquals(
-						linkedFileList.remove(index),
-						linkedList.remove(index)
-					);
-				}
-			}
-			// Add random values to end
-			if(numElements>0) {
-				int numAdd = random.nextInt(numElements);
-				for(int c=0;c<numAdd;c++) {
-					assertEquals(linkedFileList.size(), linkedList.size());
-					Integer newVal = random.nextInt();
-					assertEquals(linkedFileList.add(newVal), linkedList.add(newVal));
-				}
-			}
-			// Check equality
-			assertEquals(linkedFileList, linkedList);
-			// Add random values in middle
-			if(numElements>0) {
-				int numAdd = random.nextInt(numElements);
-				for(int c=0;c<numAdd;c++) {
-					assertEquals(linkedFileList.size(), linkedList.size());
-					int index = random.nextInt(linkedFileList.size());
-					Integer newVal = random.nextInt();
-					linkedFileList.add(index, newVal);
-					linkedList.add(index, newVal);
-					assertEquals(
-						linkedFileList.remove(index),
-						linkedList.remove(index)
-					);
-				}
-			}
-			// Check equality
-			assertEquals(linkedFileList, linkedList);
-			// Save and restore, checking matches
-			linkedFileList.close();
-			PersistentLinkedList<Integer> newFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.READ_ONLY), Integer.class);
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
 			try {
-				assertEquals(newFileList, linkedList);
+				LinkedList<Integer> linkedList = new LinkedList<>();
+				try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
+					// Populate the list
+					for(int c=0;c<numElements;c++) {
+						Integer I = random.nextInt();
+						assertEquals(linkedFileList.add(I), linkedList.add(I));
+					}
+					// Check size match
+					assertEquals(linkedFileList.size(), linkedList.size());
+					if(numElements>0) {
+						// Check first
+						assertEquals(linkedFileList.getFirst(), linkedList.getFirst());
+						// Check last
+						assertEquals(linkedFileList.getLast(), linkedList.getLast());
+						// Update random locations to random values
+						for(int c=0;c<numElements;c++) {
+							int index = random.nextInt(numElements);
+							Integer newVal = random.nextInt();
+							assertEquals(linkedFileList.set(index, newVal), linkedList.set(index, newVal));
+						}
+					}
+					// Check equality
+					assertEquals(linkedFileList, linkedList);
+					// Remove random indexes
+					if(numElements>0) {
+						int numRemove = random.nextInt(numElements);
+						for(int c=0;c<numRemove;c++) {
+							assertEquals(linkedFileList.size(), linkedList.size());
+							int index = random.nextInt(linkedFileList.size());
+							assertEquals(
+								linkedFileList.remove(index),
+								linkedList.remove(index)
+							);
+						}
+					}
+					// Add random values to end
+					if(numElements>0) {
+						int numAdd = random.nextInt(numElements);
+						for(int c=0;c<numAdd;c++) {
+							assertEquals(linkedFileList.size(), linkedList.size());
+							Integer newVal = random.nextInt();
+							assertEquals(linkedFileList.add(newVal), linkedList.add(newVal));
+						}
+					}
+					// Check equality
+					assertEquals(linkedFileList, linkedList);
+					// Add random values in middle
+					if(numElements>0) {
+						int numAdd = random.nextInt(numElements);
+						for(int c=0;c<numAdd;c++) {
+							assertEquals(linkedFileList.size(), linkedList.size());
+							int index = random.nextInt(linkedFileList.size());
+							Integer newVal = random.nextInt();
+							linkedFileList.add(index, newVal);
+							linkedList.add(index, newVal);
+							assertEquals(
+								linkedFileList.remove(index),
+								linkedList.remove(index)
+							);
+						}
+					}
+					// Check equality
+					assertEquals(linkedFileList, linkedList);
+				}
+				// Save and restore, checking matches
+				try (PersistentLinkedList<Integer> newFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.READ_ONLY), Integer.class)) {
+					assertEquals(newFileList, linkedList);
+				}
 			} finally {
-				newFileList.close();
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -266,31 +264,31 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	 * Tests the time complexity by adding many elements and making sure the time stays near linear
 	 */
 	public void testAddRandomStrings() throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), String.class);
-		try {
-			// Add in groups of 1000, timing the add
-			String[] toAdd = new String[1000];
-			for(int d = 0; d < 1000; d++) {
-				toAdd[d] = getRandomString(random, true);
-			}
-			for(int c=0;c<TEST_LOOPS;c++) {
-				long startNanos = System.nanoTime();
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
+			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
+				// Add in groups of 1000, timing the add
+				String[] toAdd = new String[1000];
 				for(int d = 0; d < 1000; d++) {
-					linkedFileList.add(toAdd[d]);
+					toAdd[d] = getRandomString(random, true);
 				}
-				long endNanos = System.nanoTime();
-				System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 random strings in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+				for(int c=0;c<TEST_LOOPS;c++) {
+					long startNanos = System.nanoTime();
+					for(int d = 0; d < 1000; d++) {
+						linkedFileList.add(toAdd[d]);
+					}
+					long endNanos = System.nanoTime();
+					System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 random strings in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+				}
+				// Calculate the mean and standard deviation, compare for linear
+			} finally {
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-			// Calculate the mean and standard deviation, compare for linear
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -298,31 +296,31 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	 * Tests the time complexity by adding many elements and making sure the time stays near linear
 	 */
 	public void testAddRandomIntegers() throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), Integer.class);
-		try {
-			// Add in groups of 1000, timing the add
-			Integer[] toAdd = new Integer[1000];
-			for(int d = 0; d < 1000; d++) {
-				toAdd[d] = random.nextInt();
-			}
-			for(int c=0;c<TEST_LOOPS;c++) {
-				long startNanos = System.nanoTime();
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
+			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
+				// Add in groups of 1000, timing the add
+				Integer[] toAdd = new Integer[1000];
 				for(int d = 0; d < 1000; d++) {
-					linkedFileList.add(toAdd[d]);
+					toAdd[d] = random.nextInt();
 				}
-				long endNanos = System.nanoTime();
-				System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 random integers in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+				for(int c=0;c<TEST_LOOPS;c++) {
+					long startNanos = System.nanoTime();
+					for(int d = 0; d < 1000; d++) {
+						linkedFileList.add(toAdd[d]);
+					}
+					long endNanos = System.nanoTime();
+					System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 random integers in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+				}
+				// Calculate the mean and standard deviation, compare for linear
+			} finally {
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-			// Calculate the mean and standard deviation, compare for linear
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -330,27 +328,27 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	 * Tests the time complexity for integers (all null to avoid serialization)
 	 */
 	public void testAddNull() throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), Integer.class);
-		try {
-			// Add in groups of 1000, timing the add
-			for(int c=0;c<TEST_LOOPS;c++) {
-				long startNanos = System.nanoTime();
-				for(int d = 0; d < 1000; d++) {
-					linkedFileList.add(null);
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
+			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
+				// Add in groups of 1000, timing the add
+				for(int c=0;c<TEST_LOOPS;c++) {
+					long startNanos = System.nanoTime();
+					for(int d = 0; d < 1000; d++) {
+						linkedFileList.add(null);
+					}
+					long endNanos = System.nanoTime();
+					System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 null Integer in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
 				}
-				long endNanos = System.nanoTime();
-				System.out.println((c+1)+" of "+TEST_LOOPS+": Added 1000 null Integer in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+				// Calculate the mean and standard deviation, compare for linear
+			} finally {
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-			// Calculate the mean and standard deviation, compare for linear
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -358,30 +356,30 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	 * Test iteration performance.
 	 */
 	public void testStringIterationPerformance() throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), String.class);
-		try {
-			for(int c = 0; c <= 10; c++) {
-				if(c > 0) {
-					for(int d = 0; d < 1000; d++) {
-						linkedFileList.add(getRandomString(random, true));
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
+			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
+				for(int c = 0; c <= 10; c++) {
+					if(c > 0) {
+						for(int d = 0; d < 1000; d++) {
+							linkedFileList.add(getRandomString(random, true));
+						}
 					}
+					long startNanos = System.nanoTime();
+					for(String value : linkedFileList) {
+						// Do nothing
+					}
+					long endNanos = System.nanoTime();
+					System.out.println("Iterated "+linkedFileList.size()+" random strings in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
 				}
-				long startNanos = System.nanoTime();
-				for(String value : linkedFileList) {
-					// Do nothing
-				}
-				long endNanos = System.nanoTime();
-				System.out.println("Iterated "+linkedFileList.size()+" random strings in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+			} finally {
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -389,30 +387,30 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	 * Test iteration performance.
 	 */
 	public void testIntegerIterationPerformance() throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), Integer.class);
-		try {
-			for(int c = 0; c <= 10; c++) {
-				if(c > 0) {
-					for(int d = 0; d < 1000; d++) {
-						linkedFileList.add(random.nextInt());
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
+			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
+				for(int c = 0; c <= 10; c++) {
+					if(c > 0) {
+						for(int d = 0; d < 1000; d++) {
+							linkedFileList.add(random.nextInt());
+						}
 					}
+					long startNanos = System.nanoTime();
+					for(Integer value : linkedFileList) {
+						// Do nothing
+					}
+					long endNanos = System.nanoTime();
+					System.out.println("Iterated "+linkedFileList.size()+" random integers in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
 				}
-				long startNanos = System.nanoTime();
-				for(Integer value : linkedFileList) {
-					// Do nothing
-				}
-				long endNanos = System.nanoTime();
-				System.out.println("Iterated "+linkedFileList.size()+" random integers in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+			} finally {
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -420,23 +418,23 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	 * Test circular list performance.
 	 */
 	public void testStringCircularListPerformance() throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), String.class);
-		try {
-			for(int c=0;c<100000;c++) {
-				String newValue = getRandomString(random, true);
-				String oldValue = null;
-				if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
-				linkedFileList.addFirst(newValue);
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
+			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
+				for(int c=0;c<100000;c++) {
+					String newValue = getRandomString(random, true);
+					String oldValue = null;
+					if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
+					linkedFileList.addFirst(newValue);
+				}
+			} finally {
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -444,23 +442,23 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	 * Test circular list performance.
 	 */
 	public void testIntegerCircularListPerformance() throws Exception {
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, ProtectionLevel.NONE), Integer.class);
-		try {
-			for(int c=0;c<100000;c++) {
-				Integer newValue = random.nextInt();
-				Integer oldValue = null;
-				if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
-				linkedFileList.addFirst(newValue);
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
+			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
+				for(int c=0;c<100000;c++) {
+					Integer newValue = random.nextInt();
+					Integer oldValue = null;
+					if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
+					linkedFileList.addFirst(newValue);
+				}
+			} finally {
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-		} finally {
-			linkedFileList.close();
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 
@@ -534,158 +532,130 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	private void doTestFailureRecovery(ProtectionLevel protectionLevel) throws Exception {
 		boolean allowFailure = true;
 		Sequence sequence = new UnsynchronizedSequence();
-		File tempFile = File.createTempFile("PersistentLinkedListTest", null);
-		tempFile.deleteOnExit();
-		try {
-			LinkedList<String> heapList = new LinkedList<>();
-			final int iterations = TEST_LOOPS;
-			for(int c=0;c<iterations;c++) {
-				long startNanos = System.nanoTime();
-				// addFirst
-				String partial = null;
-				try {
+		try (
+			TempFileContext tempFileContext = new TempFileContext();
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+		) {
+			try {
+				LinkedList<String> heapList = new LinkedList<>();
+				final int iterations = TEST_LOOPS;
+				for(int c=0;c<iterations;c++) {
+					long startNanos = System.nanoTime();
+					// addFirst
+					String partial = null;
 					try {
-						PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile, protectionLevel), allowFailure), String.class);
 						try {
-							int batchSize = random.nextInt(100)+1;
-							for(int d=0;d<batchSize;d++) {
-								partial = Long.toString(sequence.getNextSequenceValue());
-								heapList.addFirst(partial);
-								linkedFileList.addFirst(partial);
-								partial = null;
+							try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
+								int batchSize = random.nextInt(100)+1;
+								for(int d=0;d<batchSize;d++) {
+									partial = Long.toString(sequence.getNextSequenceValue());
+									heapList.addFirst(partial);
+									linkedFileList.addFirst(partial);
+									partial = null;
+								}
 							}
-						} finally {
-							linkedFileList.close();
+						} catch(WrappedException err) {
+							Throwable cause = err.getCause();
+							if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
+							throw err;
 						}
-					} catch(WrappedException err) {
-						Throwable cause = err.getCause();
-						if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
-						throw err;
+					} catch(IOException err) {
+						System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": addFirst: Caught failure: "+err.toString());
 					}
-				} catch(IOException err) {
-					System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": addFirst: Caught failure: "+err.toString());
-				}
-				// Check consistency
-				{
-					PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, protectionLevel), String.class);
-					try {
-						checkRecoveryConsistency(heapList, linkedFileList, partial);
-					} finally {
-						linkedFileList.close();
+					// Check consistency
+					{
+						try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), protectionLevel), String.class)) {
+							checkRecoveryConsistency(heapList, linkedFileList, partial);
+						}
 					}
-				}
-				// removeLast
-				partial = null;
-				try {
+					// removeLast
+					partial = null;
 					try {
-						PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile, protectionLevel), allowFailure), String.class);
 						try {
-							int batchSize = random.nextInt(95)+1;
-							if(batchSize>linkedFileList.size()) batchSize = linkedFileList.size();
-							for(int d=0;d<batchSize;d++) {
-								partial = heapList.getLast();
-								assertEquals(linkedFileList.getLast(), partial);
-								assertEquals(linkedFileList.removeLast(), heapList.removeLast());
-								partial = null;
+							try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
+								int batchSize = random.nextInt(95)+1;
+								if(batchSize>linkedFileList.size()) batchSize = linkedFileList.size();
+								for(int d=0;d<batchSize;d++) {
+									partial = heapList.getLast();
+									assertEquals(linkedFileList.getLast(), partial);
+									assertEquals(linkedFileList.removeLast(), heapList.removeLast());
+									partial = null;
+								}
 							}
-						} finally {
-							linkedFileList.close();
+						} catch(WrappedException err) {
+							Throwable cause = err.getCause();
+							if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
+							throw err;
 						}
-					} catch(WrappedException err) {
-						Throwable cause = err.getCause();
-						if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
-						throw err;
+					} catch(IOException err) {
+						System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": removeLast: Caught failure: "+err.toString());
 					}
-				} catch(IOException err) {
-					System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": removeLast: Caught failure: "+err.toString());
-				}
-				// Check consistency
-				{
-					PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, protectionLevel), String.class);
-					try {
+					// Check consistency
+					try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), protectionLevel), String.class)) {
 						checkRecoveryConsistency(heapList, linkedFileList, partial);
-					} finally {
-						linkedFileList.close();
 					}
-				}
-				// addLast
-				partial = null;
-				try {
+					// addLast
+					partial = null;
 					try {
-						PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile, protectionLevel), allowFailure), String.class);
 						try {
-							int batchSize = random.nextInt(100)+1;
-							for(int d=0;d<batchSize;d++) {
-								partial = Long.toString(sequence.getNextSequenceValue());
-								heapList.addLast(partial);
-								linkedFileList.addLast(partial);
-								partial = null;
+							try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
+								int batchSize = random.nextInt(100)+1;
+								for(int d=0;d<batchSize;d++) {
+									partial = Long.toString(sequence.getNextSequenceValue());
+									heapList.addLast(partial);
+									linkedFileList.addLast(partial);
+									partial = null;
+								}
 							}
-						} finally {
-							linkedFileList.close();
+						} catch(WrappedException err) {
+							Throwable cause = err.getCause();
+							if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
+							throw err;
 						}
-					} catch(WrappedException err) {
-						Throwable cause = err.getCause();
-						if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
-						throw err;
+					} catch(IOException err) {
+						System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": addLast: Caught failure: "+err.toString());
 					}
-				} catch(IOException err) {
-					System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": addLast: Caught failure: "+err.toString());
-				}
-				// Check consistency
-				{
-					PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, protectionLevel), String.class);
-					try {
+					// Check consistency
+					try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), protectionLevel), String.class)) {
 						checkRecoveryConsistency(heapList, linkedFileList, partial);
-					} finally {
-						linkedFileList.close();
 					}
-				}
-				// removeFirst
-				partial = null;
-				try {
+					// removeFirst
+					partial = null;
 					try {
-						PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile, protectionLevel), allowFailure), String.class);
 						try {
-							int batchSize = random.nextInt(95)+1;
-							if(batchSize>linkedFileList.size()) batchSize = linkedFileList.size();
-							for(int d=0;d<batchSize;d++) {
-								// This assigned value *is* used in catch block - ignore NetBeans warning
-								partial = linkedFileList.getFirst(); // Removing this line causes tests to fail
-								assertEquals(linkedFileList.removeFirst(), heapList.removeFirst());
-								partial = null;
+							try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
+								int batchSize = random.nextInt(95)+1;
+								if(batchSize>linkedFileList.size()) batchSize = linkedFileList.size();
+								for(int d=0;d<batchSize;d++) {
+									// This assigned value *is* used in catch block - ignore NetBeans warning
+									partial = linkedFileList.getFirst(); // Removing this line causes tests to fail
+									assertEquals(linkedFileList.removeFirst(), heapList.removeFirst());
+									partial = null;
+								}
 							}
-						} finally {
-							linkedFileList.close();
+						} catch(WrappedException err) {
+							Throwable cause = err.getCause();
+							if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
+							throw err;
 						}
-					} catch(WrappedException err) {
-						Throwable cause = err.getCause();
-						if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
-						throw err;
+					} catch(IOException err) {
+						System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": removeFirst: Caught failure: "+err.toString());
 					}
-				} catch(IOException err) {
-					System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": removeFirst: Caught failure: "+err.toString());
-				}
-				// Check consistency
-				{
-					PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile, protectionLevel), String.class);
-					try {
+					// Check consistency
+					try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), protectionLevel), String.class)) {
 						checkRecoveryConsistency(heapList, linkedFileList, partial);
-					} finally {
-						linkedFileList.close();
 					}
+					// TODO: add random index
+					// TODO: remove random index
+					long endNanos = System.nanoTime();
+					if((c%10)==9) System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": Tested block buffer failure recovery in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
 				}
-				// TODO: add random index
-				// TODO: remove random index
-				long endNanos = System.nanoTime();
-				if((c%10)==9) System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": Tested block buffer failure recovery in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+			} finally {
+				File newFile = new File(tempFile.getFile().getPath() + ".new");
+				if(newFile.exists()) FileUtils.delete(newFile);
+				File oldFile = new File(tempFile.getFile().getPath() + ".old");
+				if(oldFile.exists()) FileUtils.delete(oldFile);
 			}
-		} finally {
-			FileUtils.delete(tempFile);
-			File newFile = new File(tempFile.getPath()+".new");
-			if(newFile.exists()) FileUtils.delete(newFile);
-			File oldFile = new File(tempFile.getPath()+".old");
-			if(oldFile.exists()) FileUtils.delete(oldFile);
 		}
 	}
 

@@ -120,24 +120,18 @@ public class PersistentCollectionsTest extends TestCase {
 	}
 
 	public void testEnsureZeros() throws Exception {
-		PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(ENSURE_ZEROS_TEST_SIZE);
-		try {
+		try (PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(ENSURE_ZEROS_TEST_SIZE)) {
 			smallBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);
 			for(int i = 0; i < 10; i++) {
 				doTestEnsureZeros(smallBuffer);
 			}
-		} finally {
-			smallBuffer.close();
 		}
 
-		PersistentBuffer largeBuffer = PersistentCollections.getPersistentBuffer(Long.MAX_VALUE);
-		try {
+		try (PersistentBuffer largeBuffer = PersistentCollections.getPersistentBuffer(Long.MAX_VALUE)) {
 			largeBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);
 			for(int i = 0; i < 10; i++) {
 				doTestEnsureZeros(largeBuffer);
 			}
-		} finally {
-			largeBuffer.close();
 		}
 	}
 }
