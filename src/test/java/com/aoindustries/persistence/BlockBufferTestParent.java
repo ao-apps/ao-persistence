@@ -23,12 +23,12 @@
 package com.aoindustries.persistence;
 
 import com.aoindustries.exception.WrappedException;
-import com.aoindustries.io.FileUtils;
 import com.aoindustries.tempfiles.TempFile;
 import com.aoindustries.tempfiles.TempFileContext;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,7 +63,7 @@ abstract public class BlockBufferTestParent extends TestCase {
 	public void testAllocateDeallocate() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTestParent")
+			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTestParent_")
 		) {
 			try (PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))) {
 				Set<Long> allocatedIds = new HashSet<>();
@@ -96,9 +96,9 @@ abstract public class BlockBufferTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -154,7 +154,7 @@ abstract public class BlockBufferTestParent extends TestCase {
 	private void doTestFailureRecovery(ProtectionLevel protectionLevel) throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTestParent")
+			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTestParent_")
 		) {
 			try {
 				SortedSet<Long> allocatedIds = new TreeSet<>();
@@ -245,9 +245,9 @@ abstract public class BlockBufferTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}

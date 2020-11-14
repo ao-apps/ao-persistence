@@ -56,7 +56,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
 	public RandomAccessFileBuffer() throws IOException {
 		super(ProtectionLevel.NONE);
 		tempFileContext = new TempFileContext();
-		raf = new RandomAccessFile(tempFileContext.createTempFile("RandomAccessFileBuffer").getFile(), "rw");
+		raf = new RandomAccessFile(tempFileContext.createTempFile("RandomAccessFileBuffer_").getFile(), "rw");
 		channel = raf.getChannel();
 		// Lock the file
 		channel.lock(0L, Long.MAX_VALUE, false);

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.BufferUnderflowException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -273,10 +274,11 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	public TwoCopyBarrierBuffer() throws IOException {
 		super(ProtectionLevel.NONE);
 		tempFileContext = new TempFileContext();
-		file = tempFileContext.createTempFile("TwoCopyBarrierBuffer").getFile();
-		newFile = tempFileContext.createTempFile("TwoCopyBarrierBuffer", ".new").getFile();
-		FileUtils.delete(newFile);
-		oldFile = tempFileContext.createTempFile("TwoCopyBarrierBuffer", ".old").getFile();
+		file = tempFileContext.createTempFile("TwoCopyBarrierBuffer_").getFile();
+		String prefix = file.getName() + '_';
+		newFile = tempFileContext.createTempFile(prefix, ".new").getFile();
+		Files.delete(newFile.toPath());
+		oldFile = tempFileContext.createTempFile(prefix, ".old").getFile();
 		sectorSize = DEFAULT_SECTOR_SIZE;
 		asynchronousCommitDelay = DEFAULT_ASYNCHRONOUS_COMMIT_DELAY;
 		synchronousCommitDelay = DEFAULT_SYNCHRONOUS_COMMIT_DELAY;

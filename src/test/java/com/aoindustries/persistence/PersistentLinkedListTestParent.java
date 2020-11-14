@@ -23,7 +23,6 @@
 package com.aoindustries.persistence;
 
 import com.aoindustries.exception.WrappedException;
-import com.aoindustries.io.FileUtils;
 import com.aoindustries.tempfiles.TempFile;
 import com.aoindustries.tempfiles.TempFileContext;
 import com.aoindustries.util.Sequence;
@@ -31,6 +30,7 @@ import com.aoindustries.util.UnsynchronizedSequence;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -75,7 +75,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	private void doTestCorrectnessString(int numElements) throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try {
 				LinkedList<String> linkedList = new LinkedList<>();
@@ -148,9 +148,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -169,7 +169,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	private void doTestCorrectnessInteger(int numElements) throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try {
 				LinkedList<Integer> linkedList = new LinkedList<>();
@@ -242,9 +242,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -266,7 +266,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testAddRandomStrings() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
 				// Add in groups of 1000, timing the add
@@ -285,9 +285,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				// Calculate the mean and standard deviation, compare for linear
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -298,7 +298,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testAddRandomIntegers() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
 				// Add in groups of 1000, timing the add
@@ -317,9 +317,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				// Calculate the mean and standard deviation, compare for linear
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -330,7 +330,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testAddNull() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
 				// Add in groups of 1000, timing the add
@@ -345,9 +345,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				// Calculate the mean and standard deviation, compare for linear
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -358,7 +358,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testStringIterationPerformance() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
 				for(int c = 0; c <= 10; c++) {
@@ -376,9 +376,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -389,7 +389,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testIntegerIterationPerformance() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
 				for(int c = 0; c <= 10; c++) {
@@ -407,9 +407,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -420,7 +420,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testStringCircularListPerformance() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
 				for(int c=0;c<100000;c++) {
@@ -431,9 +431,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -444,7 +444,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 	public void testIntegerCircularListPerformance() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
 				for(int c=0;c<100000;c++) {
@@ -455,9 +455,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}
@@ -534,7 +534,7 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 		Sequence sequence = new UnsynchronizedSequence();
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest")
+			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try {
 				LinkedList<String> heapList = new LinkedList<>();
@@ -652,9 +652,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 				}
 			} finally {
 				File newFile = new File(tempFile.getFile().getPath() + ".new");
-				if(newFile.exists()) FileUtils.delete(newFile);
+				if(newFile.exists()) Files.delete(newFile.toPath());
 				File oldFile = new File(tempFile.getFile().getPath() + ".old");
-				if(oldFile.exists()) FileUtils.delete(oldFile);
+				if(oldFile.exists()) Files.delete(oldFile.toPath());
 			}
 		}
 	}

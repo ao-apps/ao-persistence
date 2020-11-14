@@ -66,7 +66,7 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 	public void testAllocateOneMillion() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest");
+			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
 			PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
 		) {
 			for(int c = 0; c < 1000000; c++) {
@@ -78,7 +78,7 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 	public void testAllocateDeallocateOneMillion() throws Exception {
 		try (
 			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest");
+			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
 			PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
 		) {
 			final int numAdd = 1000000;

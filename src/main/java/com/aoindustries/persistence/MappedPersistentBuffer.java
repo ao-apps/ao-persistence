@@ -60,7 +60,7 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
 	public MappedPersistentBuffer() throws IOException {
 		super(ProtectionLevel.NONE);
 		tempFileContext = new TempFileContext();
-		raf = new RandomAccessFile(tempFileContext.createTempFile("MappedPersistentBuffer").getFile(), "rw");
+		raf = new RandomAccessFile(tempFileContext.createTempFile("MappedPersistentBuffer_").getFile(), "rw");
 		channel = raf.getChannel();
 		// Lock the file
 		channel.lock(0L, Long.MAX_VALUE, false);
