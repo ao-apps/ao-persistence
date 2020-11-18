@@ -22,13 +22,13 @@
  */
 package com.aoindustries.persistence;
 
-import com.aoindustries.exception.WrappedException;
 import com.aoindustries.tempfiles.TempFile;
 import com.aoindustries.tempfiles.TempFileContext;
 import com.aoindustries.util.Sequence;
 import com.aoindustries.util.UnsynchronizedSequence;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.security.SecureRandom;
@@ -554,9 +554,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 									partial = null;
 								}
 							}
-						} catch(WrappedException err) {
-							Throwable cause = err.getCause();
-							if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
+						} catch(UncheckedIOException err) {
+							IOException cause = err.getCause();
+							if(cause != null) throw cause;
 							throw err;
 						}
 					} catch(IOException err) {
@@ -582,9 +582,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 									partial = null;
 								}
 							}
-						} catch(WrappedException err) {
-							Throwable cause = err.getCause();
-							if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
+						} catch(UncheckedIOException err) {
+							IOException cause = err.getCause();
+							if(cause != null) throw cause;
 							throw err;
 						}
 					} catch(IOException err) {
@@ -607,9 +607,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 									partial = null;
 								}
 							}
-						} catch(WrappedException err) {
-							Throwable cause = err.getCause();
-							if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
+						} catch(UncheckedIOException err) {
+							IOException cause = err.getCause();
+							if(cause != null) throw cause;
 							throw err;
 						}
 					} catch(IOException err) {
@@ -633,9 +633,9 @@ abstract public class PersistentLinkedListTestParent extends TestCase {
 									partial = null;
 								}
 							}
-						} catch(WrappedException err) {
-							Throwable cause = err.getCause();
-							if(cause!=null && (cause instanceof IOException)) throw (IOException)cause;
+						} catch(UncheckedIOException err) {
+							IOException cause = err.getCause();
+							if(cause != null) throw cause;
 							throw err;
 						}
 					} catch(IOException err) {

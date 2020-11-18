@@ -23,12 +23,12 @@
 package com.aoindustries.persistence;
 
 import com.aoindustries.collections.AoArrays;
-import com.aoindustries.exception.WrappedException;
 import com.aoindustries.io.IoUtils;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.util.AbstractSequentialList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -760,7 +760,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 		try {
 			return getElement(head);
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -779,7 +779,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 		try {
 			return getElement(tail);
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -801,7 +801,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			remove(head);
 			return element;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -823,7 +823,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			remove(tail);
 			return element;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -842,7 +842,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			if(head==END_PTR) addFirstEntry(element);
 			else addBefore(element, head);
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -863,7 +863,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			if(tail==END_PTR) addFirstEntry(element);
 			else addAfter(element, tail);
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -926,7 +926,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			}
 			return false;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -955,7 +955,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			}
 			return true;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1002,7 +1002,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			}
 			blockBuffer.barrier(true);
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1012,7 +1012,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 		try {
 			return getElement(getPointerForIndex(index));
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1035,7 +1035,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			if(prev==END_PTR) addFirst(element);
 			else addAfter(element, prev);
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1048,7 +1048,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			setElement(ptr, element);
 			return oldElement;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1062,7 +1062,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			if(prev==END_PTR) addFirst(element);
 			else addAfter(element, prev);
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1076,7 +1076,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			remove(ptr);
 			return oldElement;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1098,7 +1098,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			}
 			return -1;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1126,7 +1126,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			}
 			return -1;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1250,7 +1250,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			}
 			return false;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1279,7 +1279,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 					nextIndex = index;
 				}
 			} catch(IOException err) {
-				throw new WrappedException(err);
+				throw new UncheckedIOException(err);
 			}
 		}
 
@@ -1301,7 +1301,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 				assert (nextPtr==END_PTR && nextIndex==_size) || (nextPtr!=END_PTR && nextIndex<_size);
 				return getElement(lastReturned);
 			} catch(IOException err) {
-				throw new WrappedException(err);
+				throw new UncheckedIOException(err);
 			}
 		}
 
@@ -1322,7 +1322,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 				assert (nextPtr==END_PTR && nextIndex==_size) || (nextPtr!=END_PTR && nextIndex<_size);
 				return getElement(lastReturned);
 			} catch(IOException err) {
-				throw new WrappedException(err);
+				throw new UncheckedIOException(err);
 			}
 		}
 
@@ -1360,7 +1360,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 				expectedModCount++;
 				assert (nextPtr==END_PTR && nextIndex==_size) || (nextPtr!=END_PTR && nextIndex<_size);
 			} catch(IOException err) {
-				throw new WrappedException(err);
+				throw new UncheckedIOException(err);
 			}
 		}
 
@@ -1384,7 +1384,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 				nextIndex++;
 				expectedModCount++;
 			} catch(IOException err) {
-				throw new WrappedException(err);
+				throw new UncheckedIOException(err);
 			}
 		}
 
@@ -1433,7 +1433,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			}
 			return result;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 
@@ -1456,7 +1456,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
 			return a;
 		} catch(IOException err) {
-			throw new WrappedException(err);
+			throw new UncheckedIOException(err);
 		}
 	}
 

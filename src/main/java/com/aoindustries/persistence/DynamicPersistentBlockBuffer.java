@@ -22,8 +22,8 @@
  */
 package com.aoindustries.persistence;
 
-import com.aoindustries.exception.WrappedException;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -500,7 +500,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
 					}
 					return false;
 				} catch(IOException err) {
-					throw new WrappedException(err);
+					throw new UncheckedIOException(err);
 				}
 			}
 
@@ -521,7 +521,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
 					}
 					throw new NoSuchElementException();
 				} catch(IOException err) {
-					throw new WrappedException(err);
+					throw new UncheckedIOException(err);
 				}
 			}
 
@@ -535,7 +535,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
 					expectedModCount++;
 					lastId = -1;
 				} catch(IOException err) {
-					throw new WrappedException(err);
+					throw new UncheckedIOException(err);
 				}
 			}
 		};
