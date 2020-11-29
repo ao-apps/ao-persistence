@@ -1024,7 +1024,6 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 *
 	 * @param index index of the element to replace
 	 * @param element element to be stored at the specified position
-	 * @throws IndexOutOfBoundsException {@inheritDoc}
 	 */
 	// @NotThreadSafe
 	private void setElement(long ptr, E element) {
