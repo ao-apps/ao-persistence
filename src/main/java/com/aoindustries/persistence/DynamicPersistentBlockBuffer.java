@@ -88,7 +88,9 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
 	 */
 	public DynamicPersistentBlockBuffer(PersistentBuffer pbuffer) throws IOException {
 		super(pbuffer);
-		for(int c=0;c<64;c++) freeSpaceMaps.add(null);
+		for(int c=0;c<64;c++) {
+			freeSpaceMaps.add(null);
+		}
 		// Build the free space maps and expand to end on an even block
 		long capacity = pbuffer.capacity();
 		long id = 0;

@@ -38,7 +38,7 @@ along with ao-persistence.  If not, see <http://www.gnu.org/licenses />.
 		shortTitle="Changelog"
 		tocLevels="1"
 		datePublished="2020-03-15T21:00:26-05:00"
-		dateModified="2020-11-17T20:47:00-06:00"
+		dateModified="2020-11-30T01:00:15-06:00"
 	>
 		<!-- The current snapshot, unreleased version -->
 		<c:set var="version" value="@{com.aoindustries:ao-persistence:pom.version}" />
@@ -53,19 +53,28 @@ along with ao-persistence.  If not, see <http://www.gnu.org/licenses />.
 				groupId="@{project.groupId}"
 				artifactId="@{documented.artifactId}"
 				scmUrl="@{project.scm.url}"
-			>
-				<ul>
-					<li>
-						Implemented <code>java.io.Closeable</code> where appropriate for compatibility with
-						try-with-resources in Java 1.7+.
-					</li>
-					<li>Updated dependencies.</li>
-					<li>Temporary files are now created with more secure default permissions.</li>
-					<li>Resolved editor warnings.</li>
-					<li>Now using <code>java.io.UncheckedIOException</code> instead of <code>WrappedException</code>.</li>
-				</ul>
-			</changelog:release>
+			/>
 		</c:if>
+
+		<changelog:release
+			projectName="@{documented.name}"
+			version="1.1.0"
+			datePublished="2020-11-30T01:00:15-06:00"
+			groupId="@{project.groupId}"
+			artifactId="@{documented.artifactId}"
+			scmUrl="@{project.scm.url}"
+		>
+			<ul>
+				<li>
+					Implemented <code>java.io.Closeable</code> where appropriate for compatibility with
+					try-with-resources in Java 1.7+.
+				</li>
+				<li>Updated dependencies.</li>
+				<li>Temporary files are now created with more secure default permissions.</li>
+				<li>Resolved editor warnings.</li>
+				<li>Now using <code>java.io.UncheckedIOException</code> instead of <code>WrappedException</code>.</li>
+			</ul>
+		</changelog:release>
 
 		<changelog:release
 			projectName="@{documented.name}"
