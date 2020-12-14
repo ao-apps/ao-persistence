@@ -127,9 +127,9 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	}
 
 	/**
-     * @deprecated The finalization mechanism is inherently problematic.
+	 * @deprecated The finalization mechanism is inherently problematic.
 	 */
-    @Deprecated // Java 9: (since="9")
+	@Deprecated // Java 9: (since="9")
 	@Override
 	// @NotThreadSafe
 	@SuppressWarnings("FinalizeDeclaration")
