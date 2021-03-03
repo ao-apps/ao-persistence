@@ -34,7 +34,7 @@ along with ao-persistence.  If not, see <http://www.gnu.org/licenses />.
 
 	<properties>
 		<!-- Dependencies -->
-		<commons-lang3.version>3.11</commons-lang3.version>
+		<commons-lang3.version>3.12.0</commons-lang3.version>
 	</properties>
 
 	<name>AO Persistence</name>
@@ -139,7 +139,7 @@ along with ao-persistence.  If not, see <http://www.gnu.org/licenses />.
 									<location>${project.build.directory}/offlineLinks/com.aoindustries/ao-tempfiles</location>
 								</offlineLink>
 								<offlineLink>
-									<url>https://commons.apache.org/proper/commons-lang/javadocs/api-${commons-lang3.version}/</url>
+									<url>https://javadoc.io/doc/org.apache.commons/commons-lang3/${commons-lang3.version}/</url>
 									<location>${project.build.directory}/offlineLinks/org.apache.commons/commons-lang3</location>
 								</offlineLink>
 								<!-- Test Direct -->
