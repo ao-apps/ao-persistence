@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2017, 2019, 2020  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2017, 2019, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -561,7 +561,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			}
 
 			// Get the set of all allocated ids (except the meta data id).
-			Map<Long,Boolean> allocatedIds = new HashMap<>();
+			Map<Long, Boolean> allocatedIds = new HashMap<>();
 			while(ids.hasNext()) {
 				allocatedIds.put(ids.next(), false);
 			}
@@ -709,7 +709,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 			// No unreferenced allocated blocks
 			long firstUnreferencedBlockId = -1;
 			long unreferencedCount = 0;
-			for(Map.Entry<Long,Boolean> entry : allocatedIds.entrySet()) {
+			for(Map.Entry<Long, Boolean> entry : allocatedIds.entrySet()) {
 				if(!entry.getValue()) {
 					if(firstUnreferencedBlockId==-1) firstUnreferencedBlockId = entry.getKey();
 					unreferencedCount++;
