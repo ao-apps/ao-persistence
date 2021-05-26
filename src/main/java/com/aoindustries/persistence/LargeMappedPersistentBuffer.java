@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2019, 2020  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2019, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -129,7 +129,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	/**
 	 * @deprecated The finalization mechanism is inherently problematic.
 	 */
-	@Deprecated // Java 9: (since="9")
+	@Deprecated(since="9")
 	@Override
 	// @NotThreadSafe
 	@SuppressWarnings("FinalizeDeclaration")
