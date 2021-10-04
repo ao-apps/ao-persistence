@@ -38,10 +38,10 @@ import java.io.OutputStream;
  *
  * @author  AO Industries, Inc.
  */
-abstract public class BufferedSerializer<E> implements Serializer<E> {
+public abstract class BufferedSerializer<E> implements Serializer<E> {
 
 	private E lastSerialized = null;
-	final private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
 	public BufferedSerializer() {
 	}
@@ -58,24 +58,24 @@ abstract public class BufferedSerializer<E> implements Serializer<E> {
 
 	// @ThreadSafe
 	@Override
-	final public boolean isFixedSerializedSize() {
+	public final boolean isFixedSerializedSize() {
 		return false;
 	}
 
 	// @NotThreadSafe
 	@Override
-	final public long getSerializedSize(E value) throws IOException {
+	public final long getSerializedSize(E value) throws IOException {
 		serializeToBuffer(value);
 		return buffer.size();
 	}
 
 	// @NotThreadSafe
 	@Override
-	final public void serialize(E value, OutputStream out) throws IOException {
+	public final void serialize(E value, OutputStream out) throws IOException {
 		serializeToBuffer(value);
 		buffer.writeTo(out);
 	}
 
 	// @NotThreadSafe
-	abstract protected void serialize(E value, ByteArrayOutputStream buffer) throws IOException;
+	protected abstract void serialize(E value, ByteArrayOutputStream buffer) throws IOException;
 }

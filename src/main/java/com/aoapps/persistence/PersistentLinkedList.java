@@ -144,10 +144,10 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	private static final long DATA_SIZE_NULL = -1;
 
-	final private Serializer<E> serializer;
-	final private PersistentBlockBuffer blockBuffer;
+	private final Serializer<E> serializer;
+	private final PersistentBlockBuffer blockBuffer;
 
-	final private byte[] ioBuffer = new byte[Math.max(DATA_OFFSET, MAGIC.length)];
+	private final byte[] ioBuffer = new byte[Math.max(DATA_OFFSET, MAGIC.length)];
 
 	// Cached for higher performance
 	private long metaDataBlockId;

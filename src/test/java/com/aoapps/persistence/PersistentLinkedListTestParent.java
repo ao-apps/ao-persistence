@@ -44,7 +44,7 @@ import junit.framework.TestCase;
  * @author  AO Industries, Inc.
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-abstract public class PersistentLinkedListTestParent extends TestCase {
+public abstract class PersistentLinkedListTestParent extends TestCase {
 
 	private static final int TEST_LOOPS = 10;
 

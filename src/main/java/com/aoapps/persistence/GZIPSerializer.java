@@ -42,7 +42,7 @@ public class GZIPSerializer<E> implements Serializer<E> {
 	private final Serializer<E> wrapped;
 
 	private E lastSerialized = null;
-	final private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
 	public GZIPSerializer(Serializer<E> wrapped) {
 		this.wrapped = wrapped;

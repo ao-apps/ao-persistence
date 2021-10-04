@@ -34,7 +34,7 @@ import java.io.OutputStream;
  *
  * @author  AO Industries, Inc.
  */
-abstract public class AbstractPersistentBlockBuffer implements PersistentBlockBuffer {
+public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBuffer {
 
 	protected final PersistentBuffer pbuffer;
 
@@ -159,12 +159,12 @@ abstract public class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	 * check this with assertions.
 	 */
 	// @NotThreadSafe
-	abstract protected long getBlockAddress(long id) throws IOException;
+	protected abstract long getBlockAddress(long id) throws IOException;
 
 	/**
 	 * Ensures the underlying persistent buffer is of adequate capacity.  Grows the
 	 * underlying storage if needed.
 	 */
 	// @NotThreadSafe
-	abstract protected void ensureCapacity(long capacity) throws IOException;
+	protected abstract void ensureCapacity(long capacity) throws IOException;
 }

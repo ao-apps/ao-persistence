@@ -45,7 +45,7 @@ import junit.framework.TestCase;
  * @author  AO Industries, Inc.
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-abstract public class BlockBufferTestParent extends TestCase {
+public abstract class BlockBufferTestParent extends TestCase {
 
 	public BlockBufferTestParent(String testName) {
 		super(testName);
@@ -56,9 +56,9 @@ abstract public class BlockBufferTestParent extends TestCase {
 
 	static final Random random = new SecureRandom();
 
-	abstract public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException;
-	abstract public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException;
-	abstract public long getAllocationSize(Random random) throws IOException;
+	public abstract PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException;
+	public abstract PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException;
+	public abstract long getAllocationSize(Random random) throws IOException;
 
 	public void testAllocateDeallocate() throws Exception {
 		try (

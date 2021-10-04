@@ -37,7 +37,7 @@ import java.nio.BufferUnderflowException;
  *
  * @author  AO Industries, Inc.
  */
-abstract public class AbstractPersistentBuffer implements PersistentBuffer {
+public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 
 	protected final ProtectionLevel protectionLevel;
 	private final byte[] ioBuffer = new byte[8];
