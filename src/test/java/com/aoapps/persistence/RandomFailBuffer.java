@@ -117,7 +117,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 	 * entry will be <code>SECTOR_SIZE</code> in length, even if at the end of the
 	 * capacity.
 	 */
-	private final Map<Long,byte[]> writeCache = new HashMap<>();
+	private final Map<Long, byte[]> writeCache = new HashMap<>();
 
 	/**
 	 * Creates a read-write test buffer with protection level <code>NONE</code>.
@@ -162,7 +162,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 		if(!writeCache.isEmpty()) {
 			long capacity = wrapped.capacity();
 			// Write current write cache in full
-			for(Map.Entry<Long,byte[]> entry : writeCache.entrySet()) {
+			for(Map.Entry<Long, byte[]> entry : writeCache.entrySet()) {
 				long sector = entry.getKey();
 				long sectorEnd = sector+SECTOR_SIZE;
 				if(sectorEnd>capacity) sectorEnd = capacity;
@@ -207,9 +207,9 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 	public void setCapacity(long newCapacity) throws IOException {
 		checkClosed();
 		randomFail(FailureMethod.setCapacity);
-		Iterator<Map.Entry<Long,byte[]>> entries = writeCache.entrySet().iterator();
+		Iterator<Map.Entry<Long, byte[]>> entries = writeCache.entrySet().iterator();
 		while(entries.hasNext()) {
-			Map.Entry<Long,byte[]> entry = entries.next();
+			Map.Entry<Long, byte[]> entry = entries.next();
 			long sector = entry.getKey();
 			if(sector>=newCapacity) {
 				// Remove any cached writes that start >= newCapacity

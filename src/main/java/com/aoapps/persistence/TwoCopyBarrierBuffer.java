@@ -251,7 +251,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 * is shared between the two maps.
 	 * </p>
 	 */
-	private SortedMap<Long,byte[]>
+	private SortedMap<Long, byte[]>
 		// Changes since the current (most up-to-date) file was last updated
 		currentWriteCache = new TreeMap<>(),
 		// Changes since the old (previous version) file was last updated.  This
@@ -321,7 +321,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 * Creates a buffer.  Synchronizes the two copies of the file.  Populates the <code>oldWriteCache</code> with
 	 * any data the doesn't match the newer version of the file.  This means that both files are read completely
 	 * at start-up in order to provide the most efficient synchronization later.
-	 * 
+	 *
 	 * @param file              The base filename, will be appended with ".old" and ".new" while committing changes.
 	 * @param protectionLevel   The protection level for this buffer.
 	 * @param sectorSize        The size of the sectors cached and written.  For best results this should
@@ -437,7 +437,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 					}
 				}
 				// Write only those sectors that have been modified
-				for(Map.Entry<Long,byte[]> entry : oldWriteCache.entrySet()) {
+				for(Map.Entry<Long, byte[]> entry : oldWriteCache.entrySet()) {
 					long sector = entry.getKey();
 					if(PersistentCollections.ASSERT) assert sector < capacity;
 					if(PersistentCollections.ASSERT) assert (sector & (sectorSize-1))==0 : "Sector not aligned";
@@ -452,7 +452,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 			FileUtils.rename(file, oldFile);
 			// Swap caches
 			oldWriteCache.clear();
-			SortedMap<Long,byte[]> temp = currentWriteCache;
+			SortedMap<Long, byte[]> temp = currentWriteCache;
 			currentWriteCache = oldWriteCache;
 			oldWriteCache = temp;
 			FileUtils.rename(newFile, file);
@@ -561,9 +561,9 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		synchronized(cacheLock) {
 			checkClosed();
 			if(newCapacity!=capacity) {
-				Iterator<Map.Entry<Long,byte[]>> oldEntries = oldWriteCache.entrySet().iterator();
+				Iterator<Map.Entry<Long, byte[]>> oldEntries = oldWriteCache.entrySet().iterator();
 				while(oldEntries.hasNext()) {
-					Map.Entry<Long,byte[]> entry = oldEntries.next();
+					Map.Entry<Long, byte[]> entry = oldEntries.next();
 					Long sector = entry.getKey();
 					if(sector>=newCapacity) {
 						// Remove any cached writes that start >= newCapacity
