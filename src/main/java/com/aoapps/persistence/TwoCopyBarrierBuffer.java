@@ -389,7 +389,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 				long sectorEnd = sector+sectorSize;
 				if(sectorEnd>capacity) sectorEnd = capacity;
 				int inBytes = (int)(sectorEnd - sector);
-				if(PersistentCollections.ASSERT) assert inBytes>0;
+				assert inBytes>0;
 				// Read current bytes
 				raf.readFully(buff, 0, inBytes);
 				if(sectorEnd>oldCapacity) {
@@ -423,7 +423,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 */
 	// @NotThreadSafe
 	private void flushWriteCache(boolean isClosing) throws IOException {
-		if(PersistentCollections.ASSERT) assert Thread.holdsLock(cacheLock);
+		assert Thread.holdsLock(cacheLock);
 		if(!currentWriteCache.isEmpty()) {
 			if(protectionLevel==ProtectionLevel.READ_ONLY) throw new IOException("protectionLevel==ProtectionLevel.READ_ONLY");
 			FileUtils.rename(oldFile, newFile);
@@ -439,8 +439,8 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 				// Write only those sectors that have been modified
 				for(Map.Entry<Long, byte[]> entry : oldWriteCache.entrySet()) {
 					long sector = entry.getKey();
-					if(PersistentCollections.ASSERT) assert sector < capacity;
-					if(PersistentCollections.ASSERT) assert (sector & (sectorSize-1))==0 : "Sector not aligned";
+					assert sector < capacity;
+					assert (sector & (sectorSize-1))==0 : "Sector not aligned";
 					long sectorEnd = sector + sectorSize;
 					if(sectorEnd>capacity) sectorEnd = capacity;
 					newRaf.seek(sector);
@@ -490,7 +490,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 */
 	// @NotThreadSafe
 	private void checkClosed() throws IOException {
-		if(PersistentCollections.ASSERT) assert Thread.holdsLock(cacheLock);
+		assert Thread.holdsLock(cacheLock);
 		if(isClosed) throw new IOException("TwoCopyBarrierBuffer(\""+file.getPath()+"\") is closed");
 	}
 
@@ -508,7 +508,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 */
 	// @NotThreadSafe
 	private void clearFirstWriteTime() {
-		if(PersistentCollections.ASSERT) assert Thread.holdsLock(cacheLock);
+		assert Thread.holdsLock(cacheLock);
 		firstWriteTime = -1;
 		if(asynchronousCommitTimerTask!=null) {
 			asynchronousCommitTimerTask.cancel();
@@ -521,7 +521,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 */
 	// @NotThreadSafe
 	private void markFirstWriteTime() {
-		if(PersistentCollections.ASSERT) assert Thread.holdsLock(cacheLock);
+		assert Thread.holdsLock(cacheLock);
 		// Mark as needing flush
 		if(firstWriteTime==-1) firstWriteTime = System.currentTimeMillis();
 		if(asynchronousCommitDelay!=Long.MAX_VALUE && asynchronousCommitTimerTask==null) {
@@ -589,9 +589,9 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		synchronized(cacheLock) {
 			checkClosed();
 			if(position<0) throw new IllegalArgumentException("position<0: "+position);
-			if(PersistentCollections.ASSERT) assert position<capacity;
+			assert position<capacity;
 			long sector = position&(-sectorSize);
-			if(PersistentCollections.ASSERT) assert (sector&(sectorSize-1))==0 : "Sector not aligned";
+			assert (sector&(sectorSize-1))==0 : "Sector not aligned";
 			byte[] cached = oldWriteCache.get(sector);
 			if(cached!=null) {
 				return cached[(int)(position-sector)];
@@ -617,15 +617,15 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 			if(off<0) throw new IllegalArgumentException("off<0: "+off);
 			if(len<0) throw new IllegalArgumentException("len<0: "+len);
 			final long end = position+len;
-			if(PersistentCollections.ASSERT) assert end<=capacity;
+			assert end<=capacity;
 			int bytesRead = 0;
 			while(position<end) {
 				long sector = position&(-sectorSize);
-				if(PersistentCollections.ASSERT) assert (sector&(sectorSize-1))==0 : "Sector not aligned";
+				assert (sector&(sectorSize-1))==0 : "Sector not aligned";
 				int buffEnd = off + (sectorSize+(int)(sector-position));
 				if(buffEnd>(off+len)) buffEnd = off+len;
 				int bytesToRead = buffEnd-off;
-				if(PersistentCollections.ASSERT) assert bytesToRead <= len;
+				assert bytesToRead <= len;
 				byte[] cached = oldWriteCache.get(sector);
 				int count;
 				if(cached!=null) {
@@ -659,9 +659,9 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		synchronized(cacheLock) {
 			checkClosed();
 			if(position<0) throw new IllegalArgumentException("position<0: "+position);
-			if(PersistentCollections.ASSERT) assert position<capacity;
+			assert position<capacity;
 			final long sector = position&(-sectorSize);
-			if(PersistentCollections.ASSERT) assert (sector&(sectorSize-1))==0 : "Sector not aligned";
+			assert (sector&(sectorSize-1))==0 : "Sector not aligned";
 			byte[] oldCached = oldWriteCache.get(sector);
 			if(oldCached!=null) {
 				if(currentWriteCache.containsKey(sector)) {
@@ -738,11 +738,11 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 			if(len<0) throw new IllegalArgumentException("len<0: "+len);
 			long rafLength = -1;
 			final long end = position+len;
-			if(PersistentCollections.ASSERT) assert end<=capacity;
+			assert end<=capacity;
 			byte[] readBuff = null;
 			while(position<end) {
 				final long sector = position&(-sectorSize);
-				if(PersistentCollections.ASSERT) assert (sector&(sectorSize-1))==0 : "Sector not aligned";
+				assert (sector&(sectorSize-1))==0 : "Sector not aligned";
 				int buffEnd = off + (sectorSize+(int)(sector-position));
 				if(buffEnd>(off+len)) buffEnd = off+len;
 				int bytesToWrite = buffEnd-off;

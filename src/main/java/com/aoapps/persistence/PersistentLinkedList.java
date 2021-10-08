@@ -238,7 +238,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private void setHead(long head) throws IOException {
-		if(PersistentCollections.ASSERT) assert head==END_PTR || isValidRange(head);
+		assert head==END_PTR || isValidRange(head);
 		blockBuffer.putLong(metaDataBlockId, HEAD_OFFSET, head);
 		this._head = head;
 	}
@@ -253,7 +253,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private void setTail(long tail) throws IOException {
-		if(PersistentCollections.ASSERT) assert tail==END_PTR || isValidRange(tail);
+		assert tail==END_PTR || isValidRange(tail);
 		blockBuffer.putLong(metaDataBlockId, TAIL_OFFSET, tail);
 		this._tail = tail;
 	}
@@ -264,7 +264,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private long getNext(long ptr) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
+		assert isValidRange(ptr);
 		return blockBuffer.getLong(ptr, NEXT_OFFSET);
 	}
 
@@ -274,8 +274,8 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private void setNext(long ptr, long next) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
-		if(PersistentCollections.ASSERT) assert next==END_PTR || isValidRange(next);
+		assert isValidRange(ptr);
+		assert next==END_PTR || isValidRange(next);
 		blockBuffer.putLong(ptr, NEXT_OFFSET, next);
 	}
 
@@ -285,7 +285,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private long getPrev(long ptr) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
+		assert isValidRange(ptr);
 		return blockBuffer.getLong(ptr, PREV_OFFSET);
 	}
 
@@ -295,8 +295,8 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private void setPrev(long ptr, long prev) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
-		if(PersistentCollections.ASSERT) assert prev==END_PTR || isValidRange(prev);
+		assert isValidRange(ptr);
+		assert prev==END_PTR || isValidRange(prev);
 		blockBuffer.putLong(ptr, PREV_OFFSET, prev);
 	}
 
@@ -307,7 +307,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private long getDataSize(long ptr) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
+		assert isValidRange(ptr);
 		return blockBuffer.getLong(ptr, DATA_SIZE_OFFSET);
 	}
 
@@ -326,7 +326,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private E getElement(long ptr) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
+		assert isValidRange(ptr);
 		long dataSize = getDataSize(ptr);
 		if(dataSize==DATA_SIZE_NULL) return null;
 
@@ -345,22 +345,22 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private void remove(long ptr) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
-		if(PersistentCollections.ASSERT) assert _size>0;
+		assert isValidRange(ptr);
+		assert _size>0;
 		long prev = getPrev(ptr);
 		long next = getNext(ptr);
 		if(prev==END_PTR) {
-			if(PersistentCollections.ASSERT) assert getHead()==ptr;
+			assert getHead()==ptr;
 			setHead(next);
 		} else {
-			if(PersistentCollections.ASSERT) assert getNext(prev)==ptr;
+			assert getNext(prev)==ptr;
 			setNext(prev, next);
 		}
 		if(next==END_PTR) {
-			if(PersistentCollections.ASSERT) assert getTail()==ptr;
+			assert getTail()==ptr;
 			setTail(prev);
 		} else {
-			if(PersistentCollections.ASSERT) assert getPrev(next)==ptr;
+			assert getPrev(next)==ptr;
 			setPrev(next, prev);
 		}
 		// Barrier, to make sure always pointing to complete data
@@ -385,8 +385,8 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	// @NotThreadSafe
 	private long addEntry(long next, long prev, E element) throws IOException {
 		//System.err.println("DEBUG: addEntry: element="+element);
-		if(PersistentCollections.ASSERT) assert next==END_PTR || isValidRange(next);
-		if(PersistentCollections.ASSERT) assert prev==END_PTR || isValidRange(prev);
+		assert next==END_PTR || isValidRange(next);
+		assert prev==END_PTR || isValidRange(prev);
 		if(_size==Long.MAX_VALUE) throw new IOException("List is full: _size==Long.MAX_VALUE");
 
 		// Allocate and write new entry
@@ -412,17 +412,17 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 		blockBuffer.barrier(false);
 		// Update pointers
 		if(prev==END_PTR) {
-			if(PersistentCollections.ASSERT) assert getHead()==next;
+			assert getHead()==next;
 			setHead(newPtr);
 		} else {
-			if(PersistentCollections.ASSERT) assert getNext(prev)==next;
+			assert getNext(prev)==next;
 			setNext(prev, newPtr);
 		}
 		if(next==END_PTR) {
-			if(PersistentCollections.ASSERT) assert getTail()==prev;
+			assert getTail()==prev;
 			setTail(newPtr);
 		} else {
-			if(PersistentCollections.ASSERT) assert getPrev(next)==prev;
+			assert getPrev(next)==prev;
 			setPrev(next, newPtr);
 		}
 		// Barrier, to make sure links are correct
@@ -437,8 +437,8 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private void addFirstEntry(final E element) throws IOException {
-		if(PersistentCollections.ASSERT) assert getHead()==END_PTR;
-		if(PersistentCollections.ASSERT) assert getTail()==END_PTR;
+		assert getHead()==END_PTR;
+		assert getTail()==END_PTR;
 		addEntry(END_PTR, END_PTR, element);
 	}
 
@@ -447,7 +447,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private void addBefore(final E element, final long ptr) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
+		assert isValidRange(ptr);
 		addEntry(ptr, getPrev(ptr), element);
 	}
 
@@ -456,7 +456,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private void addAfter(final E element, final long ptr) throws IOException {
-		if(PersistentCollections.ASSERT) assert isValidRange(ptr);
+		assert isValidRange(ptr);
 		addEntry(getNext(ptr), ptr, element);
 	}
 	// </editor-fold>
@@ -883,22 +883,22 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 */
 	// @NotThreadSafe
 	private long getPointerForIndex(long index) throws IOException {
-		if(PersistentCollections.ASSERT) assert _size>0;
+		assert _size>0;
 		if(index<(_size >> 1)) {
 			long ptr = getHead();
-			if(PersistentCollections.ASSERT) assert ptr!=END_PTR;
+			assert ptr!=END_PTR;
 			for(int i=0;i<index;i++) {
 				ptr = getNext(ptr);
-				if(PersistentCollections.ASSERT) assert ptr!=END_PTR;
+				assert ptr!=END_PTR;
 			}
 			return ptr;
 		} else {
 			// Search backwards
 			long bptr = getTail();
-			if(PersistentCollections.ASSERT) assert bptr!=END_PTR;
+			assert bptr!=END_PTR;
 			for(long i=_size-1;i>index;i--) {
 				bptr = getPrev(bptr);
-				if(PersistentCollections.ASSERT) assert bptr!=END_PTR;
+				assert bptr!=END_PTR;
 			}
 			return bptr;
 		}
@@ -1484,7 +1484,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	@Override
 	public void close() throws IOException {
 		if(!blockBuffer.isClosed()) {
-			// if(PersistentCollections.ASSERT) assert isConsistent();
+			// assert isConsistent();
 			blockBuffer.close();
 		}
 	}

@@ -97,7 +97,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 			bitmapSize = 1;
 		} else {
 			long smallestPowerOfTwo = 1L << (64-1-numZeros);
-			if(PersistentCollections.ASSERT) assert smallestPowerOfTwo==Long.highestOneBit(blockSize);
+			assert smallestPowerOfTwo==Long.highestOneBit(blockSize);
 			if(smallestPowerOfTwo!=blockSize) {
 				//smallestPowerOfTwo <<= 1;
 				numZeros--;
@@ -192,7 +192,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 			bitmapBitsAddress = getBitMapBitsAddress(lowestFreeId);
 		}
 		// Grow the underlying storage to make room for the bitmap space.
-		if(PersistentCollections.ASSERT) assert (lowestFreeId&7)==0 : "lowestFreeId must be the beginning of a byte";
+		assert (lowestFreeId&7)==0 : "lowestFreeId must be the beginning of a byte";
 		modCount++;
 		expandCapacity(capacity, bitmapBitsAddress+1);
 		pbuffer.put(bitmapBitsAddress, (byte)1);

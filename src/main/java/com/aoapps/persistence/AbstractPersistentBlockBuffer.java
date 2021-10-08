@@ -77,14 +77,14 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 		long totalSize = offset+len;
 		if(totalSize<0) throw new IllegalArgumentException("offset+len>Long.MAX_VALUE: offset="+offset+", len="+len);
 		long blockSize = getBlockSize(id);
-		if(PersistentCollections.ASSERT) assert blockSize>=0;
+		assert blockSize>=0;
 		return totalSize<=blockSize;
 	}
 
 	// @NotThreadSafe
 	@Override
 	public void get(long id, long offset, byte[] buff, int off, int len) throws IOException {
-		if(PersistentCollections.ASSERT) assert isInBounds(id, offset, len);
+		assert isInBounds(id, offset, len);
 		long startAddress = getBlockAddress(id)+offset;
 		ensureCapacity(startAddress+len);
 		pbuffer.get(startAddress, buff, off, len);
@@ -93,7 +93,7 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public int getInt(long id, long offset) throws IOException {
-		if(PersistentCollections.ASSERT) assert isInBounds(id, offset, 4);
+		assert isInBounds(id, offset, 4);
 		long startAddress = getBlockAddress(id)+offset;
 		ensureCapacity(startAddress+4);
 		return pbuffer.getInt(startAddress);
@@ -102,7 +102,7 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public long getLong(long id, long offset) throws IOException {
-		if(PersistentCollections.ASSERT) assert isInBounds(id, offset, 8);
+		assert isInBounds(id, offset, 8);
 		long startAddress = getBlockAddress(id)+offset;
 		ensureCapacity(startAddress+8);
 		return pbuffer.getLong(startAddress);
@@ -111,7 +111,7 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public InputStream getInputStream(long id, long offset, long length) throws IOException {
-		if(PersistentCollections.ASSERT) assert isInBounds(id, offset, length);
+		assert isInBounds(id, offset, length);
 		long startAddress = getBlockAddress(id)+offset;
 		ensureCapacity(startAddress+length);
 		return pbuffer.getInputStream(startAddress, length);
@@ -120,7 +120,7 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public void put(long id, long offset, byte[] buff, int off, int len) throws IOException {
-		if(PersistentCollections.ASSERT) assert isInBounds(id, offset, len);
+		assert isInBounds(id, offset, len);
 		long startAddress = getBlockAddress(id)+offset;
 		ensureCapacity(startAddress+len);
 		pbuffer.put(startAddress, buff, off, len);
@@ -129,7 +129,7 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public void putInt(long id, long offset, int value) throws IOException {
-		if(PersistentCollections.ASSERT) assert isInBounds(id, offset, 4);
+		assert isInBounds(id, offset, 4);
 		long startAddress = getBlockAddress(id)+offset;
 		ensureCapacity(startAddress+4);
 		pbuffer.putInt(startAddress, value);
@@ -138,7 +138,7 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public void putLong(long id, long offset, long value) throws IOException {
-		if(PersistentCollections.ASSERT) assert isInBounds(id, offset, 8);
+		assert isInBounds(id, offset, 8);
 		long startAddress = getBlockAddress(id)+offset;
 		ensureCapacity(startAddress+8);
 		pbuffer.putLong(startAddress, value);
@@ -147,7 +147,7 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public OutputStream getOutputStream(long id, long offset, long length) throws IOException {
-		if(PersistentCollections.ASSERT) assert isInBounds(id, offset, length);
+		assert isInBounds(id, offset, length);
 		long startAddress = getBlockAddress(id)+offset;
 		ensureCapacity(startAddress+length);
 		return pbuffer.getOutputStream(startAddress, length);
