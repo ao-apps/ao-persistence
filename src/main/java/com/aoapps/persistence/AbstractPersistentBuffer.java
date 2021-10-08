@@ -179,7 +179,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 			}
 
 			@Override
-			public int read(byte b[], int off, int len) throws IOException {
+			public int read(byte[] b, int off, int len) throws IOException {
 				if(closed) throw new IOException("Stream closed");
 				if(len<0) throw new IllegalArgumentException("len<0: "+len);
 				if(len==0) return 0;
@@ -247,7 +247,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 			}
 
 			@Override
-			public void write(byte b[], int off, int len) throws IOException {
+			public void write(byte[] b, int off, int len) throws IOException {
 				if(closed) throw new IOException("Stream closed");
 				if(curRemaining<len) throw new BufferOverflowException();
 				put(curPosition, b, off, len);
