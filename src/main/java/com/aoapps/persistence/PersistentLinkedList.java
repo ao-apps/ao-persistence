@@ -1413,9 +1413,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 		}
 		// @NotThreadSafe
 		@Override
-		public E next() {
-				return itr.previous();
-			}
+		public E next() throws NoSuchElementException {
+			return itr.previous();
+		}
 		// @NotThreadSafe
 		@Override
 		public void remove() {
