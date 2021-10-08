@@ -42,7 +42,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	protected final ProtectionLevel protectionLevel;
 	private final byte[] ioBuffer = new byte[8];
 
-	public AbstractPersistentBuffer(ProtectionLevel protectionLevel) {
+	protected AbstractPersistentBuffer(ProtectionLevel protectionLevel) {
 		this.protectionLevel = protectionLevel;
 	}
 

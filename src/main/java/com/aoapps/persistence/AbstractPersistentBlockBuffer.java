@@ -38,7 +38,7 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 
 	protected final PersistentBuffer pbuffer;
 
-	public AbstractPersistentBlockBuffer(PersistentBuffer pbuffer) {
+	protected AbstractPersistentBlockBuffer(PersistentBuffer pbuffer) {
 		this.pbuffer = pbuffer;
 	}
 

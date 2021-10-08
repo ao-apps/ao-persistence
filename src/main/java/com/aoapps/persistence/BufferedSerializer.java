@@ -43,7 +43,7 @@ public abstract class BufferedSerializer<E> implements Serializer<E> {
 	private E lastSerialized = null;
 	private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-	public BufferedSerializer() {
+	protected BufferedSerializer() {
 	}
 
 	// @NotThreadSafe

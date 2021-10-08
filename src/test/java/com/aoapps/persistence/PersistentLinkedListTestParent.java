@@ -48,7 +48,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 
 	private static final int TEST_LOOPS = 10;
 
-	public PersistentLinkedListTestParent(String testName) {
+	protected PersistentLinkedListTestParent(String testName) {
 		super(testName);
 	}
 

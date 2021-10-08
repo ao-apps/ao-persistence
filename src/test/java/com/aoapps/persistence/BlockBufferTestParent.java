@@ -47,7 +47,7 @@ import junit.framework.TestCase;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public abstract class BlockBufferTestParent extends TestCase {
 
-	public BlockBufferTestParent(String testName) {
+	protected BlockBufferTestParent(String testName) {
 		super(testName);
 	}
 
