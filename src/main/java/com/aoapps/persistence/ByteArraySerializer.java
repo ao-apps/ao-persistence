@@ -46,7 +46,7 @@ public class ByteArraySerializer implements Serializer<byte[]> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(byte[] value) {
-		return 4+value.length;
+		return 4L + value.length;
 	}
 
 	private final byte[] ioBuffer = new byte[4];

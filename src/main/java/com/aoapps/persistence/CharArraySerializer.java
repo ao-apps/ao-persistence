@@ -47,7 +47,7 @@ public class CharArraySerializer implements Serializer<char[]> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(char[] value) {
-		return 4+value.length/2;
+		return 4L + value.length/2;
 	}
 
 	// @NotThreadSafe

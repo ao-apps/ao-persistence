@@ -107,7 +107,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	/**
 	 * The constant location of the head pointer.
 	 */
-	private static final long HEAD_OFFSET = MAGIC.length+4;
+	private static final long HEAD_OFFSET = MAGIC.length + 4L;
 
 	/**
 	 * The constant location of the tail pointer.
@@ -118,6 +118,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 * The total number of bytes in the header.
 	 */
 	private static final int HEADER_SIZE = (int)(TAIL_OFFSET + 8);
+	static {
+		assert (TAIL_OFFSET + 8) <= Integer.MAX_VALUE;
+	}
 
 	/**
 	 * The block offset for <code>next</code>.
