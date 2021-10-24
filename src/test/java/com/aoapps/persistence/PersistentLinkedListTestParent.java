@@ -60,15 +60,18 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 		} else {
 			len = random.nextInt(129);
 		}
-		StringBuilder SB = new StringBuilder(len);
+		StringBuilder sb = new StringBuilder(len);
 		for(int d = 0; d < len; d++) {
-			SB.append((char)random.nextInt(Character.MAX_VALUE + 1));
+			sb.append((char)random.nextInt(Character.MAX_VALUE + 1));
 		}
-		return SB.toString();
+		return sb.toString();
 	}
 
-	private final Random secureRandom = new SecureRandom();
-	private final Random random = new Random(secureRandom.nextLong());
+	private final SecureRandom secureRandom = new SecureRandom();
+	/**
+	 * A fast random number generator for non-cryptographic uses.
+	 */
+	private final Random fastRandom = new Random(secureRandom.nextLong());
 
 	protected abstract PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception;
 
@@ -82,7 +85,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
 					// Populate the list
 					for(int c=0;c<numElements;c++) {
-						String s = getRandomString(random, true);
+						String s = getRandomString(fastRandom, true);
 						assertEquals(linkedFileList.add(s), linkedList.add(s));
 					}
 					// Check size match
@@ -94,8 +97,8 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 						assertEquals(linkedFileList.getLast(), linkedList.getLast());
 						// Update random locations to random values
 						for(int c=0;c<numElements;c++) {
-							int index = random.nextInt(numElements);
-							String newVal = getRandomString(random, true);
+							int index = fastRandom.nextInt(numElements);
+							String newVal = getRandomString(fastRandom, true);
 							assertEquals(linkedFileList.set(index, newVal), linkedList.set(index, newVal));
 						}
 					}
@@ -103,10 +106,10 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					assertEquals(linkedFileList, linkedList);
 					// Remove random indexes
 					if(numElements>0) {
-						int numRemove = random.nextInt(numElements);
+						int numRemove = fastRandom.nextInt(numElements);
 						for(int c=0;c<numRemove;c++) {
 							assertEquals(linkedFileList.size(), linkedList.size());
-							int index = random.nextInt(linkedFileList.size());
+							int index = fastRandom.nextInt(linkedFileList.size());
 							assertEquals(
 								linkedFileList.remove(index),
 								linkedList.remove(index)
@@ -115,10 +118,10 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					}
 					// Add random values to end
 					if(numElements>0) {
-						int numAdd = random.nextInt(numElements);
+						int numAdd = fastRandom.nextInt(numElements);
 						for(int c=0;c<numAdd;c++) {
 							assertEquals(linkedFileList.size(), linkedList.size());
-							String newVal = getRandomString(random, true);
+							String newVal = getRandomString(fastRandom, true);
 							assertEquals(linkedFileList.add(newVal), linkedList.add(newVal));
 						}
 					}
@@ -126,11 +129,11 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					assertEquals(linkedFileList, linkedList);
 					// Add random values in middle
 					if(numElements>0) {
-						int numAdd = random.nextInt(numElements);
+						int numAdd = fastRandom.nextInt(numElements);
 						for(int c=0;c<numAdd;c++) {
 							assertEquals(linkedFileList.size(), linkedList.size());
-							int index = random.nextInt(linkedFileList.size());
-							String newVal = getRandomString(random, true);
+							int index = fastRandom.nextInt(linkedFileList.size());
+							String newVal = getRandomString(fastRandom, true);
 							linkedFileList.add(index, newVal);
 							linkedList.add(index, newVal);
 							assertEquals(
@@ -162,7 +165,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 		doTestCorrectnessString(0);
 		doTestCorrectnessString(1);
 		for(int c = 0; c < 10; c++) {
-			doTestCorrectnessString(100 + random.nextInt(101));
+			doTestCorrectnessString(100 + fastRandom.nextInt(101));
 		}
 	}
 
@@ -175,9 +178,9 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				LinkedList<Integer> linkedList = new LinkedList<>();
 				try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
 					// Populate the list
-					for(int c=0;c<numElements;c++) {
-						Integer I = random.nextInt();
-						assertEquals(linkedFileList.add(I), linkedList.add(I));
+					for(int c = 0; c < numElements; c++) {
+						Integer i = fastRandom.nextInt();
+						assertEquals(linkedFileList.add(i), linkedList.add(i));
 					}
 					// Check size match
 					assertEquals(linkedFileList.size(), linkedList.size());
@@ -188,8 +191,8 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 						assertEquals(linkedFileList.getLast(), linkedList.getLast());
 						// Update random locations to random values
 						for(int c=0;c<numElements;c++) {
-							int index = random.nextInt(numElements);
-							Integer newVal = random.nextInt();
+							int index = fastRandom.nextInt(numElements);
+							Integer newVal = fastRandom.nextInt();
 							assertEquals(linkedFileList.set(index, newVal), linkedList.set(index, newVal));
 						}
 					}
@@ -197,10 +200,10 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					assertEquals(linkedFileList, linkedList);
 					// Remove random indexes
 					if(numElements>0) {
-						int numRemove = random.nextInt(numElements);
+						int numRemove = fastRandom.nextInt(numElements);
 						for(int c=0;c<numRemove;c++) {
 							assertEquals(linkedFileList.size(), linkedList.size());
-							int index = random.nextInt(linkedFileList.size());
+							int index = fastRandom.nextInt(linkedFileList.size());
 							assertEquals(
 								linkedFileList.remove(index),
 								linkedList.remove(index)
@@ -209,10 +212,10 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					}
 					// Add random values to end
 					if(numElements>0) {
-						int numAdd = random.nextInt(numElements);
+						int numAdd = fastRandom.nextInt(numElements);
 						for(int c=0;c<numAdd;c++) {
 							assertEquals(linkedFileList.size(), linkedList.size());
-							Integer newVal = random.nextInt();
+							Integer newVal = fastRandom.nextInt();
 							assertEquals(linkedFileList.add(newVal), linkedList.add(newVal));
 						}
 					}
@@ -220,11 +223,11 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					assertEquals(linkedFileList, linkedList);
 					// Add random values in middle
 					if(numElements>0) {
-						int numAdd = random.nextInt(numElements);
+						int numAdd = fastRandom.nextInt(numElements);
 						for(int c=0;c<numAdd;c++) {
 							assertEquals(linkedFileList.size(), linkedList.size());
-							int index = random.nextInt(linkedFileList.size());
-							Integer newVal = random.nextInt();
+							int index = fastRandom.nextInt(linkedFileList.size());
+							Integer newVal = fastRandom.nextInt();
 							linkedFileList.add(index, newVal);
 							linkedList.add(index, newVal);
 							assertEquals(
@@ -256,7 +259,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 		doTestCorrectnessInteger(0);
 		doTestCorrectnessInteger(1);
 		for(int c = 0; c < 10; c++) {
-			doTestCorrectnessInteger(100 + random.nextInt(101));
+			doTestCorrectnessInteger(100 + fastRandom.nextInt(101));
 		}
 	}
 
@@ -272,7 +275,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				// Add in groups of 1000, timing the add
 				String[] toAdd = new String[1000];
 				for(int d = 0; d < 1000; d++) {
-					toAdd[d] = getRandomString(random, true);
+					toAdd[d] = getRandomString(fastRandom, true);
 				}
 				for(int c=0;c<TEST_LOOPS;c++) {
 					long startNanos = System.nanoTime();
@@ -304,7 +307,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				// Add in groups of 1000, timing the add
 				Integer[] toAdd = new Integer[1000];
 				for(int d = 0; d < 1000; d++) {
-					toAdd[d] = random.nextInt();
+					toAdd[d] = fastRandom.nextInt();
 				}
 				for(int c=0;c<TEST_LOOPS;c++) {
 					long startNanos = System.nanoTime();
@@ -364,7 +367,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				for(int c = 0; c <= 10; c++) {
 					if(c > 0) {
 						for(int d = 0; d < 1000; d++) {
-							linkedFileList.add(getRandomString(random, true));
+							linkedFileList.add(getRandomString(fastRandom, true));
 						}
 					}
 					long startNanos = System.nanoTime();
@@ -395,7 +398,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				for(int c = 0; c <= 10; c++) {
 					if(c > 0) {
 						for(int d = 0; d < 1000; d++) {
-							linkedFileList.add(random.nextInt());
+							linkedFileList.add(fastRandom.nextInt());
 						}
 					}
 					long startNanos = System.nanoTime();
@@ -424,7 +427,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 		) {
 			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
 				for(int c=0;c<100000;c++) {
-					String newValue = getRandomString(random, true);
+					String newValue = getRandomString(fastRandom, true);
 					String oldValue = null;
 					if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
 					linkedFileList.addFirst(newValue);
@@ -448,7 +451,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 		) {
 			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
 				for(int c=0;c<100000;c++) {
-					Integer newValue = random.nextInt();
+					Integer newValue = fastRandom.nextInt();
 					Integer oldValue = null;
 					if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
 					linkedFileList.addFirst(newValue);
@@ -546,8 +549,8 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					try {
 						try {
 							try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
-								int batchSize = random.nextInt(100)+1;
-								for(int d=0;d<batchSize;d++) {
+								int batchSize = fastRandom.nextInt(100) + 1;
+								for(int d = 0; d < batchSize; d++) {
 									partial = Long.toString(sequence.getNextSequenceValue());
 									heapList.addFirst(partial);
 									linkedFileList.addFirst(partial);
@@ -573,9 +576,9 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					try {
 						try {
 							try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
-								int batchSize = random.nextInt(95)+1;
-								if(batchSize>linkedFileList.size()) batchSize = linkedFileList.size();
-								for(int d=0;d<batchSize;d++) {
+								int batchSize = fastRandom.nextInt(95) + 1;
+								if(batchSize > linkedFileList.size()) batchSize = linkedFileList.size();
+								for(int d = 0; d < batchSize; d++) {
 									partial = heapList.getLast();
 									assertEquals(linkedFileList.getLast(), partial);
 									assertEquals(linkedFileList.removeLast(), heapList.removeLast());
@@ -599,8 +602,8 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					try {
 						try {
 							try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
-								int batchSize = random.nextInt(100)+1;
-								for(int d=0;d<batchSize;d++) {
+								int batchSize = fastRandom.nextInt(100) + 1;
+								for(int d = 0; d < batchSize; d++) {
 									partial = Long.toString(sequence.getNextSequenceValue());
 									heapList.addLast(partial);
 									linkedFileList.addLast(partial);
@@ -624,9 +627,9 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 					try {
 						try {
 							try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
-								int batchSize = random.nextInt(95)+1;
-								if(batchSize>linkedFileList.size()) batchSize = linkedFileList.size();
-								for(int d=0;d<batchSize;d++) {
+								int batchSize = fastRandom.nextInt(95) + 1;
+								if(batchSize > linkedFileList.size()) batchSize = linkedFileList.size();
+								for(int d = 0; d < batchSize; d++) {
 									// This assigned value *is* used in catch block - ignore NetBeans warning
 									partial = linkedFileList.getFirst(); // Removing this line causes tests to fail
 									assertEquals(linkedFileList.removeFirst(), heapList.removeFirst());

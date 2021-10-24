@@ -199,8 +199,8 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 								buffer.close();
 							} catch(ThreadDeath td) {
 								throw td;
-							} catch(Throwable T) {
-								logger.log(Level.WARNING, null, T);
+							} catch(Throwable t) {
+								logger.log(Level.WARNING, null, t);
 							}
 						});
 					}
