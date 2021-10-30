@@ -188,8 +188,14 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 							synchronized(fieldLock) {
 								long currentTime = System.currentTimeMillis();
 								long timeSince = currentTime - startTime[0];
-								if(timeSince<=-60000 || timeSince>=60000) {
-									logger.info(size==1 ? "Closing the TwoCopyBarrierBuffer." : "Closing TwoCopyBarrierBuffer "+counter[0]+" of "+size+".");
+								if(timeSince <= -60000 || timeSince >= 60000) {
+									if(logger.isLoggable(Level.INFO)) {
+										logger.info(
+											(size == 1)
+											? "Closing the TwoCopyBarrierBuffer."
+											: "Closing TwoCopyBarrierBuffer " + counter[0] + " of " + size+"."
+										);
+									}
 									wrote[0] = true;
 									startTime[0] = currentTime;
 								}
@@ -207,17 +213,31 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 				} finally {
 					executorService.shutdown();
 					boolean terminated = false;
-					while(!terminated) {
+					while(!terminated && !Thread.currentThread().isInterrupted()) {
 						try {
 							terminated = executorService.awaitTermination(3600, TimeUnit.SECONDS);
+							if(!terminated && logger.isLoggable(Level.INFO)) {
+								logger.info(
+									(size == 1)
+									? "Waiting for the TwoCopyBarrierBuffer to close."
+									: "Waiting for all " + size + " TwoCopyBarrierBuffers to close."
+								);
+							}
 						} catch(InterruptedException err) {
 							logger.log(Level.WARNING, null, err);
+							// Restore the interrupted status
+							Thread.currentThread().interrupt();
 						}
-						if(!terminated) logger.info(size==1 ? "Waiting for the TwoCopyBarrierBuffer to close." : "Waiting for all "+size+" TwoCopyBarrierBuffers to close.");
 					}
 				}
 				synchronized(fieldLock) {
-					if(wrote[0]) logger.info(size==1 ? "Finished closing the TwoCopyBarrierBuffer." : "Finished closing all "+size+" TwoCopyBarrierBuffers.");
+					if(wrote[0] && logger.isLoggable(Level.INFO)) {
+						logger.info(
+							(size == 1)
+							? "Finished closing the TwoCopyBarrierBuffer."
+							: "Finished closing all " + size + " TwoCopyBarrierBuffers."
+						);
+					}
 				}
 			}
 		}
