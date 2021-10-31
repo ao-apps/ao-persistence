@@ -58,7 +58,7 @@ public class PersistentLinkedListLargeMappedTest extends PersistentLinkedListTes
 			TempFile tempFile = tempFileContext.createTempFile("LinkedFileListTest");
 			PersistentLinkedList<byte[]> linkedFileList = new PersistentLinkedList<byte[]>(getPersistentBuffer(tempFile), false, false)
 		) {
-			byte[] buff = new byte[1024*1024];
+			byte[] buff = new byte[1024 * 1024];
 			System.out.println("Filling list");
 			for(int c=0;c<1024;c++) {
 				linkedFileList.add(buff);
