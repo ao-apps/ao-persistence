@@ -1293,7 +1293,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
 		// @NotThreadSafe
 		@Override
-		public E next() {
+		public E next() throws NoSuchElementException {
 			checkForComodification();
 			if (nextIndex == _size) throw new NoSuchElementException();
 			try {
@@ -1315,7 +1315,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
 		// @NotThreadSafe
 		@Override
-		public E previous() {
+		public E previous() throws NoSuchElementException {
 			checkForComodification();
 			if (nextIndex == 0) throw new NoSuchElementException();
 			try {

@@ -251,7 +251,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 			}
 			// @NotThreadSafe
 			@Override
-			public Long next() {
+			public Long next() throws NoSuchElementException {
 				if(expectedModCount!=modCount) throw new ConcurrentModificationException();
 				try {
 					long bitmapBitsAddress = getBitMapBitsAddress(nextId);

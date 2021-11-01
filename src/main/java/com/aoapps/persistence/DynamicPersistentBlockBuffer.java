@@ -508,7 +508,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
 
 			// @NotThreadSafe
 			@Override
-			public Long next() {
+			public Long next() throws NoSuchElementException {
 				if(expectedModCount!=modCount) throw new ConcurrentModificationException();
 				try {
 					long capacity = pbuffer.capacity();
@@ -531,8 +531,8 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
 			@Override
 			public void remove() {
 				try {
-					if(expectedModCount!=modCount) throw new ConcurrentModificationException();
-					if(lastId==-1) throw new IllegalStateException();
+					if(expectedModCount != modCount) throw new ConcurrentModificationException();
+					if(lastId == -1) throw new IllegalStateException();
 					deallocate(lastId);
 					expectedModCount++;
 					lastId = -1;
