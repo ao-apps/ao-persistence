@@ -114,7 +114,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	/**
 	 * The constant location of the head pointer.
 	 */
-	private static final long HEAD_OFFSET = MAGIC.length + VERSION_BYTES;
+	private static final long HEAD_OFFSET = (long)MAGIC.length + VERSION_BYTES;
 
 	/**
 	 * The constant location of the tail pointer.
