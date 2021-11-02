@@ -46,22 +46,22 @@ public class FloatSerializer implements Serializer<Float> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(Float value) {
-		return 4;
+		return Float.BYTES;
 	}
 
-	private final byte[] buffer = new byte[4];
+	private final byte[] buffer = new byte[Float.BYTES];
 
 	// @NotThreadSafe
 	@Override
 	public void serialize(Float value, OutputStream out) throws IOException {
 		IoUtils.intToBuffer(Float.floatToRawIntBits(value), buffer);
-		out.write(buffer, 0, 4);
+		out.write(buffer, 0, Float.BYTES);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public Float deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, 4);
+		IoUtils.readFully(in, buffer, 0, Float.BYTES);
 		return Float.intBitsToFloat(IoUtils.bufferToInt(buffer));
 	}
 }

@@ -99,6 +99,13 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
 	private static final int VERSION = 3;
 
+	private static final int VERSION_BYTES = Integer.BYTES;
+	private static final int HEAD_BYTES = Long.BYTES;
+	private static final int TAIL_BYTES = Long.BYTES;
+	private static final int NEXT_BYTES = Long.BYTES;
+	private static final int PREV_BYTES = Long.BYTES;
+	private static final int DATA_SIZE_OFFSET_BYTES = Long.BYTES;
+
 	/**
 	 * The value used to represent an ending pointer.
 	 */
@@ -107,19 +114,19 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	/**
 	 * The constant location of the head pointer.
 	 */
-	private static final long HEAD_OFFSET = MAGIC.length + 4L;
+	private static final long HEAD_OFFSET = MAGIC.length + VERSION_BYTES;
 
 	/**
 	 * The constant location of the tail pointer.
 	 */
-	private static final long TAIL_OFFSET = HEAD_OFFSET+8;
+	private static final long TAIL_OFFSET = HEAD_OFFSET + HEAD_BYTES;
 
 	/**
 	 * The total number of bytes in the header.
 	 */
-	private static final int HEADER_SIZE = (int)(TAIL_OFFSET + 8);
+	private static final int HEADER_SIZE = (int)(TAIL_OFFSET + TAIL_BYTES);
 	static {
-		assert (TAIL_OFFSET + 8) <= Integer.MAX_VALUE;
+		assert (TAIL_OFFSET + TAIL_BYTES) <= Integer.MAX_VALUE;
 	}
 
 	/**
@@ -130,17 +137,17 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	/**
 	 * The block offset for <code>prev</code>.
 	 */
-	private static final int PREV_OFFSET = 8;
+	private static final int PREV_OFFSET = NEXT_OFFSET + NEXT_BYTES;
 
 	/**
 	 * The block offset for <code>dataSize</code>.
 	 */
-	private static final int DATA_SIZE_OFFSET = 16;
+	private static final int DATA_SIZE_OFFSET = PREV_OFFSET + PREV_BYTES;
 
 	/**
 	 * The block offset for the beginning of the data.
 	 */
-	private static final int DATA_OFFSET = 24;
+	private static final int DATA_OFFSET = DATA_SIZE_OFFSET + DATA_SIZE_OFFSET_BYTES;
 
 	/**
 	 * Value used to indicate <code>null</code> data.

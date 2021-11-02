@@ -104,18 +104,18 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public int getInt(long id, long offset) throws IOException {
-		checkBounds(id, offset, 4);
-		long startAddress = getBlockAddress(id)+offset;
-		ensureCapacity(startAddress+4);
+		checkBounds(id, offset, Integer.BYTES);
+		long startAddress = getBlockAddress(id) + offset;
+		ensureCapacity(startAddress + Integer.BYTES);
 		return pbuffer.getInt(startAddress);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public long getLong(long id, long offset) throws IOException {
-		checkBounds(id, offset, 8);
-		long startAddress = getBlockAddress(id)+offset;
-		ensureCapacity(startAddress+8);
+		checkBounds(id, offset, Long.BYTES);
+		long startAddress = getBlockAddress(id) + offset;
+		ensureCapacity(startAddress + Long.BYTES);
 		return pbuffer.getLong(startAddress);
 	}
 
@@ -140,18 +140,18 @@ public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBu
 	// @NotThreadSafe
 	@Override
 	public void putInt(long id, long offset, int value) throws IOException {
-		checkBounds(id, offset, 4);
-		long startAddress = getBlockAddress(id)+offset;
-		ensureCapacity(startAddress+4);
+		checkBounds(id, offset, Integer.BYTES);
+		long startAddress = getBlockAddress(id) + offset;
+		ensureCapacity(startAddress + Integer.BYTES);
 		pbuffer.putInt(startAddress, value);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public void putLong(long id, long offset, long value) throws IOException {
-		checkBounds(id, offset, 8);
-		long startAddress = getBlockAddress(id)+offset;
-		ensureCapacity(startAddress+8);
+		checkBounds(id, offset, Long.BYTES);
+		long startAddress = getBlockAddress(id) + offset;
+		ensureCapacity(startAddress + Long.BYTES);
 		pbuffer.putLong(startAddress, value);
 	}
 

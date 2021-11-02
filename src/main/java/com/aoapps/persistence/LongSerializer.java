@@ -46,22 +46,22 @@ public class LongSerializer implements Serializer<Long> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(Long value) {
-		return 8;
+		return Long.BYTES;
 	}
 
-	private final byte[] buffer = new byte[8];
+	private final byte[] buffer = new byte[Long.BYTES];
 
 	// @NotThreadSafe
 	@Override
 	public void serialize(Long value, OutputStream out) throws IOException {
 		IoUtils.longToBuffer(value, buffer);
-		out.write(buffer, 0, 8);
+		out.write(buffer, 0, Long.BYTES);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public Long deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, 8);
+		IoUtils.readFully(in, buffer, 0, Long.BYTES);
 		return IoUtils.bufferToLong(buffer);
 	}
 }

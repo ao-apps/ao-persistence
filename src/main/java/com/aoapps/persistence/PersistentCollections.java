@@ -150,9 +150,9 @@ public class PersistentCollections {
 			if(previousByteOrder!=nativeByteOrder) byteBuffer.order(nativeByteOrder);
 			// Align to 8-byte boundary
 			byteBuffer.position(position);
-			while(count>0 && (position&7)!=0) {
+			while(count > 0 && (position & (Long.BYTES - 1)) != 0) {
 				byte b = byteBuffer.get();
-				if(b!=0) {
+				if(b != 0) {
 					byteBuffer.put(position, (byte)0);
 					modified = true;
 				}
@@ -161,19 +161,19 @@ public class PersistentCollections {
 			}
 			// Read in long values to get 64 bits at a time
 			do {
-				int nextCount = count - 8;
-				if(nextCount<0) break;
-				if(byteBuffer.getLong()!=0) {
+				int nextCount = count - Long.BYTES;
+				if(nextCount < 0) break;
+				if(byteBuffer.getLong() != 0) {
 					byteBuffer.putLong(position, 0);
 					modified = true;
 				}
-				position += 8;
+				position += Long.BYTES;
 				count = nextCount;
 			} while(true);
 			// Trailing bytes
-			while(count>0) {
+			while(count > 0) {
 				byte b = byteBuffer.get();
-				if(b!=0) {
+				if(b != 0) {
 					byteBuffer.put(position, (byte)0);
 					modified = true;
 				}
@@ -217,7 +217,7 @@ public class PersistentCollections {
 	// @ThreadSafe
 	public static PersistentBuffer getPersistentBuffer(long maximumCapacity) throws IOException {
 		// If < 1 GB, use mapped buffer
-		if(maximumCapacity<(1L<<30)) {
+		if(maximumCapacity < (1L << 30)) {
 			return new MappedPersistentBuffer();
 		}
 		// No mmap for 32-bit
@@ -252,12 +252,12 @@ public class PersistentCollections {
 	 */
 	// @ThreadSafe
 	public static PersistentBuffer getPersistentBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel, long maximumCapacity) throws IOException {
-		if(maximumCapacity<(1L<<30)) {
+		if(maximumCapacity < (1L << 30)) {
 			long len = raf.length();
 			if(maximumCapacity<len) maximumCapacity = len;
 		}
 		// If < 1 GB, use mapped buffer
-		if(maximumCapacity<(1L<<30)) {
+		if(maximumCapacity < (1L << 30)) {
 			return new MappedPersistentBuffer(raf, protectionLevel);
 		}
 		// No mmap for 32-bit

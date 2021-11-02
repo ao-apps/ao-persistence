@@ -46,22 +46,22 @@ public class IntegerSerializer implements Serializer<Integer> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(Integer value) {
-		return 4;
+		return Integer.BYTES;
 	}
 
-	private final byte[] buffer = new byte[4];
+	private final byte[] buffer = new byte[Integer.BYTES];
 
 	// @NotThreadSafe
 	@Override
 	public void serialize(Integer value, OutputStream out) throws IOException {
 		IoUtils.intToBuffer(value, buffer);
-		out.write(buffer, 0, 4);
+		out.write(buffer, 0, Integer.BYTES);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public Integer deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, 4);
+		IoUtils.readFully(in, buffer, 0, Integer.BYTES);
 		return IoUtils.bufferToInt(buffer);
 	}
 }

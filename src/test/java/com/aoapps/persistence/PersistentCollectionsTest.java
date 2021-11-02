@@ -64,7 +64,7 @@ public class PersistentCollectionsTest extends TestCase {
 	}
 
 	public void testCharToBuffer() throws Exception {
-		byte[] buff = new byte[2];
+		byte[] buff = new byte[Character.BYTES];
 		for(int i = 0; i < ITERATIONS; i++) {
 			char value = (char)fastRandom.nextInt(Character.MAX_VALUE + 1);
 			IoUtils.charToBuffer(value, buff);
@@ -74,9 +74,9 @@ public class PersistentCollectionsTest extends TestCase {
 	}
 
 	public void testShortToBuffer() throws Exception {
-		byte[] buff = new byte[2];
+		byte[] buff = new byte[Short.BYTES];
 		for(int i = 0; i < ITERATIONS; i++) {
-			short value = (short)(fastRandom.nextInt(32768) - 16384);
+			short value = (short)(fastRandom.nextInt(1 << Short.SIZE) + Short.MIN_VALUE);
 			IoUtils.shortToBuffer(value, buff);
 			short result = IoUtils.bufferToShort(buff);
 			assertEquals(value, result);
@@ -84,7 +84,7 @@ public class PersistentCollectionsTest extends TestCase {
 	}
 
 	public void testIntToBuffer() throws Exception {
-		byte[] buff = new byte[4];
+		byte[] buff = new byte[Integer.BYTES];
 		for(int i = 0; i < ITERATIONS; i++) {
 			int value = fastRandom.nextInt();
 			IoUtils.intToBuffer(value, buff);
@@ -94,9 +94,9 @@ public class PersistentCollectionsTest extends TestCase {
 	}
 
 	public void testLongToBuffer() throws Exception {
-		byte[] buff = new byte[8];
+		byte[] buff = new byte[Long.BYTES];
 		for(int i = 0; i < ITERATIONS; i++) {
-			long value = fastRandom.nextInt();
+			long value = fastRandom.nextLong();
 			IoUtils.longToBuffer(value, buff);
 			long result = IoUtils.bufferToLong(buff);
 			assertEquals(value, result);

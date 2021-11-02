@@ -46,23 +46,23 @@ public class ByteArraySerializer implements Serializer<byte[]> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(byte[] value) {
-		return 4L + value.length;
+		return (long)Integer.BYTES + value.length;
 	}
 
-	private final byte[] ioBuffer = new byte[4];
+	private final byte[] ioBuffer = new byte[Integer.BYTES];
 
 	// @NotThreadSafe
 	@Override
 	public void serialize(byte[] value, OutputStream out) throws IOException {
 		IoUtils.intToBuffer(value.length, ioBuffer);
-		out.write(ioBuffer, 0, 4);
+		out.write(ioBuffer, 0, Integer.BYTES);
 		out.write(value);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public byte[] deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, ioBuffer, 0, 4);
+		IoUtils.readFully(in, ioBuffer, 0, Integer.BYTES);
 		int length = IoUtils.bufferToInt(ioBuffer);
 		byte[] value = new byte[length];
 		IoUtils.readFully(in, value, 0, length);

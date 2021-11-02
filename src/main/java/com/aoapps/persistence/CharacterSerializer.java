@@ -46,22 +46,22 @@ public class CharacterSerializer implements Serializer<Character> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(Character value) {
-		return 2;
+		return Character.BYTES;
 	}
 
-	private final byte[] buffer = new byte[2];
+	private final byte[] buffer = new byte[Character.BYTES];
 
 	// @NotThreadSafe
 	@Override
 	public void serialize(Character value, OutputStream out) throws IOException {
 		IoUtils.charToBuffer(value, buffer);
-		out.write(buffer, 0, 2);
+		out.write(buffer, 0, Character.BYTES);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public Character deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, 2);
+		IoUtils.readFully(in, buffer, 0, Character.BYTES);
 		return IoUtils.bufferToChar(buffer);
 	}
 }

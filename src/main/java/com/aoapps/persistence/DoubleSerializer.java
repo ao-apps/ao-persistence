@@ -46,22 +46,22 @@ public class DoubleSerializer implements Serializer<Double> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(Double value) {
-		return 8;
+		return Double.BYTES;
 	}
 
-	private final byte[] buffer = new byte[8];
+	private final byte[] buffer = new byte[Double.BYTES];
 
 	// @NotThreadSafe
 	@Override
 	public void serialize(Double value, OutputStream out) throws IOException {
 		IoUtils.longToBuffer(Double.doubleToRawLongBits(value), buffer);
-		out.write(buffer, 0, 8);
+		out.write(buffer, 0, Double.BYTES);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public Double deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, 8);
+		IoUtils.readFully(in, buffer, 0, Double.BYTES);
 		return Double.longBitsToDouble(IoUtils.bufferToLong(buffer));
 	}
 }

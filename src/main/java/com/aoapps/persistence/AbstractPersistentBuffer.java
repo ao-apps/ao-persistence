@@ -40,7 +40,7 @@ import java.nio.BufferUnderflowException;
 public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 
 	protected final ProtectionLevel protectionLevel;
-	private final byte[] ioBuffer = new byte[8];
+	private final byte[] ioBuffer = new byte[Long.BYTES];
 
 	protected AbstractPersistentBuffer(ProtectionLevel protectionLevel) {
 		this.protectionLevel = protectionLevel;
@@ -60,7 +60,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	// @NotThreadSafe
 	@Override
 	public void get(long position, byte[] buff, int off, int len) throws IOException {
-		while(len>0) {
+		while(len > 0) {
 			int count = getSome(position, buff, off, len);
 			position += count;
 			off += count;
@@ -76,7 +76,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	// @NotThreadSafe
 	@Override
 	public boolean getBoolean(long position) throws IOException {
-		return get(position)!=0;
+		return get(position) != 0;
 	}
 
 	/**
@@ -89,7 +89,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	// @NotThreadSafe
 	@Override
 	public byte get(long position) throws IOException {
-		get(position, ioBuffer, 0, 1);
+		get(position, ioBuffer, 0, Byte.BYTES);
 		return ioBuffer[0];
 	}
 
@@ -101,7 +101,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	// @NotThreadSafe
 	@Override
 	public int getInt(long position) throws IOException {
-		get(position, ioBuffer, 0, 4);
+		get(position, ioBuffer, 0, Integer.BYTES);
 		return IoUtils.bufferToInt(ioBuffer);
 	}
 
@@ -113,7 +113,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	// @NotThreadSafe
 	@Override
 	public long getLong(long position) throws IOException {
-		get(position, ioBuffer, 0, 8);
+		get(position, ioBuffer, 0, Long.BYTES);
 		return IoUtils.bufferToLong(ioBuffer);
 	}
 
@@ -128,7 +128,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	@Override
 	public void put(long position, byte value) throws IOException {
 		ioBuffer[0] = value;
-		put(position, ioBuffer, 0, 1);
+		put(position, ioBuffer, 0, Byte.BYTES);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	@Override
 	public void putInt(long position, int value) throws IOException {
 		IoUtils.intToBuffer(value, ioBuffer);
-		put(position, ioBuffer, 0, 4);
+		put(position, ioBuffer, 0, Integer.BYTES);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	@Override
 	public void putLong(long position, long value) throws IOException {
 		IoUtils.longToBuffer(value, ioBuffer);
-		put(position, ioBuffer, 0, 8);
+		put(position, ioBuffer, 0, Long.BYTES);
 	}
 
 	/**

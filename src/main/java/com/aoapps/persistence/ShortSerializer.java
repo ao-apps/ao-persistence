@@ -46,22 +46,22 @@ public class ShortSerializer implements Serializer<Short> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(Short value) {
-		return 2;
+		return Short.BYTES;
 	}
 
-	private final byte[] buffer = new byte[2];
+	private final byte[] buffer = new byte[Short.BYTES];
 
 	// @NotThreadSafe
 	@Override
 	public void serialize(Short value, OutputStream out) throws IOException {
 		IoUtils.shortToBuffer(value, buffer);
-		out.write(buffer, 0, 2);
+		out.write(buffer, 0, Short.BYTES);
 	}
 
 	// @NotThreadSafe
 	@Override
 	public Short deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, 2);
+		IoUtils.readFully(in, buffer, 0, Short.BYTES);
 		return IoUtils.bufferToShort(buffer);
 	}
 }

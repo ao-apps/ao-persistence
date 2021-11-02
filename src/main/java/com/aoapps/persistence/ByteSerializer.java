@@ -45,7 +45,7 @@ public class ByteSerializer implements Serializer<Byte> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(Byte value) {
-		return 1;
+		return Byte.BYTES;
 	}
 
 	// @NotThreadSafe
@@ -58,7 +58,7 @@ public class ByteSerializer implements Serializer<Byte> {
 	@Override
 	public Byte deserialize(InputStream in) throws IOException {
 		int value = in.read();
-		if(value==-1) throw new EOFException();
+		if(value == -1) throw new EOFException();
 		return (byte)value;
 	}
 }

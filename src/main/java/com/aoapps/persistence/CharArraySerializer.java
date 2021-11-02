@@ -47,7 +47,7 @@ public class CharArraySerializer implements Serializer<char[]> {
 	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(char[] value) {
-		return 4L + value.length/2;
+		return (long)Integer.BYTES + (value.length / Character.BYTES);
 	}
 
 	// @NotThreadSafe
@@ -57,15 +57,19 @@ public class CharArraySerializer implements Serializer<char[]> {
 		try {
 			int len = chars.length;
 			IoUtils.intToBuffer(len, bytes);
-			out.write(bytes, 0, 4);
+			out.write(bytes, 0, Integer.BYTES);
 			int pos = 0;
-			while(len>0) {
-				int count = BufferManager.BUFFER_SIZE/2;
-				if(len<count) count = len;
-				for(int charsIndex=0, bytesIndex = 0; charsIndex<count; charsIndex++, bytesIndex+=2) {
+			while(len > 0) {
+				int count = BufferManager.BUFFER_SIZE / Character.BYTES;
+				if(len < count) count = len;
+				for(
+					int charsIndex = 0, bytesIndex = 0;
+					charsIndex < count;
+					charsIndex++, bytesIndex += Character.BYTES
+				) {
 					IoUtils.charToBuffer(chars[pos+charsIndex], bytes, bytesIndex);
 				}
-				out.write(bytes, 0, count*2);
+				out.write(bytes, 0, count * Character.BYTES);
 				pos += count;
 				len -= count;
 			}
@@ -79,16 +83,20 @@ public class CharArraySerializer implements Serializer<char[]> {
 	public char[] deserialize(InputStream in) throws IOException {
 		byte[] bytes = BufferManager.getBytes();
 		try {
-			IoUtils.readFully(in, bytes, 0, 4);
+			IoUtils.readFully(in, bytes, 0, Integer.BYTES);
 			int len = IoUtils.bufferToInt(bytes);
 			char[] chars = new char[len];
 			int pos = 0;
-			while(len>0) {
-				int count = BufferManager.BUFFER_SIZE/2;
-				if(len<count) count = len;
+			while(len > 0) {
+				int count = BufferManager.BUFFER_SIZE / Character.BYTES;
+				if(len < count) count = len;
 				IoUtils.readFully(in, bytes, pos, len);
-				for(int charsIndex=0, bytesIndex = 0; charsIndex<count; charsIndex++, bytesIndex+=2) {
-					chars[pos+charsIndex] = IoUtils.bufferToChar(bytes, bytesIndex);
+				for(
+					int charsIndex = 0, bytesIndex = 0;
+					charsIndex < count;
+					charsIndex++, bytesIndex += Character.BYTES
+				) {
+					chars[pos + charsIndex] = IoUtils.bufferToChar(bytes, bytesIndex);
 				}
 				pos += count;
 				len -= count;
