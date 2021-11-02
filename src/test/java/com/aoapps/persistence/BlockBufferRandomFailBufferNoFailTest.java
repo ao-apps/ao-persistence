@@ -25,7 +25,6 @@ package com.aoapps.persistence;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Random;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -54,7 +53,7 @@ public class BlockBufferRandomFailBufferNoFailTest extends BlockBufferTestParent
 	}
 
 	@Override
-	public long getAllocationSize(Random random) throws IOException {
-		return random.nextInt(4097);
+	public long getAllocationSize() throws IOException {
+		return fastRandom.nextInt(4097);
 	}
 }

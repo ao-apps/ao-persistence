@@ -22,6 +22,7 @@
  */
 package com.aoapps.persistence;
 
+import com.aoapps.lang.io.IoUtils;
 import com.aoapps.lang.util.Sequence;
 import com.aoapps.lang.util.UnsynchronizedSequence;
 import com.aoapps.tempfiles.TempFile;
@@ -48,30 +49,29 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 
 	private static final int TEST_LOOPS = 10;
 
+	/**
+	 * A fast pseudo-random number generator for non-cryptographic purposes.
+	 */
+	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
+
 	protected PersistentLinkedListTestParent(String testName) {
 		super(testName);
 	}
 
-	private static String getRandomString(Random random, boolean allowNull) {
+	private static String getRandomString(boolean allowNull) {
 		int len;
 		if(allowNull) {
-			len = random.nextInt(130)-1;
+			len = fastRandom.nextInt(130)-1;
 			if(len==-1) return null;
 		} else {
-			len = random.nextInt(129);
+			len = fastRandom.nextInt(129);
 		}
 		StringBuilder sb = new StringBuilder(len);
 		for(int d = 0; d < len; d++) {
-			sb.append((char)random.nextInt(Character.MAX_VALUE + 1));
+			sb.append((char)fastRandom.nextInt(Character.MAX_VALUE + 1));
 		}
 		return sb.toString();
 	}
-
-	private final SecureRandom secureRandom = new SecureRandom();
-	/**
-	 * A fast random number generator for non-cryptographic uses.
-	 */
-	private final Random fastRandom = new Random(secureRandom.nextLong());
 
 	protected abstract PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception;
 
@@ -85,7 +85,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
 					// Populate the list
 					for(int c=0;c<numElements;c++) {
-						String s = getRandomString(fastRandom, true);
+						String s = getRandomString(true);
 						assertEquals(linkedFileList.add(s), linkedList.add(s));
 					}
 					// Check size match
@@ -98,7 +98,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 						// Update random locations to random values
 						for(int c=0;c<numElements;c++) {
 							int index = fastRandom.nextInt(numElements);
-							String newVal = getRandomString(fastRandom, true);
+							String newVal = getRandomString(true);
 							assertEquals(linkedFileList.set(index, newVal), linkedList.set(index, newVal));
 						}
 					}
@@ -121,7 +121,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 						int numAdd = fastRandom.nextInt(numElements);
 						for(int c=0;c<numAdd;c++) {
 							assertEquals(linkedFileList.size(), linkedList.size());
-							String newVal = getRandomString(fastRandom, true);
+							String newVal = getRandomString(true);
 							assertEquals(linkedFileList.add(newVal), linkedList.add(newVal));
 						}
 					}
@@ -133,7 +133,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 						for(int c=0;c<numAdd;c++) {
 							assertEquals(linkedFileList.size(), linkedList.size());
 							int index = fastRandom.nextInt(linkedFileList.size());
-							String newVal = getRandomString(fastRandom, true);
+							String newVal = getRandomString(true);
 							linkedFileList.add(index, newVal);
 							linkedList.add(index, newVal);
 							assertEquals(
@@ -275,7 +275,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				// Add in groups of 1000, timing the add
 				String[] toAdd = new String[1000];
 				for(int d = 0; d < 1000; d++) {
-					toAdd[d] = getRandomString(fastRandom, true);
+					toAdd[d] = getRandomString(true);
 				}
 				for(int c=0;c<TEST_LOOPS;c++) {
 					long startNanos = System.nanoTime();
@@ -367,7 +367,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 				for(int c = 0; c <= 10; c++) {
 					if(c > 0) {
 						for(int d = 0; d < 1000; d++) {
-							linkedFileList.add(getRandomString(fastRandom, true));
+							linkedFileList.add(getRandomString(true));
 						}
 					}
 					long startNanos = System.nanoTime();
@@ -427,7 +427,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 		) {
 			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
 				for(int c=0;c<100000;c++) {
-					String newValue = getRandomString(fastRandom, true);
+					String newValue = getRandomString(true);
 					String oldValue = null;
 					if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
 					linkedFileList.addFirst(newValue);

@@ -41,7 +41,10 @@ public class PersistentCollectionsTest extends TestCase {
 
 	private static final int ITERATIONS = 1000;
 
-	private static final Random random = new SecureRandom();
+	/**
+	 * A fast pseudo-random number generator for non-cryptographic purposes.
+	 */
+	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite(PersistentCollectionsTest.class);
@@ -62,8 +65,8 @@ public class PersistentCollectionsTest extends TestCase {
 
 	public void testCharToBuffer() throws Exception {
 		byte[] buff = new byte[2];
-		for(int i=0; i<ITERATIONS; i++) {
-			char value = (char)random.nextInt(Character.MAX_VALUE+1);
+		for(int i = 0; i < ITERATIONS; i++) {
+			char value = (char)fastRandom.nextInt(Character.MAX_VALUE + 1);
 			IoUtils.charToBuffer(value, buff);
 			char result = IoUtils.bufferToChar(buff);
 			assertEquals(value, result);
@@ -72,8 +75,8 @@ public class PersistentCollectionsTest extends TestCase {
 
 	public void testShortToBuffer() throws Exception {
 		byte[] buff = new byte[2];
-		for(int i=0; i<ITERATIONS; i++) {
-			short value = (short)(random.nextInt(32768)-16384);
+		for(int i = 0; i < ITERATIONS; i++) {
+			short value = (short)(fastRandom.nextInt(32768) - 16384);
 			IoUtils.shortToBuffer(value, buff);
 			short result = IoUtils.bufferToShort(buff);
 			assertEquals(value, result);
@@ -82,8 +85,8 @@ public class PersistentCollectionsTest extends TestCase {
 
 	public void testIntToBuffer() throws Exception {
 		byte[] buff = new byte[4];
-		for(int i=0; i<ITERATIONS; i++) {
-			int value = random.nextInt();
+		for(int i = 0; i < ITERATIONS; i++) {
+			int value = fastRandom.nextInt();
 			IoUtils.intToBuffer(value, buff);
 			int result = IoUtils.bufferToInt(buff);
 			assertEquals(value, result);
@@ -92,8 +95,8 @@ public class PersistentCollectionsTest extends TestCase {
 
 	public void testLongToBuffer() throws Exception {
 		byte[] buff = new byte[8];
-		for(int i=0; i<ITERATIONS; i++) {
-			long value = random.nextInt();
+		for(int i = 0; i < ITERATIONS; i++) {
+			long value = fastRandom.nextInt();
 			IoUtils.longToBuffer(value, buff);
 			long result = IoUtils.bufferToLong(buff);
 			assertEquals(value, result);
@@ -104,12 +107,12 @@ public class PersistentCollectionsTest extends TestCase {
 
 	private static void doTestEnsureZeros(PersistentBuffer buffer) throws IOException {
 		long totalNanos = 0;
-		for(int c=0; c<100; c++) {
+		for(int c = 0; c < 100; c++) {
 			// Update 1/8192 of buffer with random values
-			for(int d=0; d<(ENSURE_ZEROS_TEST_SIZE>>>13); d++) {
+			for(int d = 0; d < (ENSURE_ZEROS_TEST_SIZE >>> 13); d++) {
 				buffer.put(
-					random.nextInt() & (ENSURE_ZEROS_TEST_SIZE-1),
-					(byte)random.nextInt()
+					fastRandom.nextInt() & (ENSURE_ZEROS_TEST_SIZE - 1),
+					(byte)fastRandom.nextInt()
 				);
 			}
 			long startNanos = System.nanoTime();

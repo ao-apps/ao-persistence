@@ -22,6 +22,7 @@
  */
 package com.aoapps.persistence;
 
+import com.aoapps.lang.io.IoUtils;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -107,9 +108,13 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 	 */
 	private static final int SECTOR_SIZE = 512;
 
+	/**
+	 * A fast pseudo-random number generator for non-cryptographic purposes.
+	 */
+	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
+
 	private final PersistentBuffer wrapped;
 	private final boolean allowFailures;
-	private final Random random = new SecureRandom();
 	private boolean isClosed = false;
 
 	/**
@@ -132,16 +137,17 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 	 * Fails in a one-in-interval chance.
 	 */
 	// @NotThreadSafe
+	@SuppressWarnings("ConvertToTryWithResources")
 	private void randomFail(FailureMethod failureMethod) throws IOException {
 		if(allowFailures) {
-			if(random.nextInt(failureMethod.getFailInterval())==0) {
+			if(fastRandom.nextInt(failureMethod.getFailInterval()) == 0) {
 				isClosed = true;
 				if(!writeCache.isEmpty()) {
 					long capacity = wrapped.capacity();
 					// Write current write cache in a partial state
 					List<Long> sectors = new ArrayList<>(writeCache.keySet());
-					Collections.shuffle(sectors, random);
-					int numToWrite = random.nextInt(sectors.size());
+					Collections.shuffle(sectors, fastRandom);
+					int numToWrite = fastRandom.nextInt(sectors.size());
 					for(int c=0; c<numToWrite; c++) {
 						long sector = sectors.get(c);
 						long sectorEnd = sector+SECTOR_SIZE;
@@ -180,6 +186,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 
 	// @NotThreadSafe
 	@Override
+	@SuppressWarnings("ConvertToTryWithResources")
 	public void close() throws IOException {
 		flushWriteCache();
 		isClosed = true;

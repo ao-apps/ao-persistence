@@ -22,6 +22,7 @@
  */
 package com.aoapps.persistence;
 
+import com.aoapps.lang.io.IoUtils;
 import com.aoapps.tempfiles.TempFile;
 import com.aoapps.tempfiles.TempFileContext;
 import java.io.File;
@@ -54,11 +55,14 @@ public abstract class BlockBufferTestParent extends TestCase {
 	private static final int TEST_LOOPS = 20;
 	private static final int TEST_REPORT_INTERVAL = 5;
 
-	static final Random random = new SecureRandom();
+	/**
+	 * A fast pseudo-random number generator for non-cryptographic purposes.
+	 */
+	static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
 
 	public abstract PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException;
 	public abstract PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException;
-	public abstract long getAllocationSize(Random random) throws IOException;
+	public abstract long getAllocationSize() throws IOException;
 
 	public void testAllocateDeallocate() throws Exception {
 		try (
@@ -70,8 +74,8 @@ public abstract class BlockBufferTestParent extends TestCase {
 				for(int c=0;c<TEST_LOOPS;c++) {
 					if(((c+1)%TEST_REPORT_INTERVAL)==0) System.out.println(getClass()+": testAllocateDeallocate: Test loop "+(c+1)+" of " + TEST_LOOPS);
 					// Allocate some blocks, must not return duplicate ids.
-					for(int d=0;d<1000;d++) {
-						long id = blockBuffer.allocate(getAllocationSize(random));
+					for(int d = 0; d < 1000; d++) {
+						long id = blockBuffer.allocate(getAllocationSize());
 						assertTrue("Block id allocated twice: "+id, allocatedIds.add(id));
 					}
 
@@ -87,7 +91,7 @@ public abstract class BlockBufferTestParent extends TestCase {
 
 					// Randomly deallocate 900 of the entries
 					List<Long> ids = new ArrayList<>(allocatedIds);
-					Collections.shuffle(ids, random);
+					Collections.shuffle(ids, fastRandom);
 					for(int d=0;d<500;d++) {
 						long id = ids.get(d);
 						blockBuffer.deallocate(id);
@@ -166,9 +170,9 @@ public abstract class BlockBufferTestParent extends TestCase {
 					try {
 						try {
 							try (PersistentBlockBuffer failingBlockBuffer = getBlockBuffer(new RandomFailBuffer(getBuffer(tempFile.getFile(), protectionLevel), true))) {
-								int batchSize = random.nextInt(100)+1;
-								for(int d=0;d<batchSize;d++) {
-									long id = failingBlockBuffer.allocate(getAllocationSize(random));
+								int batchSize = fastRandom.nextInt(100)+1;
+								for(int d = 0; d < batchSize; d++) {
+									long id = failingBlockBuffer.allocate(getAllocationSize());
 									partialIds.add(id);
 									allocatedIds.add(id);
 								}
@@ -205,7 +209,7 @@ public abstract class BlockBufferTestParent extends TestCase {
 						try {
 							try {
 								try (PersistentBlockBuffer failingBlockBuffer = getBlockBuffer(new RandomFailBuffer(getBuffer(tempFile.getFile(), protectionLevel), true))) {
-									int batchSize = random.nextInt(50)+1;
+									int batchSize = fastRandom.nextInt(50) + 1;
 									if(batchSize>randomizedIds.size()) batchSize=randomizedIds.size();
 									for(int d=0;d<batchSize;d++) {
 										Long id = randomizedIds.get(d);

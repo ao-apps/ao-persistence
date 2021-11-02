@@ -24,7 +24,6 @@ package com.aoapps.persistence;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -53,8 +52,8 @@ public class BlockBufferSingleBitmapFixedTest extends BlockBufferTestParent {
 	}
 
 	@Override
-	public long getAllocationSize(Random random) throws IOException {
-		return random.nextInt((1<<30)+1);
+	public long getAllocationSize() throws IOException {
+		return fastRandom.nextInt((1 << 30) + 1);
 	}
 
 	/**

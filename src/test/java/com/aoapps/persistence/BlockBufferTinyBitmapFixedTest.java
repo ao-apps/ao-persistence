@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -59,8 +58,8 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 	}
 
 	@Override
-	public long getAllocationSize(Random random) throws IOException {
-		return random.nextBoolean() ? 1 : 0;
+	public long getAllocationSize() throws IOException {
+		return fastRandom.nextBoolean() ? 1 : 0;
 	}
 
 	public void testAllocateOneMillion() throws Exception {
@@ -103,23 +102,23 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 			long allocTime = 0;
 			for(int c=0;c<100;c++) {
 				// Remove random items
-				int numRemove = random.nextInt(Math.min(10000, ids.size()));
+				int numRemove = fastRandom.nextInt(Math.min(10000, ids.size()));
 				List<Long> removeList = new ArrayList<>(numRemove);
 				for(int d=0;d<numRemove;d++) {
-					int index = random.nextInt(ids.size());
+					int index = fastRandom.nextInt(ids.size());
 					removeList.add(ids.get(index));
 					ids.set(index, ids.get(ids.size()-1));
 					ids.remove(ids.size()-1);
 				}
 				//System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Shuffling.");
-				//Collections.shuffle(ids, new Random(random.nextLong()));
+				//Collections.shuffle(ids, fastRandom);
 				startNanos = System.nanoTime();
 				for(Long id : removeList) {
 					blockBuffer.deallocate(id);
 				}
 				deallocCount += numRemove;
 				deallocTime += System.nanoTime() - startNanos;
-				int numAddBack = random.nextInt(10000);
+				int numAddBack = fastRandom.nextInt(10000);
 				startNanos = System.nanoTime();
 				for(int d = 0; d < numAddBack; d++) {
 					ids.add(blockBuffer.allocate(1));
