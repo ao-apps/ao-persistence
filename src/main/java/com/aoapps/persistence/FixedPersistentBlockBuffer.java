@@ -219,7 +219,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 	// @NotThreadSafe
 	@Override
 	public Iterator<Long> iterateBlockIds() {
-		return new Iterator<Long>() {
+		return new Iterator<>() {
 			private int expectedModCount = modCount;
 			private long lastId = -1;
 			private long nextId = 0;

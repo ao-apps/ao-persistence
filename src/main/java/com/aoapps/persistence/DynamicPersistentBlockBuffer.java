@@ -109,7 +109,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
 			if(!isAllocated(header)) {
 				addFreeSpaceMap(id, blockSizeBits, capacity, true);
 				//SortedSet<Long> fsm = freeSpaceMaps.get(blockSizeBits);
-				//if(fsm==null) freeSpaceMaps.set(blockSizeBits, fsm = new TreeSet<Long>());
+				//if(fsm==null) freeSpaceMaps.set(blockSizeBits, fsm = new TreeSet<>());
 				//if(!fsm.add(id)) throw new AssertionError("Free space map already contains entry: "+id);
 			}
 			id = blockEnd;
@@ -481,7 +481,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
 	// @NotThreadSafe
 	@Override
 	public Iterator<Long> iterateBlockIds() throws IOException {
-		return new Iterator<Long>() {
+		return new Iterator<>() {
 			private int expectedModCount = modCount;
 			private long lastId = -1;
 			private long nextId = 0;
