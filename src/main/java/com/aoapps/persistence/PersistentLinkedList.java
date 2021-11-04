@@ -1399,8 +1399,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
 		// @NotThreadSafe
 		final void checkForComodification() {
-			if (modCount != expectedModCount)
-			throw new ConcurrentModificationException();
+			if (modCount != expectedModCount) throw new ConcurrentModificationException();
 		}
 	}
 
