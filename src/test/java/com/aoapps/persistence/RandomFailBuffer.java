@@ -218,14 +218,15 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 		while(entries.hasNext()) {
 			Map.Entry<Long, byte[]> entry = entries.next();
 			long sector = entry.getKey();
-			if(sector>=newCapacity) {
+			if(sector >= newCapacity) {
 				// Remove any cached writes that start >= newCapacity
 				entries.remove();
 			} else {
-				long sectorEnd = sector+SECTOR_SIZE;
-				if(newCapacity>=sector && newCapacity<sectorEnd) {
+				long sectorEnd = sector + SECTOR_SIZE;
+				assert newCapacity > sector;
+				if(newCapacity < sectorEnd) {
 					// Also, zero-out any part of the last sector (beyond newCapacity) if it is a cached write
-					Arrays.fill(entry.getValue(), (int)(newCapacity-sector), SECTOR_SIZE, (byte)0);
+					Arrays.fill(entry.getValue(), (int)(newCapacity - sector), SECTOR_SIZE, (byte)0);
 				}
 			}
 		}

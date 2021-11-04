@@ -585,15 +585,16 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 				while(oldEntries.hasNext()) {
 					Map.Entry<Long, byte[]> entry = oldEntries.next();
 					Long sector = entry.getKey();
-					if(sector>=newCapacity) {
+					if(sector >= newCapacity) {
 						// Remove any cached writes that start >= newCapacity
 						oldEntries.remove();
 						currentWriteCache.remove(sector);
 					} else {
-						long sectorEnd = sector+sectorSize;
-						if(newCapacity>=sector && newCapacity<sectorEnd) {
+						long sectorEnd = sector + sectorSize;
+						assert newCapacity > sector;
+						if(newCapacity < sectorEnd) {
 							// Also, zero-out any part of the last sector (beyond newCapacity) if it is a cached write
-							Arrays.fill(entry.getValue(), (int)(newCapacity-sector), sectorSize, (byte)0);
+							Arrays.fill(entry.getValue(), (int)(newCapacity - sector), sectorSize, (byte)0);
 						}
 					}
 				}
