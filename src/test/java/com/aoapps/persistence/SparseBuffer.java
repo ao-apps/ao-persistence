@@ -157,5 +157,6 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 	// @ThreadSafe
 	@Override
 	public void barrier(boolean force) throws IOException {
+		// Do nothing
 	}
 }

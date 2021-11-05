@@ -147,7 +147,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 
 	private static final Set<TwoCopyBarrierBuffer> shutdownBuffers = new HashSet<>();
 
-	private static class FieldLock {}
+	private static class FieldLock {/* Empty lock class to help heap profile */}
 
 	/**
 	 * TODO: Is there a way we can combine the force calls between all buffers?
@@ -253,7 +253,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	private final int sectorSize;
 	private final long asynchronousCommitDelay;
 	private final long synchronousCommitDelay;
-	private static class CacheLock {}
+	private static class CacheLock {/* Empty lock class to help heap profile */}
 	private final CacheLock cacheLock = new CacheLock();
 
 	// All modifiable fields are protected by cacheLock

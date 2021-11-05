@@ -39,12 +39,12 @@ import java.util.logging.Logger;
  *
  * @author  AO Industries, Inc.
  */
-public class PersistentCollections {
+public abstract class PersistentCollections {
+
+	/** Make no instances. */
+	private PersistentCollections() {throw new AssertionError();}
 
 	private static final Logger logger = Logger.getLogger(PersistentCollections.class.getName());
-
-	private PersistentCollections() {
-	}
 
 	/**
 	 * The value is never modified therefore thread safe.

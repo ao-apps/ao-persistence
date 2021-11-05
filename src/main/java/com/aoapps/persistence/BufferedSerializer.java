@@ -44,6 +44,7 @@ public abstract class BufferedSerializer<E> implements Serializer<E> {
 	private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
 	protected BufferedSerializer() {
+		// Do nothing
 	}
 
 	// @NotThreadSafe
