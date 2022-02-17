@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -31,7 +31,6 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * A set of static utility methods to help in the selection, creation, and management
@@ -54,7 +53,7 @@ public abstract class PersistentCollections {
 	/**
 	 * Writes the requested number of zeros to the provided output.
 	 */
-	/*// @ThreadSafe
+	/*
 	static void fillZeros(DataOutput out, long count) throws IOException {
 		if(count<0) throw new IllegalArgumentException("count<0: "+count);
 		while(count>BufferManager.BUFFER_SIZE) {
@@ -72,7 +71,6 @@ public abstract class PersistentCollections {
 	 *
 	 * @return  true  when the byteBuffer was written to
 	 */
-	// @ThreadSafe
 	public static boolean ensureZeros(RandomAccessFile raf, long position, long count) throws IOException {
 		if(count<0) throw new IllegalArgumentException("count<0: "+count);
 		boolean modified = false;
@@ -112,7 +110,6 @@ public abstract class PersistentCollections {
 	 *
 	 * @return  true  when the byteBuffer was written to
 	 */
-	// @ThreadSafe
 	// TODO: Try with readLong instead of copying the array values
 	public static boolean ensureZeros(ByteBuffer byteBuffer, int position, int count) throws IOException {
 		if(count<0) throw new IllegalArgumentException("count<0: "+count);
@@ -190,7 +187,7 @@ public abstract class PersistentCollections {
 	/**
 	 * Writes the requested number of zeros to the provided buffer.
 	 */
-	/*// @ThreadSafe
+	/*
 	static void fillZeros(ByteBuffer buffer, long count) throws IOException {
 		if(count<0) throw new IllegalArgumentException("count<0: "+count);
 		while(count>BufferManager.BUFFER_SIZE) {
@@ -214,7 +211,6 @@ public abstract class PersistentCollections {
 	 * @param maximumCapacity The maximum size of data that may be stored in the
 	 *                        buffer.  To ensure no limits, use <code>Long.MAX_VALUE</code>.
 	 */
-	// @ThreadSafe
 	public static PersistentBuffer getPersistentBuffer(long maximumCapacity) throws IOException {
 		// If < 1 GB, use mapped buffer
 		if(maximumCapacity < (1L << 30)) {
@@ -250,7 +246,6 @@ public abstract class PersistentCollections {
 	 *                        the length of the file is used instead.
 	 *                        To ensure no limits, use <code>Long.MAX_VALUE</code>.
 	 */
-	// @ThreadSafe
 	public static PersistentBuffer getPersistentBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel, long maximumCapacity) throws IOException {
 		if(maximumCapacity < (1L << 30)) {
 			long len = raf.length();
@@ -279,7 +274,6 @@ public abstract class PersistentCollections {
 	/**
 	 * Selects the most efficient <code>Serializer</code> for the provided class.
 	 */
-	// @ThreadSafe
 	@SuppressWarnings("unchecked")
 	public static <E> Serializer<E> getSerializer(Class<E> type) {
 		if(type==Boolean.class) return (Serializer<E>)new BooleanSerializer();
@@ -311,7 +305,6 @@ public abstract class PersistentCollections {
 	 * @param additionalBlockSpace  The maximum additional space needed beyond the space used by the serializer.  This may be used
 	 *                              for linked list pointers, for example.
 	 */
-	// @ThreadSafe
 	public static PersistentBlockBuffer getPersistentBlockBuffer(Serializer<?> serializer, PersistentBuffer pbuffer, long additionalBlockSpace) throws IOException {
 		if(additionalBlockSpace<0) throw new IllegalArgumentException("additionalBlockSpace<0: "+additionalBlockSpace);
 		if(serializer.isFixedSerializedSize()) {
@@ -346,7 +339,6 @@ public abstract class PersistentCollections {
 	 *                              for linked list pointers, for example.
 	 */
 	/*
-	// @ThreadSafe
 	public static RandomAccessPersistentBlockBuffer getRandomAccessPersistentBlockBuffer(Serializer<?> serializer, PersistentBuffer pbuffer, long additionalBlockSpace) throws IOException {
 		if(additionalBlockSpace<0) throw new IllegalArgumentException("additionalBlockSpace<0: "+additionalBlockSpace);
 		// Use power-of-two fixed size blocks if possible

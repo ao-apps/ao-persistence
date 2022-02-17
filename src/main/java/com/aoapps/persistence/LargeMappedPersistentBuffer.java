@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -30,8 +30,6 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * Uses a set of <code>MappedByteBuffer</code> for persistence.  Each buffer
@@ -120,7 +118,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 		fillMappedBuffers();
 	}
 
-	// @NotThreadSafe
 	@Override
 	public boolean isClosed() {
 		return closed;
@@ -131,7 +128,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	 */
 	@Deprecated(since="9")
 	@Override
-	// @NotThreadSafe
 	@SuppressWarnings("FinalizeDeclaration")
 	protected void finalize() throws Throwable {
 		try {
@@ -141,7 +137,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void close() throws IOException {
 		closed = true;
@@ -149,7 +144,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 		if(tempFileContext != null) tempFileContext.close();
 	}
 
-	// @NotThreadSafe
 	@Override
 	public long capacity() throws IOException {
 		return raf.length();
@@ -158,7 +152,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Fills the buffers to cover the entire file length.
 	 */
-	// @NotThreadSafe
 	private void fillMappedBuffers() throws IOException {
 		long len = raf.length();
 		long maxBuffNum = len >>> BUFFER_NUM_BIT_SHIFT;
@@ -174,7 +167,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @ThreadSafe
 	private static int getBufferNum(long position) throws IOException {
 		if(position<0) throw new IllegalArgumentException("position<0: "+position);
 		long buffNum = position >>> BUFFER_NUM_BIT_SHIFT;
@@ -185,12 +177,10 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Gets the position as an integer or throws IOException if too big for a mapped buffer.
 	 */
-	// @ThreadSafe
 	private static int getIndex(long position) throws IOException {
 		return (int)(position&BUFFER_INDEX_MASK);
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void setCapacity(long newLength) throws IOException {
 		long oldLength = capacity();
@@ -216,7 +206,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @NotThreadSafe
 	public void get(long position, byte[] buff, int off, int len) throws IOException {
 		if(len>0) {
 			int bufferNum = getBufferNum(position);
@@ -243,7 +232,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @NotThreadSafe
 	@Override
 	public int getSome(long position, byte[] buff, int off, int len) throws IOException {
 		get(position, buff, off, len);
@@ -254,13 +242,11 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	 * Gets a single byte from the buffer.
 	 */
 	@Override
-	// @NotThreadSafe
 	public byte get(long position) throws IOException {
 		return mappedBuffers.get(getBufferNum(position)).get(getIndex(position));
 	}
 
 	@Override
-	// @NotThreadSafe
 	public void ensureZeros(long position, long len) throws IOException {
 		if(len>0) {
 			int bufferNum = getBufferNum(position);
@@ -292,14 +278,12 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	 * Puts a single byte in the buffer.
 	 */
 	@Override
-	// @NotThreadSafe
 	public void put(long position, byte value) throws IOException {
 		int bufferNum = getBufferNum(position);
 		mappedBuffers.get(bufferNum).put(getIndex(position), value);
 		if(modifiedBuffers!=null) modifiedBuffers.set(bufferNum, true);
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void put(long position, byte[] buff, int off, int len) throws IOException {
 		if(len>0) {
@@ -332,7 +316,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	 * There is not currently a way to provide a barrier without using <code>force</code>.
 	 * This just uses force for both.
 	 */
-	// @NotThreadSafe
 	@Override
 	public void barrier(boolean force) throws IOException {
 		if(protectionLevel.compareTo(ProtectionLevel.BARRIER)>=0) {
@@ -347,13 +330,11 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @NotThreadSafe
 	public boolean getBoolean(long position) throws IOException {
 		return get(position)!=0;
 	}
 
 	@Override
-	// @NotThreadSafe
 	public int getInt(long position) throws IOException {
 		int startBufferNum = getBufferNum(position);
 		int endBufferNum = getBufferNum(position+3);
@@ -371,7 +352,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @NotThreadSafe
 	public long getLong(long position) throws IOException {
 		int startBufferNum = getBufferNum(position);
 		int endBufferNum = getBufferNum(position+7);
@@ -393,7 +373,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @NotThreadSafe
 	public void putInt(long position, int value) throws IOException {
 		int startBufferNum = getBufferNum(position);
 		int endBufferNum = getBufferNum(position+3);
@@ -410,7 +389,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @NotThreadSafe
 	public void putLong(long position, long value) throws IOException {
 		int startBufferNum = getBufferNum(position);
 		int endBufferNum = getBufferNum(position+7);

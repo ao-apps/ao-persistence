@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2017, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2017, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -28,8 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * Provides a base implementation of <code>PersistentBuffer</code> in terms of
@@ -46,7 +44,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 		this.protectionLevel = protectionLevel;
 	}
 
-	// @ThreadSafe
 	@Override
 	public ProtectionLevel getProtectionLevel() {
 		return protectionLevel;
@@ -57,7 +54,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 *
 	 * @see  #getSome(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public void get(long position, byte[] buff, int off, int len) throws IOException {
 		while(len > 0) {
@@ -73,7 +69,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 *
 	 * @see  #get(long)
 	 */
-	// @NotThreadSafe
 	@Override
 	public boolean getBoolean(long position) throws IOException {
 		return get(position) != 0;
@@ -86,7 +81,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 *
 	 * @see  #get(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public byte get(long position) throws IOException {
 		get(position, ioBuffer, 0, Byte.BYTES);
@@ -98,7 +92,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 *
 	 * @see  #get(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public int getInt(long position) throws IOException {
 		get(position, ioBuffer, 0, Integer.BYTES);
@@ -110,7 +103,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 *
 	 * @see  #get(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public long getLong(long position) throws IOException {
 		get(position, ioBuffer, 0, Long.BYTES);
@@ -124,7 +116,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 *
 	 * @see  #put(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public void put(long position, byte value) throws IOException {
 		ioBuffer[0] = value;
@@ -136,7 +127,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 *
 	 * @see  #put(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public void putInt(long position, int value) throws IOException {
 		IoUtils.intToBuffer(value, ioBuffer);
@@ -148,7 +138,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 *
 	 * @see  #put(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public void putLong(long position, long value) throws IOException {
 		IoUtils.longToBuffer(value, ioBuffer);
@@ -161,7 +150,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 * @see  #get(long)
 	 * @see  #getSome(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public InputStream getInputStream(final long position, final long length) throws IOException, BufferUnderflowException {
 		return new InputStream() {
@@ -230,7 +218,6 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 	 * @see  #put(long, byte)
 	 * @see  #put(long, byte[], int, int)
 	 */
-	// @NotThreadSafe
 	@Override
 	public OutputStream getOutputStream(final long position, final long length) throws IOException, BufferOverflowException {
 		return new OutputStream() {

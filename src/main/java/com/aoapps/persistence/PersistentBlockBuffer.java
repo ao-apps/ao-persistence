@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -28,8 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.BufferOverflowException;
 import java.util.Iterator;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * A persistent set of blocks of arbitrary data.  Each block may be any
@@ -46,13 +44,11 @@ public interface PersistentBlockBuffer extends Closeable {
 	/**
 	 * Checks if this buffer is closed.
 	 */
-	// @NotThreadSafe
 	boolean isClosed();
 
 	/**
 	 * Closes this buffer.
 	 */
-	// @NotThreadSafe
 	@Override
 	void close() throws IOException;
 
@@ -61,7 +57,6 @@ public interface PersistentBlockBuffer extends Closeable {
 	 *
 	 * @see  #barrier(boolean)
 	 */
-	// @ThreadSafe
 	ProtectionLevel getProtectionLevel();
 
 	/**
@@ -73,7 +68,6 @@ public interface PersistentBlockBuffer extends Closeable {
 	 *
 	 * @see  #getProtectionLevel()
 	 */
-	// @NotThreadSafe
 	void barrier(boolean force) throws IOException;
 
 	/**
@@ -92,7 +86,6 @@ public interface PersistentBlockBuffer extends Closeable {
 	 * in this case, but this is only intended to catch bugs.
 	 * </p>
 	 */
-	// @NotThreadSafe
 	Iterator<Long> iterateBlockIds() throws IOException;
 
 	/**
@@ -117,7 +110,6 @@ public interface PersistentBlockBuffer extends Closeable {
 	 * This will manifest itself as an extra allocated block after recovery.
 	 * </p>
 	 */
-	// @NotThreadSafe
 	long allocate(long minimumSize) throws IOException;
 
 	/**
@@ -136,37 +128,31 @@ public interface PersistentBlockBuffer extends Closeable {
 	 *
 	 * @throws IllegalStateException if the block is not allocated.
 	 */
-	// @NotThreadSafe
 	void deallocate(long id) throws IOException, IllegalStateException;
 
 	/**
 	 * Gets the block size for the provided id.
 	 */
-	// @NotThreadSafe
 	long getBlockSize(long id) throws IOException;
 
 	/**
 	 * Gets bytes from this block.  Bounds checking is performed only when assertions are enabled.
 	 */
-	// @NotThreadSafe
 	void get(long id, long offset, byte[] buff, int off, int len) throws IOException;
 
 	/**
 	 * Gets an integer from this block.  Bounds checking is performed only when assertions are enabled.
 	 */
-	// @NotThreadSafe
 	int getInt(long id, long offset) throws IOException;
 
 	/**
 	 * Gets a long from this block.  Bounds checking is performed only when assertions are enabled.
 	 */
-	// @NotThreadSafe
 	long getLong(long id, long offset) throws IOException;
 
 	/**
 	 * Gets an input stream that reads from this buffer.  Bounds checking is performed only when assertions are enabled.
 	 */
-	// @NotThreadSafe
 	InputStream getInputStream(long id, long offset, long length) throws IOException;
 
 	/**
@@ -174,7 +160,6 @@ public interface PersistentBlockBuffer extends Closeable {
 	 *
 	 * @throws BufferOverflowException when out of range
 	 */
-	// @NotThreadSafe
 	void put(long id, long offset, byte[] buff, int off, int len) throws IOException;
 
 	/**
@@ -182,7 +167,6 @@ public interface PersistentBlockBuffer extends Closeable {
 	 *
 	 * @throws BufferOverflowException when out of range
 	 */
-	// @NotThreadSafe
 	void putInt(long id, long offset, int value) throws IOException;
 
 	/**
@@ -190,7 +174,6 @@ public interface PersistentBlockBuffer extends Closeable {
 	 *
 	 * @throws BufferOverflowException when out of range
 	 */
-	// @NotThreadSafe
 	void putLong(long id, long offset, long value) throws IOException;
 
 	/**
@@ -198,6 +181,5 @@ public interface PersistentBlockBuffer extends Closeable {
 	 *
 	 * @throws BufferOverflowException when out of range
 	 */
-	// @NotThreadSafe
 	OutputStream getOutputStream(long id, long offset, long length) throws IOException;
 }

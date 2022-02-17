@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -30,8 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * This buffer allows very large address spaces for testing purposes.  It is backed by
@@ -63,25 +61,21 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 		super(protectionLevel);
 	}
 
-	// @NotThreadSafe
 	@Override
 	public boolean isClosed() {
 		return isClosed;
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void close() throws IOException {
 		isClosed = true;
 	}
 
-	// @NotThreadSafe
 	@Override
 	public long capacity() throws IOException {
 		return capacity;
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void setCapacity(long newCapacity) throws IOException {
 		if(newCapacity<0) throw new IllegalArgumentException("capacity<0: "+capacity);
@@ -100,7 +94,6 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @NotThreadSafe
 	@Override
 	public int getSome(long position, byte[] buff, int off, int len) throws IOException {
 		get(position, buff, off, len);
@@ -108,7 +101,6 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @NotThreadSafe
 	public void get(long position, byte[] buff, int off, int len) throws IOException {
 		if((position+len)>capacity) throw new BufferUnderflowException();
 		// TODO: More efficient algorithm using blocks calling System.arraycopy.
@@ -124,13 +116,11 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void ensureZeros(long position, long len) throws IOException {
 		throw new NotImplementedException("Implement when first needed");
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void put(long position, byte[] buff, int off, int len) throws IOException {
 		if(protectionLevel==ProtectionLevel.READ_ONLY) throw new ReadOnlyBufferException();
@@ -154,7 +144,6 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Does nothing because this is only a volatile test buffer.
 	 */
-	// @ThreadSafe
 	@Override
 	public void barrier(boolean force) throws IOException {
 		// Do nothing

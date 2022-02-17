@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -51,8 +51,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.NotImplementedException;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * <p>
@@ -441,7 +439,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	 *
 	 * @param isClosing  when <code>true</code>, will not reopen raf.
 	 */
-	// @NotThreadSafe
 	private void flushWriteCache(boolean isClosing) throws IOException {
 		assert Thread.holdsLock(cacheLock);
 		if(!currentWriteCache.isEmpty()) {
@@ -483,7 +480,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @ThreadSafe
 	@Override
 	public boolean isClosed() {
 		synchronized(cacheLock) {
@@ -491,7 +487,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @ThreadSafe
 	@Override
 	public void close() throws IOException {
 		synchronized(shutdownBuffers) {
@@ -508,13 +503,11 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Checks if closed and throws IOException if so.
 	 */
-	// @NotThreadSafe
 	private void checkClosed() throws IOException {
 		assert Thread.holdsLock(cacheLock);
 		if(isClosed) throw new IOException("TwoCopyBarrierBuffer(\""+file.getPath()+"\") is closed");
 	}
 
-	// @ThreadSafe
 	@Override
 	public long capacity() throws IOException {
 		synchronized(cacheLock) {
@@ -526,7 +519,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Clears the starting time for the write cache.  Also cancels and removes the asynchronous timer, if exists.
 	 */
-	// @NotThreadSafe
 	private void clearFirstWriteTime() {
 		assert Thread.holdsLock(cacheLock);
 		firstWriteTime = -1;
@@ -539,7 +531,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Marks the starting time for the write cache.  Also starts the asynchronous timer, if not yet started.
 	 */
-	// @NotThreadSafe
 	private void markFirstWriteTime() {
 		assert Thread.holdsLock(cacheLock);
 		// Mark as needing flush
@@ -575,7 +566,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @ThreadSafe
 	@Override
 	public void setCapacity(long newCapacity) throws IOException {
 		synchronized(cacheLock) {
@@ -604,7 +594,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @ThreadSafe
 	@Override
 	public byte get(long position) throws IOException {
 		synchronized(cacheLock) {
@@ -629,7 +618,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @ThreadSafe
 	@Override
 	public int getSome(long position, final byte[] buff, int off, int len) throws IOException {
 		synchronized(cacheLock) {
@@ -675,7 +663,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @ThreadSafe
 	public void put(long position, byte value) throws IOException {
 		synchronized(cacheLock) {
 			checkClosed();
@@ -744,12 +731,10 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @ThreadSafe
 	public void ensureZeros(long position, long len) throws IOException {
 		throw new NotImplementedException("TODO: Implement by using PersistentCollection.zero, passing to put sector aligned");
 	}
 
-	// @ThreadSafe
 	@Override
 	public void put(long position, byte[] buff, int off, int len) throws IOException {
 		synchronized(cacheLock) {
@@ -826,7 +811,6 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @ThreadSafe
 	@Override
 	public void barrier(boolean force) throws IOException {
 		synchronized(cacheLock) {

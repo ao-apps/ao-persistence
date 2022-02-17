@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -29,8 +29,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * <p>
@@ -118,7 +116,6 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 	 * Gets the address of the byte that stores the bitmap for the provided id.
 	 * This is algorithmic and may be beyond the end of the buffer capacity.
 	 */
-	// @ThreadSafe // singleBitmap, bitmapSize, and blockSize are all final
 	private long getBitMapBitsAddress(long id) {
 		if(singleBitmap) {
 			return id >>> 3;
@@ -135,7 +132,6 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 	 * Gets the address that stores the beginning of the block with the provided id.
 	 * This is algorithmic and may be beyond the end of the buffer capacity.
 	 */
-	// @ThreadSafe // singleBitmap, bitmapSize, and blockSize are all final
 	@Override
 	protected long getBlockAddress(long id) {
 		if(singleBitmap) {
@@ -155,7 +151,6 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 	 * Allocates a block.
 	 * This does not directly cause any <code>barrier</code>s.
 	 */
-	// @NotThreadSafe
 	@Override
 	public long allocate(long minimumSize) throws IOException {
 		if(minimumSize>blockSize) throw new IOException("minimumSize>blockSize: "+minimumSize+">"+blockSize);
@@ -203,7 +198,6 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 	 * Deallocates the block for the provided id.
 	 * This does not directly cause any <code>barrier</code>s.
 	 */
-	// @NotThreadSafe
 	@Override
 	public void deallocate(long id) throws IOException {
 		long bitmapBitsAddress = getBitMapBitsAddress(id);
@@ -216,14 +210,12 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 		pbuffer.put(bitmapBitsAddress, (byte)(bits ^ bit));
 	}
 
-	// @NotThreadSafe
 	@Override
 	public Iterator<Long> iterateBlockIds() {
 		return new Iterator<>() {
 			private int expectedModCount = modCount;
 			private long lastId = -1;
 			private long nextId = 0;
-			// @NotThreadSafe
 			@Override
 			public boolean hasNext() {
 				if(expectedModCount!=modCount) throw new ConcurrentModificationException();
@@ -249,7 +241,6 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 					throw new UncheckedIOException(err);
 				}
 			}
-			// @NotThreadSafe
 			@Override
 			public Long next() throws NoSuchElementException {
 				if(expectedModCount!=modCount) throw new ConcurrentModificationException();
@@ -275,7 +266,6 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 					throw new UncheckedIOException(err);
 				}
 			}
-			// @NotThreadSafe
 			@Override
 			public void remove() {
 				try {
@@ -291,13 +281,11 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 		};
 	}
 
-	// @NotThreadSafe // blockSize is final
 	@Override
 	public long getBlockSize(long id) {
 		return blockSize;
 	}
 
-	// @NotThreadSafe
 	protected void expandCapacity(long oldCapacity, long newCapacity) throws IOException {
 		// Grow the file by at least 25% its previous size
 		long percentCapacity = oldCapacity + (oldCapacity >> 2);
@@ -313,19 +301,16 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 	 * additional space as needed here, rounding up to the next 4096-byte boundary.
 	 */
 	@Override
-	// @NotThreadSafe
 	protected void ensureCapacity(long capacity) throws IOException {
 		long curCapacity = pbuffer.capacity();
 		if(curCapacity<capacity) expandCapacity(curCapacity, capacity);
 	}
 
 	/*
-	// @NotThreadSafe
 	public long getBlockCount() throws IOException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	// @NotThreadSafe
 	public long getBlockId(long index) throws IOException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}*/

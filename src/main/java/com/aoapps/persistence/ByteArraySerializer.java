@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2017, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2017, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -26,8 +26,6 @@ import com.aoapps.lang.io.IoUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * Serializes <code>byte[]</code> objects.
@@ -37,13 +35,11 @@ import java.io.OutputStream;
  */
 public class ByteArraySerializer implements Serializer<byte[]> {
 
-	// @ThreadSafe
 	@Override
 	public boolean isFixedSerializedSize() {
 		return false;
 	}
 
-	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(byte[] value) {
 		return (long)Integer.BYTES + value.length;
@@ -51,7 +47,6 @@ public class ByteArraySerializer implements Serializer<byte[]> {
 
 	private final byte[] ioBuffer = new byte[Integer.BYTES];
 
-	// @NotThreadSafe
 	@Override
 	public void serialize(byte[] value, OutputStream out) throws IOException {
 		IoUtils.intToBuffer(value.length, ioBuffer);
@@ -59,7 +54,6 @@ public class ByteArraySerializer implements Serializer<byte[]> {
 		out.write(value);
 	}
 
-	// @NotThreadSafe
 	@Override
 	public byte[] deserialize(InputStream in) throws IOException {
 		IoUtils.readFully(in, ioBuffer, 0, Integer.BYTES);

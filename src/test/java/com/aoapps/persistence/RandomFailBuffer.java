@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.apache.commons.lang3.NotImplementedException;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * This buffer wraps a buffer and introduces random failures.  All writes between
@@ -136,7 +134,6 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Fails in a one-in-interval chance.
 	 */
-	// @NotThreadSafe
 	@SuppressWarnings("ConvertToTryWithResources")
 	private void randomFail(FailureMethod failureMethod) throws IOException {
 		if(allowFailures) {
@@ -163,7 +160,6 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @NotThreadSafe
 	private void flushWriteCache() throws IOException {
 		if(!writeCache.isEmpty()) {
 			long capacity = wrapped.capacity();
@@ -178,13 +174,11 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 		}
 	}
 
-	// @NotThreadSafe
 	@Override
 	public boolean isClosed() {
 		return isClosed;
 	}
 
-	// @NotThreadSafe
 	@Override
 	@SuppressWarnings("ConvertToTryWithResources")
 	public void close() throws IOException {
@@ -196,12 +190,10 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Checks if closed and throws IOException if so.
 	 */
-	// @NotThreadSafe
 	private void checkClosed() throws IOException {
 		if(isClosed) throw new IOException("RandomFailBuffer closed");
 	}
 
-	// @NotThreadSafe
 	@Override
 	public long capacity() throws IOException {
 		checkClosed();
@@ -209,7 +201,6 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 		return wrapped.capacity();
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void setCapacity(long newCapacity) throws IOException {
 		checkClosed();
@@ -233,7 +224,6 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 		wrapped.setCapacity(newCapacity);
 	}
 
-	// @NotThreadSafe
 	@Override
 	public int getSome(long position, final byte[] buff, int off, int len) throws IOException {
 		checkClosed();
@@ -268,13 +258,11 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 		return bytesRead;
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void ensureZeros(long position, long len) throws IOException {
 		throw new NotImplementedException("Implement when first needed");
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void put(long position, byte[] buff, int off, int len) throws IOException {
 		checkClosed();
@@ -309,12 +297,10 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 	}
 
 	@Override
-	// @ThreadSafe
 	public ProtectionLevel getProtectionLevel() {
 		return wrapped.getProtectionLevel();
 	}
 
-	// @NotThreadSafe
 	@Override
 	public void barrier(boolean force) throws IOException {
 		checkClosed();

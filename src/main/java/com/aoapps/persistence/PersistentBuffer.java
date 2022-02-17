@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2012, 2016, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2016, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -28,8 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * <p>
@@ -53,20 +51,17 @@ public interface PersistentBuffer extends Closeable {
 	/**
 	 * Checks if this buffer is closed.
 	 */
-	// @NotThreadSafe
 	boolean isClosed();
 
 	/**
 	 * Closes this buffer.  It is OK to close an already closed buffer.
 	 */
-	// @NotThreadSafe
 	@Override
 	void close() throws IOException;
 
 	/**
 	 * Gets the capacity of this buffer.
 	 */
-	// @NotThreadSafe
 	long capacity() throws IOException;
 
 	/**
@@ -75,7 +70,6 @@ public interface PersistentBuffer extends Closeable {
 	 * automatic <code>barrier(true)</code>, depending on implementation.  This
 	 * should be considered an expensive operation.
 	 */
-	// @NotThreadSafe
 	void setCapacity(long newCapacity) throws IOException;
 
 	/**
@@ -84,7 +78,6 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @exception  BufferUnderflowException on end of file
 	 */
-	// @NotThreadSafe
 	void get(long position, byte[] buff, int off, int len) throws IOException;
 
 	/**
@@ -94,32 +87,27 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @exception  BufferUnderflowException on end of file
 	 */
-	// @NotThreadSafe
 	int getSome(long position, byte[] buff, int off, int len) throws IOException;
 
 	/**
 	 * Reads a boolean at the provided position, zero is considered <code>false</code>
 	 * and any non-zero value is <code>true</code>.
 	 */
-	// @NotThreadSafe
 	boolean getBoolean(long position) throws IOException;
 
 	/**
 	 * Reads a byte at the provided position.
 	 */
-	// @NotThreadSafe
 	byte get(long position) throws IOException;
 
 	/**
 	 * Reads an integer at the provided position.
 	 */
-	// @NotThreadSafe
 	int getInt(long position) throws IOException;
 
 	/**
 	 * Reads a long at the provided position.
 	 */
-	// @NotThreadSafe
 	long getLong(long position) throws IOException;
 
 	/**
@@ -130,13 +118,11 @@ public interface PersistentBuffer extends Closeable {
 	 * to detect zeros and avoid modifications.  Thus it is possible for
 	 * existing zeros to still result in a modification.
 	 */
-	// @NotThreadSafe
 	void ensureZeros(long position, long len) throws IOException;
 
 	/**
 	 * Puts a single value in the buffer.
 	 */
-	// @NotThreadSafe
 	void put(long position, byte value) throws IOException;
 
 	/**
@@ -145,7 +131,6 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @exception  BufferOverflowException on end of file
 	 */
-	// @NotThreadSafe
 	void put(long position, byte[] buff, int off, int len) throws IOException;
 
 	/**
@@ -154,7 +139,6 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @exception  BufferOverflowException on end of file
 	 */
-	// @NotThreadSafe
 	void putInt(long position, int value) throws IOException;
 
 	/**
@@ -163,7 +147,6 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @exception  BufferOverflowException on end of file
 	 */
-	// @NotThreadSafe
 	void putLong(long position, long value) throws IOException;
 
 	/**
@@ -171,7 +154,6 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @see  #barrier(boolean)
 	 */
-	// @ThreadSafe
 	ProtectionLevel getProtectionLevel();
 
 	/**
@@ -183,7 +165,6 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @see  #getProtectionLevel()
 	 */
-	// @NotThreadSafe
 	void barrier(boolean force) throws IOException;
 
 	/**
@@ -191,7 +172,6 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @exception  BufferUnderflowException on end of file
 	 */
-	// @NotThreadSafe
 	InputStream getInputStream(long position, long length) throws IOException, BufferUnderflowException;
 
 	/**
@@ -199,6 +179,5 @@ public interface PersistentBuffer extends Closeable {
 	 *
 	 * @exception  BufferUnderflowException on end of file
 	 */
-	// @NotThreadSafe
 	OutputStream getOutputStream(long position, long length) throws IOException, BufferOverflowException;
 }

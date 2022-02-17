@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -25,8 +25,6 @@ package com.aoapps.persistence;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * Serializes any objects by using a buffer between the <code>getSerializedSize</code>
@@ -47,7 +45,6 @@ public abstract class BufferedSerializer<E> implements Serializer<E> {
 		// Do nothing
 	}
 
-	// @NotThreadSafe
 	private void serializeToBuffer(E value) throws IOException {
 		if(lastSerialized!=value) {
 			lastSerialized = null;
@@ -57,26 +54,22 @@ public abstract class BufferedSerializer<E> implements Serializer<E> {
 		}
 	}
 
-	// @ThreadSafe
 	@Override
 	public final boolean isFixedSerializedSize() {
 		return false;
 	}
 
-	// @NotThreadSafe
 	@Override
 	public final long getSerializedSize(E value) throws IOException {
 		serializeToBuffer(value);
 		return buffer.size();
 	}
 
-	// @NotThreadSafe
 	@Override
 	public final void serialize(E value, OutputStream out) throws IOException {
 		serializeToBuffer(value);
 		buffer.writeTo(out);
 	}
 
-	// @NotThreadSafe
 	protected abstract void serialize(E value, ByteArrayOutputStream buffer) throws IOException;
 }

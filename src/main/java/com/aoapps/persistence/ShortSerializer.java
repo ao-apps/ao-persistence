@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2017, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2017, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -26,8 +26,6 @@ import com.aoapps.lang.io.IoUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-// import org.checkthread.annotations.NotThreadSafe;
-// import org.checkthread.annotations.ThreadSafe;
 
 /**
  * Serializes <code>Short</code> objects.
@@ -37,13 +35,11 @@ import java.io.OutputStream;
  */
 public class ShortSerializer implements Serializer<Short> {
 
-	// @ThreadSafe
 	@Override
 	public boolean isFixedSerializedSize() {
 		return true;
 	}
 
-	// @NotThreadSafe
 	@Override
 	public long getSerializedSize(Short value) {
 		return Short.BYTES;
@@ -51,14 +47,12 @@ public class ShortSerializer implements Serializer<Short> {
 
 	private final byte[] buffer = new byte[Short.BYTES];
 
-	// @NotThreadSafe
 	@Override
 	public void serialize(Short value, OutputStream out) throws IOException {
 		IoUtils.shortToBuffer(value, buffer);
 		out.write(buffer, 0, Short.BYTES);
 	}
 
-	// @NotThreadSafe
 	@Override
 	public Short deserialize(InputStream in) throws IOException {
 		IoUtils.readFully(in, buffer, 0, Short.BYTES);
