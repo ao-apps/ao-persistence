@@ -29,7 +29,6 @@ import java.io.RandomAccessFile;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.channels.FileChannel;
-import java.util.logging.Logger;
 
 /**
  * Uses <code>RandomAccessFile</code> for persistence.  Obtains a shared lock
@@ -39,8 +38,6 @@ import java.util.logging.Logger;
  * @author  AO Industries, Inc.
  */
 public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
-
-	private static final Logger logger = Logger.getLogger(RandomAccessFileBuffer.class.getName());
 
 	private final TempFileContext tempFileContext;
 	private final RandomAccessFile raf;
