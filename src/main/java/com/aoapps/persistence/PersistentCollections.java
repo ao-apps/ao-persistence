@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  *
  * @author  AO Industries, Inc.
  */
-public abstract class PersistentCollections {
+public final class PersistentCollections {
 
 	/** Make no instances. */
 	private PersistentCollections() {throw new AssertionError();}
