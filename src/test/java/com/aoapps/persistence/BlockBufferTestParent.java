@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -52,8 +52,8 @@ public abstract class BlockBufferTestParent extends TestCase {
 		super(testName);
 	}
 
-	private static final int TEST_LOOPS = 20;
-	private static final int TEST_REPORT_INTERVAL = 5;
+	private static final int TEST_LOOPS = 2; // 20;
+	private static final int TEST_REPORT_INTERVAL = 1; //5;
 
 	/**
 	 * A fast pseudo-random number generator for non-cryptographic purposes.

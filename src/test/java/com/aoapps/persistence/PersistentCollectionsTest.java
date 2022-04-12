@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2016, 2017, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2016, 2017, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -40,6 +40,8 @@ import junit.framework.TestSuite;
 public class PersistentCollectionsTest extends TestCase {
 
 	private static final int ITERATIONS = 1000;
+
+	private static final int ENSURE_ZEROS_TEST_SIZE = 1 << 16 /*20*/;
 
 	/**
 	 * A fast pseudo-random number generator for non-cryptographic purposes.
@@ -102,8 +104,6 @@ public class PersistentCollectionsTest extends TestCase {
 			assertEquals(value, result);
 		}
 	}
-
-	private static final int ENSURE_ZEROS_TEST_SIZE = 1<<20;
 
 	private static void doTestEnsureZeros(PersistentBuffer buffer) throws IOException {
 		long totalNanos = 0;

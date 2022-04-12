@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -47,8 +47,9 @@ import junit.framework.TestCase;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public abstract class PersistentLinkedListTestParent extends TestCase {
 
-	private static final int TEST_LOOPS = 10;
+	private static final int TEST_LOOPS = 2; // 10;
 
+	private static final int CIRCULAR_LIST_SIZE = 10000; // 100000
 	/**
 	 * A fast pseudo-random number generator for non-cryptographic purposes.
 	 */
@@ -426,7 +427,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), String.class)) {
-				for(int c=0;c<100000;c++) {
+				for(int c = 0; c < CIRCULAR_LIST_SIZE; c++) {
 					String newValue = getRandomString(true);
 					String oldValue = null;
 					if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
@@ -450,7 +451,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
 			TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest_")
 		) {
 			try (PersistentLinkedList<Integer> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), ProtectionLevel.NONE), Integer.class)) {
-				for(int c=0;c<100000;c++) {
+				for(int c = 0; c < CIRCULAR_LIST_SIZE; c++) {
 					Integer newValue = fastRandom.nextInt();
 					Integer oldValue = null;
 					if(linkedFileList.size()>=1000) oldValue = linkedFileList.removeLast();
