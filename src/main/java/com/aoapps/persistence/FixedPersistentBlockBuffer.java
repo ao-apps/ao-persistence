@@ -83,7 +83,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 	 * or the physical media block size.  A good overall approach would be to
 	 * select even powers of two (1, 2, 4, 8, ...).
 	 */
-	public FixedPersistentBlockBuffer(PersistentBuffer pbuffer, long blockSize) throws IOException {
+	public FixedPersistentBlockBuffer(PersistentBuffer pbuffer, long blockSize) {
 		super(pbuffer);
 		if(blockSize<=0) throw new IllegalArgumentException("blockSize<=0: "+blockSize);
 		this.blockSize = blockSize;

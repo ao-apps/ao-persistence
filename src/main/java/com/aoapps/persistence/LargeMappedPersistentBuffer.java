@@ -177,7 +177,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 	/**
 	 * Gets the position as an integer or throws IOException if too big for a mapped buffer.
 	 */
-	private static int getIndex(long position) throws IOException {
+	private static int getIndex(long position) {
 		return (int)(position&BUFFER_INDEX_MASK);
 	}
 

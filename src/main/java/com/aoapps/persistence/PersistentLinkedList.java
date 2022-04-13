@@ -224,7 +224,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 	 * Checks that the ptr is in the valid address range.  It must be >=0 and
 	 * not the metadata block pointer.
 	 */
-	private boolean isValidRange(long ptr) throws IOException {
+	private boolean isValidRange(long ptr) {
 		return ptr>=0 && ptr!=metaDataBlockId;
 	}
 	// </editor-fold>

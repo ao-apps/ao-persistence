@@ -111,7 +111,7 @@ public final class PersistentCollections {
 	 * @return  true  when the byteBuffer was written to
 	 */
 	// TODO: Try with readLong instead of copying the array values
-	public static boolean ensureZeros(ByteBuffer byteBuffer, int position, int count) throws IOException {
+	public static boolean ensureZeros(ByteBuffer byteBuffer, int position, int count) {
 		if(count<0) throw new IllegalArgumentException("count<0: "+count);
 		boolean modified = false;
 		/*
