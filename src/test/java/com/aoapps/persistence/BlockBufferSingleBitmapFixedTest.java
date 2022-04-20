@@ -33,43 +33,43 @@ import junit.framework.TestSuite;
  */
 public class BlockBufferSingleBitmapFixedTest extends BlockBufferTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(BlockBufferSingleBitmapFixedTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(BlockBufferSingleBitmapFixedTest.class);
+    return suite;
+  }
 
-	public BlockBufferSingleBitmapFixedTest(String testName) {
-		super(testName);
-	}
+  public BlockBufferSingleBitmapFixedTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
-		return new SparseBuffer(protectionLevel);
-	}
+  @Override
+  public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
+    return new SparseBuffer(protectionLevel);
+  }
 
-	@Override
-	public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
-		return new FixedPersistentBlockBuffer(pbuffer, (1L<<30));
-	}
+  @Override
+  public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
+    return new FixedPersistentBlockBuffer(pbuffer, (1L<<30));
+  }
 
-	@Override
-	public long getAllocationSize() throws IOException {
-		return fastRandom.nextInt((1 << 30) + 1);
-	}
+  @Override
+  public long getAllocationSize() throws IOException {
+    return fastRandom.nextInt((1 << 30) + 1);
+  }
 
-	/**
-	 * This test is not compatible with non-persistent {@link SparseBuffer}
-	 */
-	@Override
-	public void testFailureRecoveryBarrier() {
-		// Skip test
-	}
+  /**
+   * This test is not compatible with non-persistent {@link SparseBuffer}
+   */
+  @Override
+  public void testFailureRecoveryBarrier() {
+    // Skip test
+  }
 
-	/**
-	 * This test is not compatible with non-persistent {@link SparseBuffer}
-	 */
-	@Override
-	public void testFailureRecoveryForce() {
-		// Skip test
-	}
+  /**
+   * This test is not compatible with non-persistent {@link SparseBuffer}
+   */
+  @Override
+  public void testFailureRecoveryForce() {
+    // Skip test
+  }
 }

@@ -40,102 +40,102 @@ import junit.framework.TestSuite;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class PersistentCollectionsTest extends TestCase {
 
-	private static final int ITERATIONS = 1000;
+  private static final int ITERATIONS = 1000;
 
-	private static final int ENSURE_ZEROS_TEST_SIZE = 1 << 16 /*20*/;
+  private static final int ENSURE_ZEROS_TEST_SIZE = 1 << 16 /*20*/;
 
-	/**
-	 * A fast pseudo-random number generator for non-cryptographic purposes.
-	 */
-	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
+  /**
+   * A fast pseudo-random number generator for non-cryptographic purposes.
+   */
+  private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(PersistentCollectionsTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(PersistentCollectionsTest.class);
+    return suite;
+  }
 
-	public PersistentCollectionsTest(String testName) {
-		super(testName);
-	}
+  public PersistentCollectionsTest(String testName) {
+    super(testName);
+  }
 
-	public void testGetPersistentBuffer() throws Exception {
-		PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(1L<<20);
-		smallBuffer.close();
+  public void testGetPersistentBuffer() throws Exception {
+    PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(1L<<20);
+    smallBuffer.close();
 
-		PersistentBuffer largeBuffer = PersistentCollections.getPersistentBuffer(Long.MAX_VALUE);
-		largeBuffer.close();
-	}
+    PersistentBuffer largeBuffer = PersistentCollections.getPersistentBuffer(Long.MAX_VALUE);
+    largeBuffer.close();
+  }
 
-	public void testCharToBuffer() throws Exception {
-		byte[] buff = new byte[Character.BYTES];
-		for(int i = 0; i < ITERATIONS; i++) {
-			char value = (char)fastRandom.nextInt(Character.MAX_VALUE + 1);
-			IoUtils.charToBuffer(value, buff);
-			char result = IoUtils.bufferToChar(buff);
-			assertEquals(value, result);
-		}
-	}
+  public void testCharToBuffer() throws Exception {
+    byte[] buff = new byte[Character.BYTES];
+    for (int i = 0; i < ITERATIONS; i++) {
+      char value = (char)fastRandom.nextInt(Character.MAX_VALUE + 1);
+      IoUtils.charToBuffer(value, buff);
+      char result = IoUtils.bufferToChar(buff);
+      assertEquals(value, result);
+    }
+  }
 
-	public void testShortToBuffer() throws Exception {
-		byte[] buff = new byte[Short.BYTES];
-		for(int i = 0; i < ITERATIONS; i++) {
-			short value = (short)(fastRandom.nextInt(1 << Short.SIZE) + Short.MIN_VALUE);
-			IoUtils.shortToBuffer(value, buff);
-			short result = IoUtils.bufferToShort(buff);
-			assertEquals(value, result);
-		}
-	}
+  public void testShortToBuffer() throws Exception {
+    byte[] buff = new byte[Short.BYTES];
+    for (int i = 0; i < ITERATIONS; i++) {
+      short value = (short)(fastRandom.nextInt(1 << Short.SIZE) + Short.MIN_VALUE);
+      IoUtils.shortToBuffer(value, buff);
+      short result = IoUtils.bufferToShort(buff);
+      assertEquals(value, result);
+    }
+  }
 
-	public void testIntToBuffer() throws Exception {
-		byte[] buff = new byte[Integer.BYTES];
-		for(int i = 0; i < ITERATIONS; i++) {
-			int value = fastRandom.nextInt();
-			IoUtils.intToBuffer(value, buff);
-			int result = IoUtils.bufferToInt(buff);
-			assertEquals(value, result);
-		}
-	}
+  public void testIntToBuffer() throws Exception {
+    byte[] buff = new byte[Integer.BYTES];
+    for (int i = 0; i < ITERATIONS; i++) {
+      int value = fastRandom.nextInt();
+      IoUtils.intToBuffer(value, buff);
+      int result = IoUtils.bufferToInt(buff);
+      assertEquals(value, result);
+    }
+  }
 
-	public void testLongToBuffer() throws Exception {
-		byte[] buff = new byte[Long.BYTES];
-		for(int i = 0; i < ITERATIONS; i++) {
-			long value = fastRandom.nextLong();
-			IoUtils.longToBuffer(value, buff);
-			long result = IoUtils.bufferToLong(buff);
-			assertEquals(value, result);
-		}
-	}
+  public void testLongToBuffer() throws Exception {
+    byte[] buff = new byte[Long.BYTES];
+    for (int i = 0; i < ITERATIONS; i++) {
+      long value = fastRandom.nextLong();
+      IoUtils.longToBuffer(value, buff);
+      long result = IoUtils.bufferToLong(buff);
+      assertEquals(value, result);
+    }
+  }
 
-	private static void doTestEnsureZeros(PersistentBuffer buffer) throws IOException {
-		long totalNanos = 0;
-		for(int c = 0; c < 100; c++) {
-			// Update 1/8192 of buffer with random values
-			for(int d = 0; d < (ENSURE_ZEROS_TEST_SIZE >>> 13); d++) {
-				buffer.put(
-					fastRandom.nextInt() & (ENSURE_ZEROS_TEST_SIZE - 1),
-					(byte)fastRandom.nextInt()
-				);
-			}
-			long startNanos = System.nanoTime();
-			buffer.ensureZeros(0, ENSURE_ZEROS_TEST_SIZE);
-			totalNanos += System.nanoTime() - startNanos;
-		}
-		System.out.println(buffer.getClass().getName()+": ensureZeros in " + BigDecimal.valueOf(totalNanos, 6)+" ms");
-	}
+  private static void doTestEnsureZeros(PersistentBuffer buffer) throws IOException {
+    long totalNanos = 0;
+    for (int c = 0; c < 100; c++) {
+      // Update 1/8192 of buffer with random values
+      for (int d = 0; d < (ENSURE_ZEROS_TEST_SIZE >>> 13); d++) {
+        buffer.put(
+          fastRandom.nextInt() & (ENSURE_ZEROS_TEST_SIZE - 1),
+          (byte)fastRandom.nextInt()
+        );
+      }
+      long startNanos = System.nanoTime();
+      buffer.ensureZeros(0, ENSURE_ZEROS_TEST_SIZE);
+      totalNanos += System.nanoTime() - startNanos;
+    }
+    System.out.println(buffer.getClass().getName()+": ensureZeros in " + BigDecimal.valueOf(totalNanos, 6)+" ms");
+  }
 
-	public void testEnsureZeros() throws Exception {
-		try (PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(ENSURE_ZEROS_TEST_SIZE)) {
-			smallBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);
-			for(int i = 0; i < 10; i++) {
-				doTestEnsureZeros(smallBuffer);
-			}
-		}
+  public void testEnsureZeros() throws Exception {
+    try (PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(ENSURE_ZEROS_TEST_SIZE)) {
+      smallBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);
+      for (int i = 0; i < 10; i++) {
+        doTestEnsureZeros(smallBuffer);
+      }
+    }
 
-		try (PersistentBuffer largeBuffer = PersistentCollections.getPersistentBuffer(Long.MAX_VALUE)) {
-			largeBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);
-			for(int i = 0; i < 10; i++) {
-				doTestEnsureZeros(largeBuffer);
-			}
-		}
-	}
+    try (PersistentBuffer largeBuffer = PersistentCollections.getPersistentBuffer(Long.MAX_VALUE)) {
+      largeBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);
+      for (int i = 0; i < 10; i++) {
+        doTestEnsureZeros(largeBuffer);
+      }
+    }
+  }
 }

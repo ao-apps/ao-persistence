@@ -42,203 +42,217 @@ import java.nio.channels.FileChannel;
  */
 public class MappedPersistentBuffer extends AbstractPersistentBuffer {
 
-	//private static final Logger logger = Logger.getLogger(MappedPersistentBuffer.class.getName());
+  //private static final Logger logger = Logger.getLogger(MappedPersistentBuffer.class.getName());
 
-	private final TempFileContext tempFileContext;
-	private final RandomAccessFile raf;
-	private final FileChannel channel;
-	private MappedByteBuffer mappedBuffer;
-	private boolean modified;
-	private boolean closed;
+  private final TempFileContext tempFileContext;
+  private final RandomAccessFile raf;
+  private final FileChannel channel;
+  private MappedByteBuffer mappedBuffer;
+  private boolean modified;
+  private boolean closed;
 
-	/**
-	 * Creates a read-write buffer backed by a temporary file.  The protection level
-	 * is set to <code>NONE</code>.  The temporary file will be deleted when this
-	 * buffer is closed or on JVM shutdown.
-	 */
-	public MappedPersistentBuffer() throws IOException {
-		super(ProtectionLevel.NONE);
-		tempFileContext = new TempFileContext();
-		raf = new RandomAccessFile(tempFileContext.createTempFile("MappedPersistentBuffer_").getFile(), "rw");
-		channel = raf.getChannel();
-		// Lock the file
-		channel.lock(0L, Long.MAX_VALUE, false);
-		mappedBuffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, 0);
-	}
+  /**
+   * Creates a read-write buffer backed by a temporary file.  The protection level
+   * is set to <code>NONE</code>.  The temporary file will be deleted when this
+   * buffer is closed or on JVM shutdown.
+   */
+  public MappedPersistentBuffer() throws IOException {
+    super(ProtectionLevel.NONE);
+    tempFileContext = new TempFileContext();
+    raf = new RandomAccessFile(tempFileContext.createTempFile("MappedPersistentBuffer_").getFile(), "rw");
+    channel = raf.getChannel();
+    // Lock the file
+    channel.lock(0L, Long.MAX_VALUE, false);
+    mappedBuffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, 0);
+  }
 
-	/**
-	 * Creates a read-write buffer with <code>BARRIER</code> protection level.
-	 */
-	public MappedPersistentBuffer(String name) throws IOException {
-		this(new RandomAccessFile(name, "rw"), ProtectionLevel.BARRIER);
-	}
+  /**
+   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   */
+  public MappedPersistentBuffer(String name) throws IOException {
+    this(new RandomAccessFile(name, "rw"), ProtectionLevel.BARRIER);
+  }
 
-	/**
-	 * Creates a buffer.
-	 */
-	public MappedPersistentBuffer(String name, ProtectionLevel protectionLevel) throws IOException {
-		this(new RandomAccessFile(name, protectionLevel==ProtectionLevel.READ_ONLY ? "r" : "rw"), protectionLevel);
-	}
+  /**
+   * Creates a buffer.
+   */
+  public MappedPersistentBuffer(String name, ProtectionLevel protectionLevel) throws IOException {
+    this(new RandomAccessFile(name, protectionLevel == ProtectionLevel.READ_ONLY ? "r" : "rw"), protectionLevel);
+  }
 
-	/**
-	 * Creates a read-write buffer with <code>BARRIER</code> protection level.
-	 */
-	public MappedPersistentBuffer(File file) throws IOException {
-		this(new RandomAccessFile(file, "rw"), ProtectionLevel.BARRIER);
-	}
+  /**
+   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   */
+  public MappedPersistentBuffer(File file) throws IOException {
+    this(new RandomAccessFile(file, "rw"), ProtectionLevel.BARRIER);
+  }
 
-	/**
-	 * Creates a buffer.
-	 */
-	public MappedPersistentBuffer(File file, ProtectionLevel protectionLevel) throws IOException {
-		this(new RandomAccessFile(file, protectionLevel==ProtectionLevel.READ_ONLY ? "r" : "rw"), protectionLevel);
-	}
+  /**
+   * Creates a buffer.
+   */
+  public MappedPersistentBuffer(File file, ProtectionLevel protectionLevel) throws IOException {
+    this(new RandomAccessFile(file, protectionLevel == ProtectionLevel.READ_ONLY ? "r" : "rw"), protectionLevel);
+  }
 
-	/**
-	 * Creates a buffer using the provided <code>RandomAccessFile</code>.
-	 */
-	public MappedPersistentBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel) throws IOException {
-		super(protectionLevel);
-		this.tempFileContext = null;
-		this.raf = raf;
-		channel = raf.getChannel();
-		// Lock the file
-		channel.lock(0L, Long.MAX_VALUE, protectionLevel==ProtectionLevel.READ_ONLY);
-		mappedBuffer = channel.map(protectionLevel==ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, 0, raf.length());
-	}
+  /**
+   * Creates a buffer using the provided <code>RandomAccessFile</code>.
+   */
+  public MappedPersistentBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel) throws IOException {
+    super(protectionLevel);
+    this.tempFileContext = null;
+    this.raf = raf;
+    channel = raf.getChannel();
+    // Lock the file
+    channel.lock(0L, Long.MAX_VALUE, protectionLevel == ProtectionLevel.READ_ONLY);
+    mappedBuffer = channel.map(protectionLevel == ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, 0, raf.length());
+  }
 
-	@Override
-	public boolean isClosed() {
-		return closed;
-	}
+  @Override
+  public boolean isClosed() {
+    return closed;
+  }
 
-	@Override
-	public void close() throws IOException {
-		closed = true;
-		raf.close();
-		if(tempFileContext != null) tempFileContext.close();
-	}
+  @Override
+  public void close() throws IOException {
+    closed = true;
+    raf.close();
+    if (tempFileContext != null) {
+      tempFileContext.close();
+    }
+  }
 
-	@Override
-	public long capacity() throws IOException {
-		return raf.length();
-	}
+  @Override
+  public long capacity() throws IOException {
+    return raf.length();
+  }
 
-	/**
-	 * Gets the position as an integer or throws IOException if too big for a mapped buffer.
-	 */
-	private static int getIndex(long position) throws IOException {
-		if(position<0) throw new IllegalArgumentException("position<0: "+position);
-		if(position>Integer.MAX_VALUE) throw new IOException("position too large for MappedPersistentBuffer: "+position);
-		return (int)position;
-	}
+  /**
+   * Gets the position as an integer or throws IOException if too big for a mapped buffer.
+   */
+  private static int getIndex(long position) throws IOException {
+    if (position<0) {
+      throw new IllegalArgumentException("position<0: "+position);
+    }
+    if (position>Integer.MAX_VALUE) {
+      throw new IOException("position too large for MappedPersistentBuffer: "+position);
+    }
+    return (int)position;
+  }
 
-	@Override
-	public void setCapacity(long newLength) throws IOException {
-		long oldLength = capacity();
-		if(oldLength!=newLength) {
-			if(newLength<oldLength) {
-				if(modified) {
-					if((protectionLevel.compareTo(ProtectionLevel.BARRIER)>=0)) mappedBuffer.force();
-					modified = false;
-				}
-				mappedBuffer = channel.map(protectionLevel==ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, 0, newLength);
-			}
-			raf.setLength(newLength);
-			if(newLength>oldLength) {
-				if(modified) {
-					if((protectionLevel.compareTo(ProtectionLevel.BARRIER)>=0)) mappedBuffer.force();
-					modified = false;
-				}
-				mappedBuffer = channel.map(protectionLevel==ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, 0, newLength);
-				// Ensure zero-filled
-				ensureZeros(oldLength, newLength-oldLength);
-			}
-		}
-	}
+  @Override
+  public void setCapacity(long newLength) throws IOException {
+    long oldLength = capacity();
+    if (oldLength != newLength) {
+      if (newLength<oldLength) {
+        if (modified) {
+          if ((protectionLevel.compareTo(ProtectionLevel.BARRIER) >= 0)) {
+            mappedBuffer.force();
+          }
+          modified = false;
+        }
+        mappedBuffer = channel.map(protectionLevel == ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, 0, newLength);
+      }
+      raf.setLength(newLength);
+      if (newLength>oldLength) {
+        if (modified) {
+          if ((protectionLevel.compareTo(ProtectionLevel.BARRIER) >= 0)) {
+            mappedBuffer.force();
+          }
+          modified = false;
+        }
+        mappedBuffer = channel.map(protectionLevel == ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, 0, newLength);
+        // Ensure zero-filled
+        ensureZeros(oldLength, newLength-oldLength);
+      }
+    }
+  }
 
-	@Override
-	public void get(long position, byte[] buff, int off, int len) throws IOException {
-		mappedBuffer.position(getIndex(position));
-		mappedBuffer.get(buff, off, len);
-	}
+  @Override
+  public void get(long position, byte[] buff, int off, int len) throws IOException {
+    mappedBuffer.position(getIndex(position));
+    mappedBuffer.get(buff, off, len);
+  }
 
-	@Override
-	public int getSome(long position, byte[] buff, int off, int len) throws IOException {
-		mappedBuffer.position(getIndex(position));
-		mappedBuffer.get(buff, off, len);
-		return len;
-	}
+  @Override
+  public int getSome(long position, byte[] buff, int off, int len) throws IOException {
+    mappedBuffer.position(getIndex(position));
+    mappedBuffer.get(buff, off, len);
+    return len;
+  }
 
-	/**
-	 * Gets a single byte from the buffer.
-	 */
-	@Override
-	public byte get(long position) throws IOException {
-		return mappedBuffer.get(getIndex(position));
-	}
+  /**
+   * Gets a single byte from the buffer.
+   */
+  @Override
+  public byte get(long position) throws IOException {
+    return mappedBuffer.get(getIndex(position));
+  }
 
-	@Override
-	public void ensureZeros(long position, long len) throws IOException {
-		if(len>0) {
-			// Check bounds with getIndex
-			int endIndex = getIndex(position + len - 1);
-			if(PersistentCollections.ensureZeros(mappedBuffer, getIndex(position), (int)len)) modified = true;
-		}
-	}
+  @Override
+  public void ensureZeros(long position, long len) throws IOException {
+    if (len>0) {
+      // Check bounds with getIndex
+      int endIndex = getIndex(position + len - 1);
+      if (PersistentCollections.ensureZeros(mappedBuffer, getIndex(position), (int)len)) {
+        modified = true;
+      }
+    }
+  }
 
-	/**
-	 * Puts a single byte in the buffer.
-	 */
-	@Override
-	public void put(long position, byte value) throws IOException {
-		mappedBuffer.put(getIndex(position), value);
-		modified = true;
-	}
+  /**
+   * Puts a single byte in the buffer.
+   */
+  @Override
+  public void put(long position, byte value) throws IOException {
+    mappedBuffer.put(getIndex(position), value);
+    modified = true;
+  }
 
-	@Override
-	public void put(long position, byte[] buff, int off, int len) throws IOException {
-		mappedBuffer.position(getIndex(position));
-		mappedBuffer.put(buff, off, len);
-		modified = true;
-	}
+  @Override
+  public void put(long position, byte[] buff, int off, int len) throws IOException {
+    mappedBuffer.position(getIndex(position));
+    mappedBuffer.put(buff, off, len);
+    modified = true;
+  }
 
-	/**
-	 * There is not currently a way to provide a barrier without using <code>force</code>.
-	 * This just uses force for both.
-	 */
-	@Override
-	public void barrier(boolean force) throws IOException {
-		if(modified) {
-			if(protectionLevel.compareTo(ProtectionLevel.BARRIER)>=0) mappedBuffer.force();
-			modified = false;
-		}
-	}
+  /**
+   * There is not currently a way to provide a barrier without using <code>force</code>.
+   * This just uses force for both.
+   */
+  @Override
+  public void barrier(boolean force) throws IOException {
+    if (modified) {
+      if (protectionLevel.compareTo(ProtectionLevel.BARRIER) >= 0) {
+        mappedBuffer.force();
+      }
+      modified = false;
+    }
+  }
 
-	@Override
-	public boolean getBoolean(long position) throws IOException {
-		return mappedBuffer.get(getIndex(position))!=0;
-	}
+  @Override
+  public boolean getBoolean(long position) throws IOException {
+    return mappedBuffer.get(getIndex(position)) != 0;
+  }
 
-	@Override
-	public int getInt(long position) throws IOException {
-		return mappedBuffer.getInt(getIndex(position));
-	}
+  @Override
+  public int getInt(long position) throws IOException {
+    return mappedBuffer.getInt(getIndex(position));
+  }
 
-	@Override
-	public long getLong(long position) throws IOException {
-		return mappedBuffer.getLong(getIndex(position));
-	}
+  @Override
+  public long getLong(long position) throws IOException {
+    return mappedBuffer.getLong(getIndex(position));
+  }
 
-	@Override
-	public void putInt(long position, int value) throws IOException {
-		mappedBuffer.putInt(getIndex(position), value);
-		modified = true;
-	}
+  @Override
+  public void putInt(long position, int value) throws IOException {
+    mappedBuffer.putInt(getIndex(position), value);
+    modified = true;
+  }
 
-	@Override
-	public void putLong(long position, long value) throws IOException {
-		mappedBuffer.putLong(getIndex(position), value);
-		modified = true;
-	}
+  @Override
+  public void putLong(long position, long value) throws IOException {
+    mappedBuffer.putLong(getIndex(position), value);
+    modified = true;
+  }
 }

@@ -36,27 +36,27 @@ import java.io.OutputStream;
  */
 public class ShortSerializer implements Serializer<Short> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return true;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return true;
+  }
 
-	@Override
-	public long getSerializedSize(Short value) {
-		return Short.BYTES;
-	}
+  @Override
+  public long getSerializedSize(Short value) {
+    return Short.BYTES;
+  }
 
-	private final byte[] buffer = new byte[Short.BYTES];
+  private final byte[] buffer = new byte[Short.BYTES];
 
-	@Override
-	public void serialize(Short value, OutputStream out) throws IOException {
-		IoUtils.shortToBuffer(value, buffer);
-		out.write(buffer, 0, Short.BYTES);
-	}
+  @Override
+  public void serialize(Short value, OutputStream out) throws IOException {
+    IoUtils.shortToBuffer(value, buffer);
+    out.write(buffer, 0, Short.BYTES);
+  }
 
-	@Override
-	public Short deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, Short.BYTES);
-		return IoUtils.bufferToShort(buffer);
-	}
+  @Override
+  public Short deserialize(InputStream in) throws IOException {
+    IoUtils.readFully(in, buffer, 0, Short.BYTES);
+    return IoUtils.bufferToShort(buffer);
+  }
 }

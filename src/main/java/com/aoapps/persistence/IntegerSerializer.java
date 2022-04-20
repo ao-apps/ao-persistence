@@ -36,27 +36,27 @@ import java.io.OutputStream;
  */
 public class IntegerSerializer implements Serializer<Integer> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return true;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return true;
+  }
 
-	@Override
-	public long getSerializedSize(Integer value) {
-		return Integer.BYTES;
-	}
+  @Override
+  public long getSerializedSize(Integer value) {
+    return Integer.BYTES;
+  }
 
-	private final byte[] buffer = new byte[Integer.BYTES];
+  private final byte[] buffer = new byte[Integer.BYTES];
 
-	@Override
-	public void serialize(Integer value, OutputStream out) throws IOException {
-		IoUtils.intToBuffer(value, buffer);
-		out.write(buffer, 0, Integer.BYTES);
-	}
+  @Override
+  public void serialize(Integer value, OutputStream out) throws IOException {
+    IoUtils.intToBuffer(value, buffer);
+    out.write(buffer, 0, Integer.BYTES);
+  }
 
-	@Override
-	public Integer deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, Integer.BYTES);
-		return IoUtils.bufferToInt(buffer);
-	}
+  @Override
+  public Integer deserialize(InputStream in) throws IOException {
+    IoUtils.readFully(in, buffer, 0, Integer.BYTES);
+    return IoUtils.bufferToInt(buffer);
+  }
 }

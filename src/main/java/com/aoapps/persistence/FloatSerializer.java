@@ -36,27 +36,27 @@ import java.io.OutputStream;
  */
 public class FloatSerializer implements Serializer<Float> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return true;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return true;
+  }
 
-	@Override
-	public long getSerializedSize(Float value) {
-		return Float.BYTES;
-	}
+  @Override
+  public long getSerializedSize(Float value) {
+    return Float.BYTES;
+  }
 
-	private final byte[] buffer = new byte[Float.BYTES];
+  private final byte[] buffer = new byte[Float.BYTES];
 
-	@Override
-	public void serialize(Float value, OutputStream out) throws IOException {
-		IoUtils.intToBuffer(Float.floatToRawIntBits(value), buffer);
-		out.write(buffer, 0, Float.BYTES);
-	}
+  @Override
+  public void serialize(Float value, OutputStream out) throws IOException {
+    IoUtils.intToBuffer(Float.floatToRawIntBits(value), buffer);
+    out.write(buffer, 0, Float.BYTES);
+  }
 
-	@Override
-	public Float deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, Float.BYTES);
-		return Float.intBitsToFloat(IoUtils.bufferToInt(buffer));
-	}
+  @Override
+  public Float deserialize(InputStream in) throws IOException {
+    IoUtils.readFully(in, buffer, 0, Float.BYTES);
+    return Float.intBitsToFloat(IoUtils.bufferToInt(buffer));
+  }
 }

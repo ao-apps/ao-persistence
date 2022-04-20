@@ -35,131 +35,137 @@ import java.io.OutputStream;
  */
 public abstract class AbstractPersistentBlockBuffer implements PersistentBlockBuffer {
 
-	protected final PersistentBuffer pbuffer;
+  protected final PersistentBuffer pbuffer;
 
-	protected AbstractPersistentBlockBuffer(PersistentBuffer pbuffer) {
-		this.pbuffer = pbuffer;
-	}
+  protected AbstractPersistentBlockBuffer(PersistentBuffer pbuffer) {
+    this.pbuffer = pbuffer;
+  }
 
-	@Override
-	public boolean isClosed() {
-		return pbuffer.isClosed();
-	}
+  @Override
+  public boolean isClosed() {
+    return pbuffer.isClosed();
+  }
 
-	@Override
-	public void close() throws IOException {
-		pbuffer.close();
-	}
+  @Override
+  public void close() throws IOException {
+    pbuffer.close();
+  }
 
-	@Override
-	public ProtectionLevel getProtectionLevel() {
-		return pbuffer.getProtectionLevel();
-	}
+  @Override
+  public ProtectionLevel getProtectionLevel() {
+    return pbuffer.getProtectionLevel();
+  }
 
-	@Override
-	public void barrier(boolean force) throws IOException {
-		pbuffer.barrier(force);
-	}
+  @Override
+  public void barrier(boolean force) throws IOException {
+    pbuffer.barrier(force);
+  }
 
-	/**
-	 * Checks that a request is within the bounds of the block.
-	 */
-	@SuppressWarnings("AssertWithSideEffects")
-	protected void checkBounds(long id, long offset, long len) throws IllegalArgumentException, IOException {
-		if(id < 0) throw new IllegalArgumentException("id < 0: " + id);
-		if(offset < 0) throw new IllegalArgumentException("offset < 0: " + offset);
-		if(len < 0) throw new IllegalArgumentException("len < 0: " + len);
-		long totalSize = offset + len;
-		if(totalSize < 0) {
-			throw new IllegalArgumentException(
-				"(offset + len) > Long.MAX_VALUE: offset = " + offset+", len = " + len
-			);
-		}
-		// Only check block size when assertions are enabled, since this can be an expensive operation
-		boolean assertEnabled = false;
-		long blockSize = Long.MAX_VALUE;
-		assert (assertEnabled = true) && (blockSize = getBlockSize(id)) >= 0;
-		if(assertEnabled && totalSize > blockSize) {
-			throw new IllegalArgumentException(
-				"(offset + len) > blockSize: offset = " + offset+", len = " + len + ", blockSize = " + blockSize
-			);
-		}
-	}
+  /**
+   * Checks that a request is within the bounds of the block.
+   */
+  @SuppressWarnings("AssertWithSideEffects")
+  protected void checkBounds(long id, long offset, long len) throws IllegalArgumentException, IOException {
+    if (id < 0) {
+      throw new IllegalArgumentException("id < 0: " + id);
+    }
+    if (offset < 0) {
+      throw new IllegalArgumentException("offset < 0: " + offset);
+    }
+    if (len < 0) {
+      throw new IllegalArgumentException("len < 0: " + len);
+    }
+    long totalSize = offset + len;
+    if (totalSize < 0) {
+      throw new IllegalArgumentException(
+        "(offset + len) > Long.MAX_VALUE: offset = " + offset+", len = " + len
+      );
+    }
+    // Only check block size when assertions are enabled, since this can be an expensive operation
+    boolean assertEnabled = false;
+    long blockSize = Long.MAX_VALUE;
+    assert (assertEnabled = true) && (blockSize = getBlockSize(id)) >= 0;
+    if (assertEnabled && totalSize > blockSize) {
+      throw new IllegalArgumentException(
+        "(offset + len) > blockSize: offset = " + offset+", len = " + len + ", blockSize = " + blockSize
+      );
+    }
+  }
 
-	@Override
-	public void get(long id, long offset, byte[] buff, int off, int len) throws IOException {
-		checkBounds(id, offset, len);
-		long startAddress = getBlockAddress(id)+offset;
-		ensureCapacity(startAddress+len);
-		pbuffer.get(startAddress, buff, off, len);
-	}
+  @Override
+  public void get(long id, long offset, byte[] buff, int off, int len) throws IOException {
+    checkBounds(id, offset, len);
+    long startAddress = getBlockAddress(id)+offset;
+    ensureCapacity(startAddress+len);
+    pbuffer.get(startAddress, buff, off, len);
+  }
 
-	@Override
-	public int getInt(long id, long offset) throws IOException {
-		checkBounds(id, offset, Integer.BYTES);
-		long startAddress = getBlockAddress(id) + offset;
-		ensureCapacity(startAddress + Integer.BYTES);
-		return pbuffer.getInt(startAddress);
-	}
+  @Override
+  public int getInt(long id, long offset) throws IOException {
+    checkBounds(id, offset, Integer.BYTES);
+    long startAddress = getBlockAddress(id) + offset;
+    ensureCapacity(startAddress + Integer.BYTES);
+    return pbuffer.getInt(startAddress);
+  }
 
-	@Override
-	public long getLong(long id, long offset) throws IOException {
-		checkBounds(id, offset, Long.BYTES);
-		long startAddress = getBlockAddress(id) + offset;
-		ensureCapacity(startAddress + Long.BYTES);
-		return pbuffer.getLong(startAddress);
-	}
+  @Override
+  public long getLong(long id, long offset) throws IOException {
+    checkBounds(id, offset, Long.BYTES);
+    long startAddress = getBlockAddress(id) + offset;
+    ensureCapacity(startAddress + Long.BYTES);
+    return pbuffer.getLong(startAddress);
+  }
 
-	@Override
-	public InputStream getInputStream(long id, long offset, long length) throws IOException {
-		checkBounds(id, offset, length);
-		long startAddress = getBlockAddress(id)+offset;
-		ensureCapacity(startAddress+length);
-		return pbuffer.getInputStream(startAddress, length);
-	}
+  @Override
+  public InputStream getInputStream(long id, long offset, long length) throws IOException {
+    checkBounds(id, offset, length);
+    long startAddress = getBlockAddress(id)+offset;
+    ensureCapacity(startAddress+length);
+    return pbuffer.getInputStream(startAddress, length);
+  }
 
-	@Override
-	public void put(long id, long offset, byte[] buff, int off, int len) throws IOException {
-		checkBounds(id, offset, len);
-		long startAddress = getBlockAddress(id)+offset;
-		ensureCapacity(startAddress+len);
-		pbuffer.put(startAddress, buff, off, len);
-	}
+  @Override
+  public void put(long id, long offset, byte[] buff, int off, int len) throws IOException {
+    checkBounds(id, offset, len);
+    long startAddress = getBlockAddress(id)+offset;
+    ensureCapacity(startAddress+len);
+    pbuffer.put(startAddress, buff, off, len);
+  }
 
-	@Override
-	public void putInt(long id, long offset, int value) throws IOException {
-		checkBounds(id, offset, Integer.BYTES);
-		long startAddress = getBlockAddress(id) + offset;
-		ensureCapacity(startAddress + Integer.BYTES);
-		pbuffer.putInt(startAddress, value);
-	}
+  @Override
+  public void putInt(long id, long offset, int value) throws IOException {
+    checkBounds(id, offset, Integer.BYTES);
+    long startAddress = getBlockAddress(id) + offset;
+    ensureCapacity(startAddress + Integer.BYTES);
+    pbuffer.putInt(startAddress, value);
+  }
 
-	@Override
-	public void putLong(long id, long offset, long value) throws IOException {
-		checkBounds(id, offset, Long.BYTES);
-		long startAddress = getBlockAddress(id) + offset;
-		ensureCapacity(startAddress + Long.BYTES);
-		pbuffer.putLong(startAddress, value);
-	}
+  @Override
+  public void putLong(long id, long offset, long value) throws IOException {
+    checkBounds(id, offset, Long.BYTES);
+    long startAddress = getBlockAddress(id) + offset;
+    ensureCapacity(startAddress + Long.BYTES);
+    pbuffer.putLong(startAddress, value);
+  }
 
-	@Override
-	public OutputStream getOutputStream(long id, long offset, long length) throws IOException {
-		checkBounds(id, offset, length);
-		long startAddress = getBlockAddress(id)+offset;
-		ensureCapacity(startAddress+length);
-		return pbuffer.getOutputStream(startAddress, length);
-	}
+  @Override
+  public OutputStream getOutputStream(long id, long offset, long length) throws IOException {
+    checkBounds(id, offset, length);
+    long startAddress = getBlockAddress(id)+offset;
+    ensureCapacity(startAddress+length);
+    return pbuffer.getOutputStream(startAddress, length);
+  }
 
-	/**
-	 * Gets the address of the block in the underlying persistent buffer.
-	 * This should only be called for allocated blocks, implementations should
-	 * check this with assertions.
-	 */
-	protected abstract long getBlockAddress(long id) throws IOException;
+  /**
+   * Gets the address of the block in the underlying persistent buffer.
+   * This should only be called for allocated blocks, implementations should
+   * check this with assertions.
+   */
+  protected abstract long getBlockAddress(long id) throws IOException;
 
-	/**
-	 * Ensures the underlying persistent buffer is of adequate capacity.  Grows the
-	 * underlying storage if needed.
-	 */
-	protected abstract void ensureCapacity(long capacity) throws IOException;
+  /**
+   * Ensures the underlying persistent buffer is of adequate capacity.  Grows the
+   * underlying storage if needed.
+   */
+  protected abstract void ensureCapacity(long capacity) throws IOException;
 }

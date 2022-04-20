@@ -35,17 +35,17 @@ import junit.framework.TestSuite;
  */
 public class PersistentLinkedListTwoCopyBarrierTest extends PersistentLinkedListTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(PersistentLinkedListTwoCopyBarrierTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(PersistentLinkedListTwoCopyBarrierTest.class);
+    return suite;
+  }
 
-	public PersistentLinkedListTwoCopyBarrierTest(String testName) {
-		super(testName);
-	}
+  public PersistentLinkedListTwoCopyBarrierTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
-		return new TwoCopyBarrierBuffer(tempFile, protectionLevel);
-	}
+  @Override
+  protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
+    return new TwoCopyBarrierBuffer(tempFile, protectionLevel);
+  }
 }

@@ -39,97 +39,97 @@ import junit.framework.TestSuite;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
 
-	private static final int HOW_MANY = 100000; // 1000000;
+  private static final int HOW_MANY = 100000; // 1000000;
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(BlockBufferTinyBitmapFixedTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(BlockBufferTinyBitmapFixedTest.class);
+    return suite;
+  }
 
-	public BlockBufferTinyBitmapFixedTest(String testName) {
-		super(testName);
-	}
+  public BlockBufferTinyBitmapFixedTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
-		return new MappedPersistentBuffer(tempFile, protectionLevel);
-	}
+  @Override
+  public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
+    return new MappedPersistentBuffer(tempFile, protectionLevel);
+  }
 
-	@Override
-	public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
-		return new FixedPersistentBlockBuffer(pbuffer, 1);
-	}
+  @Override
+  public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
+    return new FixedPersistentBlockBuffer(pbuffer, 1);
+  }
 
-	@Override
-	public long getAllocationSize() throws IOException {
-		return fastRandom.nextBoolean() ? 1 : 0;
-	}
+  @Override
+  public long getAllocationSize() throws IOException {
+    return fastRandom.nextBoolean() ? 1 : 0;
+  }
 
-	public void testAllocateMany() throws Exception {
-		try (
-			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
-			PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
-		) {
-			for(int c = 0; c < HOW_MANY; c++) {
-				blockBuffer.allocate(1);
-			}
-		}
-	}
+  public void testAllocateMany() throws Exception {
+    try (
+      TempFileContext tempFileContext = new TempFileContext();
+      TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
+      PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
+    ) {
+      for (int c = 0; c < HOW_MANY; c++) {
+        blockBuffer.allocate(1);
+      }
+    }
+  }
 
-	public void testAllocateDeallocateMany() throws Exception {
-		try (
-			TempFileContext tempFileContext = new TempFileContext();
-			TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
-			PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
-		) {
-			List<Long> ids = new ArrayList<>(HOW_MANY);
-			long startNanos = System.nanoTime();
-			for(int c = 0; c < HOW_MANY; c++) {
-				ids.add(blockBuffer.allocate(1));
-			}
-			long endNanos = System.nanoTime();
-			System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Allocating "+HOW_MANY+" blocks in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
-			//System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Getting "+HOW_MANY+" ids.");
-			//Iterator<Long> iter = blockBuffer.iterateBlockIds();
-			//int count = 0;
-			//while(iter.hasNext()) {
-			//    ids.add(iter.next());
-			//    count++;
-			//}
-			//assertEquals(HOW_MANY, count);
-			long deallocCount = 0;
-			long deallocTime = 0;
-			long allocCount = 0;
-			long allocTime = 0;
-			for(int c=0;c<100;c++) {
-				// Remove random items
-				int numRemove = fastRandom.nextInt(Math.min(10000, ids.size()));
-				List<Long> removeList = new ArrayList<>(numRemove);
-				for(int d=0;d<numRemove;d++) {
-					int index = fastRandom.nextInt(ids.size());
-					removeList.add(ids.get(index));
-					ids.set(index, ids.get(ids.size()-1));
-					ids.remove(ids.size()-1);
-				}
-				//System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Shuffling.");
-				//Collections.shuffle(ids, fastRandom);
-				startNanos = System.nanoTime();
-				for(Long id : removeList) {
-					blockBuffer.deallocate(id);
-				}
-				deallocCount += numRemove;
-				deallocTime += System.nanoTime() - startNanos;
-				int numAddBack = fastRandom.nextInt(10000);
-				startNanos = System.nanoTime();
-				for(int d = 0; d < numAddBack; d++) {
-					ids.add(blockBuffer.allocate(1));
-				}
-				allocCount += numAddBack;
-				allocTime += System.nanoTime() - startNanos;
-			}
-			System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Deallocated "+deallocCount+" blocks in "+BigDecimal.valueOf(deallocTime/1000, 3)+" ms");
-			System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Allocated "+allocCount+" blocks in "+BigDecimal.valueOf(allocTime/1000, 3)+" ms");
-		}
-	}
+  public void testAllocateDeallocateMany() throws Exception {
+    try (
+      TempFileContext tempFileContext = new TempFileContext();
+      TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
+      PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
+    ) {
+      List<Long> ids = new ArrayList<>(HOW_MANY);
+      long startNanos = System.nanoTime();
+      for (int c = 0; c < HOW_MANY; c++) {
+        ids.add(blockBuffer.allocate(1));
+      }
+      long endNanos = System.nanoTime();
+      System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Allocating "+HOW_MANY+" blocks in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+      //System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Getting "+HOW_MANY+" ids.");
+      //Iterator<Long> iter = blockBuffer.iterateBlockIds();
+      //int count = 0;
+      //while (iter.hasNext()) {
+      //    ids.add(iter.next());
+      //    count++;
+      //}
+      //assertEquals(HOW_MANY, count);
+      long deallocCount = 0;
+      long deallocTime = 0;
+      long allocCount = 0;
+      long allocTime = 0;
+      for (int c=0;c<100;c++) {
+        // Remove random items
+        int numRemove = fastRandom.nextInt(Math.min(10000, ids.size()));
+        List<Long> removeList = new ArrayList<>(numRemove);
+        for (int d=0;d<numRemove;d++) {
+          int index = fastRandom.nextInt(ids.size());
+          removeList.add(ids.get(index));
+          ids.set(index, ids.get(ids.size()-1));
+          ids.remove(ids.size()-1);
+        }
+        //System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Shuffling.");
+        //Collections.shuffle(ids, fastRandom);
+        startNanos = System.nanoTime();
+        for (Long id : removeList) {
+          blockBuffer.deallocate(id);
+        }
+        deallocCount += numRemove;
+        deallocTime += System.nanoTime() - startNanos;
+        int numAddBack = fastRandom.nextInt(10000);
+        startNanos = System.nanoTime();
+        for (int d = 0; d < numAddBack; d++) {
+          ids.add(blockBuffer.allocate(1));
+        }
+        allocCount += numAddBack;
+        allocTime += System.nanoTime() - startNanos;
+      }
+      System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Deallocated "+deallocCount+" blocks in "+BigDecimal.valueOf(deallocTime/1000, 3)+" ms");
+      System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Allocated "+allocCount+" blocks in "+BigDecimal.valueOf(allocTime/1000, 3)+" ms");
+    }
+  }
 }

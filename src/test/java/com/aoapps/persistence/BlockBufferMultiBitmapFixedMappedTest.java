@@ -33,28 +33,28 @@ import junit.framework.TestSuite;
  */
 public class BlockBufferMultiBitmapFixedMappedTest extends BlockBufferTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(BlockBufferMultiBitmapFixedMappedTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(BlockBufferMultiBitmapFixedMappedTest.class);
+    return suite;
+  }
 
-	public BlockBufferMultiBitmapFixedMappedTest(String testName) {
-		super(testName);
-	}
+  public BlockBufferMultiBitmapFixedMappedTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
-		return new MappedPersistentBuffer(tempFile, protectionLevel);
-		//return new RandomAccessFileBuffer(tempFile, protectionLevel);
-	}
+  @Override
+  public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
+    return new MappedPersistentBuffer(tempFile, protectionLevel);
+    //return new RandomAccessFileBuffer(tempFile, protectionLevel);
+  }
 
-	@Override
-	public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
-		return new FixedPersistentBlockBuffer(pbuffer, 4096);
-	}
+  @Override
+  public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
+    return new FixedPersistentBlockBuffer(pbuffer, 4096);
+  }
 
-	@Override
-	public long getAllocationSize() throws IOException {
-		return fastRandom.nextInt(4097);
-	}
+  @Override
+  public long getAllocationSize() throws IOException {
+    return fastRandom.nextInt(4097);
+  }
 }

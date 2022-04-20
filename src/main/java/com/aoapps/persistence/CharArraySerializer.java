@@ -37,68 +37,72 @@ import java.io.OutputStream;
  */
 public class CharArraySerializer implements Serializer<char[]> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return false;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return false;
+  }
 
-	@Override
-	public long getSerializedSize(char[] value) {
-		return (long)Integer.BYTES + (value.length / Character.BYTES);
-	}
+  @Override
+  public long getSerializedSize(char[] value) {
+    return (long)Integer.BYTES + (value.length / Character.BYTES);
+  }
 
-	@Override
-	public void serialize(char[] chars, OutputStream out) throws IOException {
-		byte[] bytes = BufferManager.getBytes();
-		try {
-			int len = chars.length;
-			IoUtils.intToBuffer(len, bytes);
-			out.write(bytes, 0, Integer.BYTES);
-			int pos = 0;
-			while(len > 0) {
-				int count = BufferManager.BUFFER_SIZE / Character.BYTES;
-				if(len < count) count = len;
-				for(
-					int charsIndex = 0, bytesIndex = 0;
-					charsIndex < count;
-					charsIndex++, bytesIndex += Character.BYTES
-				) {
-					IoUtils.charToBuffer(chars[pos+charsIndex], bytes, bytesIndex);
-				}
-				out.write(bytes, 0, count * Character.BYTES);
-				pos += count;
-				len -= count;
-			}
-		} finally {
-			BufferManager.release(bytes, false);
-		}
-	}
+  @Override
+  public void serialize(char[] chars, OutputStream out) throws IOException {
+    byte[] bytes = BufferManager.getBytes();
+    try {
+      int len = chars.length;
+      IoUtils.intToBuffer(len, bytes);
+      out.write(bytes, 0, Integer.BYTES);
+      int pos = 0;
+      while (len > 0) {
+        int count = BufferManager.BUFFER_SIZE / Character.BYTES;
+        if (len < count) {
+          count = len;
+        }
+        for (
+          int charsIndex = 0, bytesIndex = 0;
+          charsIndex < count;
+          charsIndex++, bytesIndex += Character.BYTES
+        ) {
+          IoUtils.charToBuffer(chars[pos+charsIndex], bytes, bytesIndex);
+        }
+        out.write(bytes, 0, count * Character.BYTES);
+        pos += count;
+        len -= count;
+      }
+    } finally {
+      BufferManager.release(bytes, false);
+    }
+  }
 
-	@Override
-	public char[] deserialize(InputStream in) throws IOException {
-		byte[] bytes = BufferManager.getBytes();
-		try {
-			IoUtils.readFully(in, bytes, 0, Integer.BYTES);
-			int len = IoUtils.bufferToInt(bytes);
-			char[] chars = new char[len];
-			int pos = 0;
-			while(len > 0) {
-				int count = BufferManager.BUFFER_SIZE / Character.BYTES;
-				if(len < count) count = len;
-				IoUtils.readFully(in, bytes, pos, len);
-				for(
-					int charsIndex = 0, bytesIndex = 0;
-					charsIndex < count;
-					charsIndex++, bytesIndex += Character.BYTES
-				) {
-					chars[pos + charsIndex] = IoUtils.bufferToChar(bytes, bytesIndex);
-				}
-				pos += count;
-				len -= count;
-			}
-			return chars;
-		} finally {
-			BufferManager.release(bytes, false);
-		}
-	}
+  @Override
+  public char[] deserialize(InputStream in) throws IOException {
+    byte[] bytes = BufferManager.getBytes();
+    try {
+      IoUtils.readFully(in, bytes, 0, Integer.BYTES);
+      int len = IoUtils.bufferToInt(bytes);
+      char[] chars = new char[len];
+      int pos = 0;
+      while (len > 0) {
+        int count = BufferManager.BUFFER_SIZE / Character.BYTES;
+        if (len < count) {
+          count = len;
+        }
+        IoUtils.readFully(in, bytes, pos, len);
+        for (
+          int charsIndex = 0, bytesIndex = 0;
+          charsIndex < count;
+          charsIndex++, bytesIndex += Character.BYTES
+        ) {
+          chars[pos + charsIndex] = IoUtils.bufferToChar(bytes, bytesIndex);
+        }
+        pos += count;
+        len -= count;
+      }
+      return chars;
+    } finally {
+      BufferManager.release(bytes, false);
+    }
+  }
 }

@@ -35,17 +35,17 @@ import junit.framework.TestSuite;
  */
 public class PersistentLinkedListRandomFailBufferNoFailTest extends PersistentLinkedListTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(PersistentLinkedListRandomFailBufferNoFailTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(PersistentLinkedListRandomFailBufferNoFailTest.class);
+    return suite;
+  }
 
-	public PersistentLinkedListRandomFailBufferNoFailTest(String testName) {
-		super(testName);
-	}
+  public PersistentLinkedListRandomFailBufferNoFailTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
-		return new RandomFailBuffer(PersistentCollections.getPersistentBuffer(new RandomAccessFile(tempFile, "rw"), protectionLevel, Long.MAX_VALUE), false);
-	}
+  @Override
+  protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
+    return new RandomFailBuffer(PersistentCollections.getPersistentBuffer(new RandomAccessFile(tempFile, "rw"), protectionLevel, Long.MAX_VALUE), false);
+  }
 }

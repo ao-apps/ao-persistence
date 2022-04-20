@@ -38,26 +38,28 @@ import java.io.Serializable;
  */
 public class ObjectSerializer<E> extends BufferedSerializer<E> {
 
-	private final Class<E> type;
+  private final Class<E> type;
 
-	public ObjectSerializer(Class<E> type) {
-		if(!Serializable.class.isAssignableFrom(type)) throw new IllegalArgumentException("Class is not Serializable: "+type.getName());
-		this.type = type;
-	}
+  public ObjectSerializer(Class<E> type) {
+    if (!Serializable.class.isAssignableFrom(type)) {
+      throw new IllegalArgumentException("Class is not Serializable: "+type.getName());
+    }
+    this.type = type;
+  }
 
-	@Override
-	protected void serialize(E value, ByteArrayOutputStream buffer) throws IOException {
-		try (ObjectOutputStream oout = new ObjectOutputStream(buffer)) {
-			oout.writeObject(value);
-		}
-	}
+  @Override
+  protected void serialize(E value, ByteArrayOutputStream buffer) throws IOException {
+    try (ObjectOutputStream oout = new ObjectOutputStream(buffer)) {
+      oout.writeObject(value);
+    }
+  }
 
-	@Override
-	public E deserialize(InputStream in) throws IOException {
-		try (ObjectInputStream oin = new ObjectInputStream(in)) {
-			return type.cast(oin.readObject());
-		} catch(ClassNotFoundException | ClassCastException err) {
-			throw new IOException(err);
-		}
-	}
+  @Override
+  public E deserialize(InputStream in) throws IOException {
+    try (ObjectInputStream oin = new ObjectInputStream(in)) {
+      return type.cast(oin.readObject());
+    } catch (ClassNotFoundException | ClassCastException err) {
+      throw new IOException(err);
+    }
+  }
 }

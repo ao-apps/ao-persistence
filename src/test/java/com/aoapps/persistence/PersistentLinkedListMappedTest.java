@@ -35,17 +35,17 @@ import junit.framework.TestSuite;
  */
 public class PersistentLinkedListMappedTest extends PersistentLinkedListTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(PersistentLinkedListMappedTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(PersistentLinkedListMappedTest.class);
+    return suite;
+  }
 
-	public PersistentLinkedListMappedTest(String testName) {
-		super(testName);
-	}
+  public PersistentLinkedListMappedTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
-		return new MappedPersistentBuffer(tempFile, protectionLevel);
-	}
+  @Override
+  protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
+    return new MappedPersistentBuffer(tempFile, protectionLevel);
+  }
 }

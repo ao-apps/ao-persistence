@@ -36,17 +36,17 @@ import junit.framework.TestSuite;
  */
 public class PersistentLinkedListAutoTest extends PersistentLinkedListTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(PersistentLinkedListAutoTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(PersistentLinkedListAutoTest.class);
+    return suite;
+  }
 
-	public PersistentLinkedListAutoTest(String testName) {
-		super(testName);
-	}
+  public PersistentLinkedListAutoTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
-		return PersistentCollections.getPersistentBuffer(new RandomAccessFile(tempFile, "rw"), protectionLevel, Long.MAX_VALUE);
-	}
+  @Override
+  protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
+    return PersistentCollections.getPersistentBuffer(new RandomAccessFile(tempFile, "rw"), protectionLevel, Long.MAX_VALUE);
+  }
 }

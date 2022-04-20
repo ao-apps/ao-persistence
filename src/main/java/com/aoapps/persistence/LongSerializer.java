@@ -36,27 +36,27 @@ import java.io.OutputStream;
  */
 public class LongSerializer implements Serializer<Long> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return true;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return true;
+  }
 
-	@Override
-	public long getSerializedSize(Long value) {
-		return Long.BYTES;
-	}
+  @Override
+  public long getSerializedSize(Long value) {
+    return Long.BYTES;
+  }
 
-	private final byte[] buffer = new byte[Long.BYTES];
+  private final byte[] buffer = new byte[Long.BYTES];
 
-	@Override
-	public void serialize(Long value, OutputStream out) throws IOException {
-		IoUtils.longToBuffer(value, buffer);
-		out.write(buffer, 0, Long.BYTES);
-	}
+  @Override
+  public void serialize(Long value, OutputStream out) throws IOException {
+    IoUtils.longToBuffer(value, buffer);
+    out.write(buffer, 0, Long.BYTES);
+  }
 
-	@Override
-	public Long deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, Long.BYTES);
-		return IoUtils.bufferToLong(buffer);
-	}
+  @Override
+  public Long deserialize(InputStream in) throws IOException {
+    IoUtils.readFully(in, buffer, 0, Long.BYTES);
+    return IoUtils.bufferToLong(buffer);
+  }
 }

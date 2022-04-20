@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2020, 2021, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -32,15 +32,15 @@ import java.io.IOException;
  */
 public interface RandomAccessPersistentBlockBuffer extends PersistentBlockBuffer {
 
-	/**
-	 * Gets the number of allocated blocks.
-	 */
-	// @NotThreadSafe
-	long getBlockCount() throws IOException;
+  /**
+   * Gets the number of allocated blocks.
+   */
+  // @NotThreadSafe
+  long getBlockCount() throws IOException;
 
-	/**
-	 * Gets the allocated block id at the provided index.
-	 */
-	// @NotThreadSafe
-	long getBlockId(long index) throws IOException;
+  /**
+   * Gets the allocated block id at the provided index.
+   */
+  // @NotThreadSafe
+  long getBlockId(long index) throws IOException;
 }

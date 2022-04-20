@@ -36,27 +36,27 @@ import java.io.OutputStream;
  */
 public class DoubleSerializer implements Serializer<Double> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return true;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return true;
+  }
 
-	@Override
-	public long getSerializedSize(Double value) {
-		return Double.BYTES;
-	}
+  @Override
+  public long getSerializedSize(Double value) {
+    return Double.BYTES;
+  }
 
-	private final byte[] buffer = new byte[Double.BYTES];
+  private final byte[] buffer = new byte[Double.BYTES];
 
-	@Override
-	public void serialize(Double value, OutputStream out) throws IOException {
-		IoUtils.longToBuffer(Double.doubleToRawLongBits(value), buffer);
-		out.write(buffer, 0, Double.BYTES);
-	}
+  @Override
+  public void serialize(Double value, OutputStream out) throws IOException {
+    IoUtils.longToBuffer(Double.doubleToRawLongBits(value), buffer);
+    out.write(buffer, 0, Double.BYTES);
+  }
 
-	@Override
-	public Double deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, Double.BYTES);
-		return Double.longBitsToDouble(IoUtils.bufferToLong(buffer));
-	}
+  @Override
+  public Double deserialize(InputStream in) throws IOException {
+    IoUtils.readFully(in, buffer, 0, Double.BYTES);
+    return Double.longBitsToDouble(IoUtils.bufferToLong(buffer));
+  }
 }

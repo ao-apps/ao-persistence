@@ -33,27 +33,27 @@ import junit.framework.TestSuite;
  */
 public class BlockBufferMultiBitmapFixedLargeMappedTest extends BlockBufferTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(BlockBufferMultiBitmapFixedLargeMappedTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(BlockBufferMultiBitmapFixedLargeMappedTest.class);
+    return suite;
+  }
 
-	public BlockBufferMultiBitmapFixedLargeMappedTest(String testName) {
-		super(testName);
-	}
+  public BlockBufferMultiBitmapFixedLargeMappedTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
-		return new LargeMappedPersistentBuffer(tempFile, protectionLevel);
-	}
+  @Override
+  public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
+    return new LargeMappedPersistentBuffer(tempFile, protectionLevel);
+  }
 
-	@Override
-	public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
-		return new FixedPersistentBlockBuffer(pbuffer, 4096);
-	}
+  @Override
+  public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
+    return new FixedPersistentBlockBuffer(pbuffer, 4096);
+  }
 
-	@Override
-	public long getAllocationSize() throws IOException {
-		return fastRandom.nextInt(4097);
-	}
+  @Override
+  public long getAllocationSize() throws IOException {
+    return fastRandom.nextInt(4097);
+  }
 }

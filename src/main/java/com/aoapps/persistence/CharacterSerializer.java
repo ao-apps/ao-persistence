@@ -36,27 +36,27 @@ import java.io.OutputStream;
  */
 public class CharacterSerializer implements Serializer<Character> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return true;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return true;
+  }
 
-	@Override
-	public long getSerializedSize(Character value) {
-		return Character.BYTES;
-	}
+  @Override
+  public long getSerializedSize(Character value) {
+    return Character.BYTES;
+  }
 
-	private final byte[] buffer = new byte[Character.BYTES];
+  private final byte[] buffer = new byte[Character.BYTES];
 
-	@Override
-	public void serialize(Character value, OutputStream out) throws IOException {
-		IoUtils.charToBuffer(value, buffer);
-		out.write(buffer, 0, Character.BYTES);
-	}
+  @Override
+  public void serialize(Character value, OutputStream out) throws IOException {
+    IoUtils.charToBuffer(value, buffer);
+    out.write(buffer, 0, Character.BYTES);
+  }
 
-	@Override
-	public Character deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, buffer, 0, Character.BYTES);
-		return IoUtils.bufferToChar(buffer);
-	}
+  @Override
+  public Character deserialize(InputStream in) throws IOException {
+    IoUtils.readFully(in, buffer, 0, Character.BYTES);
+    return IoUtils.bufferToChar(buffer);
+  }
 }

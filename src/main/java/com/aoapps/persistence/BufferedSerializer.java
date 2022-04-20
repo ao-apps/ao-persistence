@@ -39,38 +39,38 @@ import java.io.OutputStream;
  */
 public abstract class BufferedSerializer<E> implements Serializer<E> {
 
-	private E lastSerialized = null;
-	private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+  private E lastSerialized = null;
+  private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-	protected BufferedSerializer() {
-		// Do nothing
-	}
+  protected BufferedSerializer() {
+    // Do nothing
+  }
 
-	private void serializeToBuffer(E value) throws IOException {
-		if(lastSerialized!=value) {
-			lastSerialized = null;
-			buffer.reset();
-			serialize(value, buffer);
-			lastSerialized = value;
-		}
-	}
+  private void serializeToBuffer(E value) throws IOException {
+    if (lastSerialized != value) {
+      lastSerialized = null;
+      buffer.reset();
+      serialize(value, buffer);
+      lastSerialized = value;
+    }
+  }
 
-	@Override
-	public final boolean isFixedSerializedSize() {
-		return false;
-	}
+  @Override
+  public final boolean isFixedSerializedSize() {
+    return false;
+  }
 
-	@Override
-	public final long getSerializedSize(E value) throws IOException {
-		serializeToBuffer(value);
-		return buffer.size();
-	}
+  @Override
+  public final long getSerializedSize(E value) throws IOException {
+    serializeToBuffer(value);
+    return buffer.size();
+  }
 
-	@Override
-	public final void serialize(E value, OutputStream out) throws IOException {
-		serializeToBuffer(value);
-		buffer.writeTo(out);
-	}
+  @Override
+  public final void serialize(E value, OutputStream out) throws IOException {
+    serializeToBuffer(value);
+    buffer.writeTo(out);
+  }
 
-	protected abstract void serialize(E value, ByteArrayOutputStream buffer) throws IOException;
+  protected abstract void serialize(E value, ByteArrayOutputStream buffer) throws IOException;
 }

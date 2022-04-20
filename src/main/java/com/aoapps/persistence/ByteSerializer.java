@@ -35,25 +35,27 @@ import java.io.OutputStream;
  */
 public class ByteSerializer implements Serializer<Byte> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return true;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return true;
+  }
 
-	@Override
-	public long getSerializedSize(Byte value) {
-		return Byte.BYTES;
-	}
+  @Override
+  public long getSerializedSize(Byte value) {
+    return Byte.BYTES;
+  }
 
-	@Override
-	public void serialize(Byte value, OutputStream out) throws IOException {
-		out.write(value);
-	}
+  @Override
+  public void serialize(Byte value, OutputStream out) throws IOException {
+    out.write(value);
+  }
 
-	@Override
-	public Byte deserialize(InputStream in) throws IOException {
-		int value = in.read();
-		if(value == -1) throw new EOFException();
-		return (byte)value;
-	}
+  @Override
+  public Byte deserialize(InputStream in) throws IOException {
+    int value = in.read();
+    if (value == -1) {
+      throw new EOFException();
+    }
+    return (byte)value;
+  }
 }

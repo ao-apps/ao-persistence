@@ -34,27 +34,27 @@ import junit.framework.TestSuite;
  */
 public class BlockBufferRandomFailBufferNoFailTest extends BlockBufferTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(BlockBufferRandomFailBufferNoFailTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(BlockBufferRandomFailBufferNoFailTest.class);
+    return suite;
+  }
 
-	public BlockBufferRandomFailBufferNoFailTest(String testName) {
-		super(testName);
-	}
+  public BlockBufferRandomFailBufferNoFailTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
-		return new RandomFailBuffer(PersistentCollections.getPersistentBuffer(new RandomAccessFile(tempFile, "rw"), protectionLevel, Long.MAX_VALUE), false);
-	}
+  @Override
+  public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
+    return new RandomFailBuffer(PersistentCollections.getPersistentBuffer(new RandomAccessFile(tempFile, "rw"), protectionLevel, Long.MAX_VALUE), false);
+  }
 
-	@Override
-	public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
-		return new DynamicPersistentBlockBuffer(pbuffer);
-	}
+  @Override
+  public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
+    return new DynamicPersistentBlockBuffer(pbuffer);
+  }
 
-	@Override
-	public long getAllocationSize() throws IOException {
-		return fastRandom.nextInt(4097);
-	}
+  @Override
+  public long getAllocationSize() throws IOException {
+    return fastRandom.nextInt(4097);
+  }
 }

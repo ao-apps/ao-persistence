@@ -63,256 +63,282 @@ import java.util.TreeSet;
  */
 public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*implements RandomAccessPersistentBlockBuffer*/ {
 
-	private final long blockSize;
-	private final boolean singleBitmap;
+  private final long blockSize;
+  private final boolean singleBitmap;
 
-	/**
-	 * The number of bytes in the bitmap.
-	 */
-	private final long bitmapSize;
+  /**
+   * The number of bytes in the bitmap.
+   */
+  private final long bitmapSize;
 
-	/**
-	 * Keeps track of modification counts to try to detect concurrent modifications.
-	 */
-	private int modCount;
+  /**
+   * Keeps track of modification counts to try to detect concurrent modifications.
+   */
+  private int modCount;
 
-	/**
-	 * Creates a persistent buffer with the provided block size.  There may be
-	 * performance advantages to block sizes that match or are multiples of the
-	 * system page size.  For smaller block sizes, there may also be reliability
-	 * advantages to block sizes that are fractions of the system page size
-	 * or the physical media block size.  A good overall approach would be to
-	 * select even powers of two (1, 2, 4, 8, ...).
-	 */
-	public FixedPersistentBlockBuffer(PersistentBuffer pbuffer, long blockSize) {
-		super(pbuffer);
-		if(blockSize<=0) throw new IllegalArgumentException("blockSize<=0: "+blockSize);
-		this.blockSize = blockSize;
+  /**
+   * Creates a persistent buffer with the provided block size.  There may be
+   * performance advantages to block sizes that match or are multiples of the
+   * system page size.  For smaller block sizes, there may also be reliability
+   * advantages to block sizes that are fractions of the system page size
+   * or the physical media block size.  A good overall approach would be to
+   * select even powers of two (1, 2, 4, 8, ...).
+   */
+  public FixedPersistentBlockBuffer(PersistentBuffer pbuffer, long blockSize) {
+    super(pbuffer);
+    if (blockSize <= 0) {
+      throw new IllegalArgumentException("blockSize <= 0: "+blockSize);
+    }
+    this.blockSize = blockSize;
 
-		// Initialize the first bitmap
-		int numZeros = Long.numberOfLeadingZeros(blockSize);
-		if(numZeros<=3) {
-			singleBitmap = true;
-			bitmapSize = 1;
-		} else {
-			long smallestPowerOfTwo = 1L << (64-1-numZeros);
-			assert smallestPowerOfTwo==Long.highestOneBit(blockSize);
-			if(smallestPowerOfTwo!=blockSize) {
-				//smallestPowerOfTwo <<= 1;
-				numZeros--;
-			}
-			if(numZeros<=(64-1-30)) {
-				// Only a single bit map at the beginning of the file
-				singleBitmap = true;
-				bitmapSize = 1L << (numZeros-3);
-			} else {
-				// Multiple bit maps spread throughout the file
-				singleBitmap = false;
-				bitmapSize = blockSize;
-			}
-		}
-	}
+    // Initialize the first bitmap
+    int numZeros = Long.numberOfLeadingZeros(blockSize);
+    if (numZeros <= 3) {
+      singleBitmap = true;
+      bitmapSize = 1;
+    } else {
+      long smallestPowerOfTwo = 1L << (64-1-numZeros);
+      assert smallestPowerOfTwo == Long.highestOneBit(blockSize);
+      if (smallestPowerOfTwo != blockSize) {
+        //smallestPowerOfTwo <<= 1;
+        numZeros--;
+      }
+      if (numZeros <= (64-1-30)) {
+        // Only a single bit map at the beginning of the file
+        singleBitmap = true;
+        bitmapSize = 1L << (numZeros-3);
+      } else {
+        // Multiple bit maps spread throughout the file
+        singleBitmap = false;
+        bitmapSize = blockSize;
+      }
+    }
+  }
 
-	/**
-	 * Gets the address of the byte that stores the bitmap for the provided id.
-	 * This is algorithmic and may be beyond the end of the buffer capacity.
-	 */
-	private long getBitMapBitsAddress(long id) {
-		if(singleBitmap) {
-			return id >>> 3;
-		} else {
-			// Find which block to use
-			long bitsPerBitmap = bitmapSize << 3;
-			long bitmapNum = id / bitsPerBitmap;
-			long bitmapStart = bitmapNum * (bitmapSize + blockSize * bitsPerBitmap);
-			return bitmapStart + ((id % bitsPerBitmap) >>> 3);
-		}
-	}
+  /**
+   * Gets the address of the byte that stores the bitmap for the provided id.
+   * This is algorithmic and may be beyond the end of the buffer capacity.
+   */
+  private long getBitMapBitsAddress(long id) {
+    if (singleBitmap) {
+      return id >>> 3;
+    } else {
+      // Find which block to use
+      long bitsPerBitmap = bitmapSize << 3;
+      long bitmapNum = id / bitsPerBitmap;
+      long bitmapStart = bitmapNum * (bitmapSize + blockSize * bitsPerBitmap);
+      return bitmapStart + ((id % bitsPerBitmap) >>> 3);
+    }
+  }
 
-	/**
-	 * Gets the address that stores the beginning of the block with the provided id.
-	 * This is algorithmic and may be beyond the end of the buffer capacity.
-	 */
-	@Override
-	protected long getBlockAddress(long id) {
-		if(singleBitmap) {
-			return bitmapSize + id * blockSize;
-		} else {
-			long bitsPerBitmap = bitmapSize << 3;
-			long bitmapNum = id / bitsPerBitmap;
-			long bitmapStart = bitmapNum * (bitmapSize + blockSize * bitsPerBitmap);
-			return bitmapStart + bitmapSize + (id % bitsPerBitmap) * blockSize;
-		}
-	}
+  /**
+   * Gets the address that stores the beginning of the block with the provided id.
+   * This is algorithmic and may be beyond the end of the buffer capacity.
+   */
+  @Override
+  protected long getBlockAddress(long id) {
+    if (singleBitmap) {
+      return bitmapSize + id * blockSize;
+    } else {
+      long bitsPerBitmap = bitmapSize << 3;
+      long bitmapNum = id / bitsPerBitmap;
+      long bitmapStart = bitmapNum * (bitmapSize + blockSize * bitsPerBitmap);
+      return bitmapStart + bitmapSize + (id % bitsPerBitmap) * blockSize;
+    }
+  }
 
-	private long lowestFreeId = 0; // One direction scan used before knownFreeIds is populated
-	private final SortedSet<Long> knownFreeIds = new TreeSet<>();
+  private long lowestFreeId = 0; // One direction scan used before knownFreeIds is populated
+  private final SortedSet<Long> knownFreeIds = new TreeSet<>();
 
-	/**
-	 * Allocates a block.
-	 * This does not directly cause any <code>barrier</code>s.
-	 */
-	@Override
-	public long allocate(long minimumSize) throws IOException {
-		if(minimumSize>blockSize) throw new IOException("minimumSize>blockSize: "+minimumSize+">"+blockSize);
-		// Check known first
-		if(!knownFreeIds.isEmpty()) {
-			Long freeIdL = knownFreeIds.first();
-			knownFreeIds.remove(freeIdL);
-			long freeId = freeIdL;
-			long bitmapBitsAddress = getBitMapBitsAddress(freeId);
-			byte bits = pbuffer.get(bitmapBitsAddress);
-			int bit = 1 << (freeId&7);
-			modCount++;
-			pbuffer.put(bitmapBitsAddress, (byte)(bits | bit));
-			return freeId;
-		}
-		long bitmapBitsAddress = getBitMapBitsAddress(lowestFreeId);
-		long capacity = pbuffer.capacity();
-		while(bitmapBitsAddress<capacity) {
-			byte bits = pbuffer.get(bitmapBitsAddress);
-			if(bits!=-1) {
-				// Check as many bits as possible
-				for(int bit = 1 << (lowestFreeId&7); bit!=0x100; bit <<= 1) {
-					if((bits&bit)==0) {
-						modCount++;
-						pbuffer.put(bitmapBitsAddress, (byte)(bits | bit));
-						return lowestFreeId++;
-					}
-					lowestFreeId++;
-				}
-			} else {
-				// All ones, go to the next byte
-				lowestFreeId = (lowestFreeId & 0xfffffffffffffff8L)+8L;
-			}
-			bitmapBitsAddress = getBitMapBitsAddress(lowestFreeId);
-		}
-		// Grow the underlying storage to make room for the bitmap space.
-		assert (lowestFreeId&7)==0 : "lowestFreeId must be the beginning of a byte";
-		modCount++;
-		expandCapacity(capacity, bitmapBitsAddress+1);
-		pbuffer.put(bitmapBitsAddress, (byte)1);
-		return lowestFreeId++;
-	}
+  /**
+   * Allocates a block.
+   * This does not directly cause any <code>barrier</code>s.
+   */
+  @Override
+  public long allocate(long minimumSize) throws IOException {
+    if (minimumSize>blockSize) {
+      throw new IOException("minimumSize>blockSize: "+minimumSize+">"+blockSize);
+    }
+    // Check known first
+    if (!knownFreeIds.isEmpty()) {
+      Long freeIdL = knownFreeIds.first();
+      knownFreeIds.remove(freeIdL);
+      long freeId = freeIdL;
+      long bitmapBitsAddress = getBitMapBitsAddress(freeId);
+      byte bits = pbuffer.get(bitmapBitsAddress);
+      int bit = 1 << (freeId&7);
+      modCount++;
+      pbuffer.put(bitmapBitsAddress, (byte)(bits | bit));
+      return freeId;
+    }
+    long bitmapBitsAddress = getBitMapBitsAddress(lowestFreeId);
+    long capacity = pbuffer.capacity();
+    while (bitmapBitsAddress<capacity) {
+      byte bits = pbuffer.get(bitmapBitsAddress);
+      if (bits != -1) {
+        // Check as many bits as possible
+        for (int bit = 1 << (lowestFreeId&7); bit != 0x100; bit <<= 1) {
+          if ((bits&bit) == 0) {
+            modCount++;
+            pbuffer.put(bitmapBitsAddress, (byte)(bits | bit));
+            return lowestFreeId++;
+          }
+          lowestFreeId++;
+        }
+      } else {
+        // All ones, go to the next byte
+        lowestFreeId = (lowestFreeId & 0xfffffffffffffff8L)+8L;
+      }
+      bitmapBitsAddress = getBitMapBitsAddress(lowestFreeId);
+    }
+    // Grow the underlying storage to make room for the bitmap space.
+    assert (lowestFreeId&7) == 0 : "lowestFreeId must be the beginning of a byte";
+    modCount++;
+    expandCapacity(capacity, bitmapBitsAddress+1);
+    pbuffer.put(bitmapBitsAddress, (byte)1);
+    return lowestFreeId++;
+  }
 
-	/**
-	 * Deallocates the block for the provided id.
-	 * This does not directly cause any <code>barrier</code>s.
-	 */
-	@Override
-	public void deallocate(long id) throws IOException {
-		long bitmapBitsAddress = getBitMapBitsAddress(id);
-		byte bits = pbuffer.get(bitmapBitsAddress);
-		int bit = 1 << (id & 7);
-		if((bits&bit)==0) throw new IllegalStateException("Block already deallocated: "+id);
-		knownFreeIds.add(id);
-		// else if(id < lowestFreeId) lowestFreeId = id;
-		modCount++;
-		pbuffer.put(bitmapBitsAddress, (byte)(bits ^ bit));
-	}
+  /**
+   * Deallocates the block for the provided id.
+   * This does not directly cause any <code>barrier</code>s.
+   */
+  @Override
+  public void deallocate(long id) throws IOException {
+    long bitmapBitsAddress = getBitMapBitsAddress(id);
+    byte bits = pbuffer.get(bitmapBitsAddress);
+    int bit = 1 << (id & 7);
+    if ((bits&bit) == 0) {
+      throw new IllegalStateException("Block already deallocated: "+id);
+    }
+    knownFreeIds.add(id);
+    // else if (id < lowestFreeId) {
+    //   lowestFreeId = id;
+    // }
+    modCount++;
+    pbuffer.put(bitmapBitsAddress, (byte)(bits ^ bit));
+  }
 
-	@Override
-	public Iterator<Long> iterateBlockIds() {
-		return new Iterator<>() {
-			private int expectedModCount = modCount;
-			private long lastId = -1;
-			private long nextId = 0;
-			@Override
-			public boolean hasNext() {
-				if(expectedModCount!=modCount) throw new ConcurrentModificationException();
-				try {
-					long bitmapBitsAddress = getBitMapBitsAddress(nextId);
-					long capacity = pbuffer.capacity();
-					while(bitmapBitsAddress<capacity) {
-						byte bits = pbuffer.get(bitmapBitsAddress);
-						if(bits!=0) {
-							// Check as many bits as possible
-							for(int bit = 1 << (nextId&7); bit!=0x100; bit <<= 1) {
-								if((bits&bit)!=0) return true;
-								nextId++;
-							}
-						} else {
-							// All zero, go to the next byte
-							nextId = (nextId & 0xfffffffffffffff8L)+8L;
-						}
-						bitmapBitsAddress = getBitMapBitsAddress(nextId);
-					}
-					return false;
-				} catch(IOException err) {
-					throw new UncheckedIOException(err);
-				}
-			}
-			@Override
-			public Long next() throws NoSuchElementException {
-				if(expectedModCount!=modCount) throw new ConcurrentModificationException();
-				try {
-					long bitmapBitsAddress = getBitMapBitsAddress(nextId);
-					long capacity = pbuffer.capacity();
-					while(bitmapBitsAddress<capacity) {
-						byte bits = pbuffer.get(bitmapBitsAddress);
-						if(bits!=0) {
-							// Check as many bits as possible
-							for(int bit = 1 << (nextId&7); bit!=0x100; bit <<= 1) {
-								if((bits&bit)!=0) return lastId = nextId++;
-								nextId++;
-							}
-						} else {
-							// All zero, go to the next byte
-							nextId = (nextId & 0xfffffffffffffff8L)+8L;
-						}
-						bitmapBitsAddress = getBitMapBitsAddress(nextId);
-					}
-					throw new NoSuchElementException();
-				} catch(IOException err) {
-					throw new UncheckedIOException(err);
-				}
-			}
-			@Override
-			public void remove() {
-				try {
-					if(expectedModCount!=modCount) throw new ConcurrentModificationException();
-					if(lastId==-1) throw new IllegalStateException();
-					deallocate(lastId);
-					expectedModCount++;
-					lastId = -1;
-				} catch(IOException err) {
-					throw new UncheckedIOException(err);
-				}
-			}
-		};
-	}
+  @Override
+  public Iterator<Long> iterateBlockIds() {
+    return new Iterator<>() {
+      private int expectedModCount = modCount;
+      private long lastId = -1;
+      private long nextId = 0;
+      @Override
+      public boolean hasNext() {
+        if (expectedModCount != modCount) {
+          throw new ConcurrentModificationException();
+        }
+        try {
+          long bitmapBitsAddress = getBitMapBitsAddress(nextId);
+          long capacity = pbuffer.capacity();
+          while (bitmapBitsAddress<capacity) {
+            byte bits = pbuffer.get(bitmapBitsAddress);
+            if (bits != 0) {
+              // Check as many bits as possible
+              for (int bit = 1 << (nextId&7); bit != 0x100; bit <<= 1) {
+                if ((bits&bit) != 0) {
+                  return true;
+                }
+                nextId++;
+              }
+            } else {
+              // All zero, go to the next byte
+              nextId = (nextId & 0xfffffffffffffff8L)+8L;
+            }
+            bitmapBitsAddress = getBitMapBitsAddress(nextId);
+          }
+          return false;
+        } catch (IOException err) {
+          throw new UncheckedIOException(err);
+        }
+      }
+      @Override
+      public Long next() throws NoSuchElementException {
+        if (expectedModCount != modCount) {
+          throw new ConcurrentModificationException();
+        }
+        try {
+          long bitmapBitsAddress = getBitMapBitsAddress(nextId);
+          long capacity = pbuffer.capacity();
+          while (bitmapBitsAddress<capacity) {
+            byte bits = pbuffer.get(bitmapBitsAddress);
+            if (bits != 0) {
+              // Check as many bits as possible
+              for (int bit = 1 << (nextId&7); bit != 0x100; bit <<= 1) {
+                if ((bits&bit) != 0) {
+                  return lastId = nextId++;
+                }
+                nextId++;
+              }
+            } else {
+              // All zero, go to the next byte
+              nextId = (nextId & 0xfffffffffffffff8L)+8L;
+            }
+            bitmapBitsAddress = getBitMapBitsAddress(nextId);
+          }
+          throw new NoSuchElementException();
+        } catch (IOException err) {
+          throw new UncheckedIOException(err);
+        }
+      }
+      @Override
+      public void remove() {
+        try {
+          if (expectedModCount != modCount) {
+            throw new ConcurrentModificationException();
+          }
+          if (lastId == -1) {
+            throw new IllegalStateException();
+          }
+          deallocate(lastId);
+          expectedModCount++;
+          lastId = -1;
+        } catch (IOException err) {
+          throw new UncheckedIOException(err);
+        }
+      }
+    };
+  }
 
-	@Override
-	public long getBlockSize(long id) {
-		return blockSize;
-	}
+  @Override
+  public long getBlockSize(long id) {
+    return blockSize;
+  }
 
-	protected void expandCapacity(long oldCapacity, long newCapacity) throws IOException {
-		// Grow the file by at least 25% its previous size
-		long percentCapacity = oldCapacity + (oldCapacity >> 2);
-		if(percentCapacity>newCapacity) newCapacity = percentCapacity;
-		// Align with page
-		if((newCapacity&0xfff)!=0) newCapacity = (newCapacity & 0xfffffffffffff000L)+4096L;
-		//System.out.println("DEBUG: newCapacity="+newCapacity);
-		pbuffer.setCapacity(newCapacity);
-	}
+  protected void expandCapacity(long oldCapacity, long newCapacity) throws IOException {
+    // Grow the file by at least 25% its previous size
+    long percentCapacity = oldCapacity + (oldCapacity >> 2);
+    if (percentCapacity>newCapacity) {
+      newCapacity = percentCapacity;
+    }
+    // Align with page
+    if ((newCapacity&0xfff) != 0) {
+      newCapacity = (newCapacity & 0xfffffffffffff000L)+4096L;
+    }
+    //System.out.println("DEBUG: newCapacity="+newCapacity);
+    pbuffer.setCapacity(newCapacity);
+  }
 
-	/**
-	 * This class takes a lazy approach on allocating buffer space.  It will allocate
-	 * additional space as needed here, rounding up to the next 4096-byte boundary.
-	 */
-	@Override
-	protected void ensureCapacity(long capacity) throws IOException {
-		long curCapacity = pbuffer.capacity();
-		if(curCapacity<capacity) expandCapacity(curCapacity, capacity);
-	}
+  /**
+   * This class takes a lazy approach on allocating buffer space.  It will allocate
+   * additional space as needed here, rounding up to the next 4096-byte boundary.
+   */
+  @Override
+  protected void ensureCapacity(long capacity) throws IOException {
+    long curCapacity = pbuffer.capacity();
+    if (curCapacity<capacity) {
+      expandCapacity(curCapacity, capacity);
+    }
+  }
 
-	/*
-	public long getBlockCount() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+  /*
+  public long getBlockCount() throws IOException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 
-	public long getBlockId(long index) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}*/
+  public long getBlockId(long index) throws IOException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }*/
 }

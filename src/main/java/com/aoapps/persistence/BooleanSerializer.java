@@ -35,25 +35,27 @@ import java.io.OutputStream;
  */
 public class BooleanSerializer implements Serializer<Boolean> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return true;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return true;
+  }
 
-	@Override
-	public long getSerializedSize(Boolean value) {
-		return 1;
-	}
+  @Override
+  public long getSerializedSize(Boolean value) {
+    return 1;
+  }
 
-	@Override
-	public void serialize(Boolean value, OutputStream out) throws IOException {
-		out.write(value ? 1 : 0);
-	}
+  @Override
+  public void serialize(Boolean value, OutputStream out) throws IOException {
+    out.write(value ? 1 : 0);
+  }
 
-	@Override
-	public Boolean deserialize(InputStream in) throws IOException {
-		int value = in.read();
-		if(value==-1) throw new EOFException();
-		return value!=0;
-	}
+  @Override
+  public Boolean deserialize(InputStream in) throws IOException {
+    int value = in.read();
+    if (value == -1) {
+      throw new EOFException();
+    }
+    return value != 0;
+  }
 }

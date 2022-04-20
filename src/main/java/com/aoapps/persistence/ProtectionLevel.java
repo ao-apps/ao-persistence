@@ -28,23 +28,23 @@ package com.aoapps.persistence;
  */
 public enum ProtectionLevel {
 
-	/**
-	 * Read-only access.  Highest performance and protection.
-	 */
-	READ_ONLY,
+  /**
+   * Read-only access.  Highest performance and protection.
+   */
+  READ_ONLY,
 
-	/**
-	 * Offers no data protection.  Highest performance.
-	 */
-	NONE,
+  /**
+   * Offers no data protection.  Highest performance.
+   */
+  NONE,
 
-	/**
-	 * Prevents data corruption, but does not prevent data loss.  Moderate performance.
-	 */
-	BARRIER,
+  /**
+   * Prevents data corruption, but does not prevent data loss.  Moderate performance.
+   */
+  BARRIER,
 
-	/**
-	 * Prevents both data corruption and data loss.  Lowest performance.
-	 */
-	FORCE
+  /**
+   * Prevents both data corruption and data loss.  Lowest performance.
+   */
+  FORCE
 }

@@ -36,46 +36,46 @@ import java.io.OutputStream;
  */
 public interface Serializer<E> {
 
-	/**
-	 * If a serializer always creates the same number of bytes, containers can
-	 * choose a fixed-size block for higher performance.  If this method
-	 * returns <code>true</code>, <code>getSerializedSize</code> must return
-	 * the same value for every access, it may be accessed with a <code>null</code>
-	 * parameter, and it may be accessed less than once per serialized object.
-	 *
-	 * @return  To indicate that the same number of bytes will be created, return
-	 *          <code>true</code>.  Otherwise, there may be a dynamic number of
-	 *          bytes and return <code>false</code>.
-	 */
-	boolean isFixedSerializedSize();
+  /**
+   * If a serializer always creates the same number of bytes, containers can
+   * choose a fixed-size block for higher performance.  If this method
+   * returns <code>true</code>, <code>getSerializedSize</code> must return
+   * the same value for every access, it may be accessed with a <code>null</code>
+   * parameter, and it may be accessed less than once per serialized object.
+   *
+   * @return  To indicate that the same number of bytes will be created, return
+   *          <code>true</code>.  Otherwise, there may be a dynamic number of
+   *          bytes and return <code>false</code>.
+   */
+  boolean isFixedSerializedSize();
 
-	/**
-	 * <p>
-	 * Determines the size of the object after serialization.
-	 * This allows some optimizations avoiding unnecessary copying of data.
-	 * </p>
-	 * The common pattern is:
-	 * <ol>
-	 *   <li>Get size from <code>getSerializedSize</code></li>
-	 *   <li>Allocate appropriate space</li>
-	 *   <li>Write serialized object with <code>serialize</code></li>
-	 * </ol>
-	 * It may be best to remember the most recently used object between calls
-	 * to <code>getSerializedSize</code> and <code>serialize</code> when it can
-	 * reduce processing time.
-	 *
-	 * @return  the exact number of bytes the object will take to serialize
-	 */
-	long getSerializedSize(E value) throws IOException;
+  /**
+   * <p>
+   * Determines the size of the object after serialization.
+   * This allows some optimizations avoiding unnecessary copying of data.
+   * </p>
+   * The common pattern is:
+   * <ol>
+   *   <li>Get size from <code>getSerializedSize</code></li>
+   *   <li>Allocate appropriate space</li>
+   *   <li>Write serialized object with <code>serialize</code></li>
+   * </ol>
+   * It may be best to remember the most recently used object between calls
+   * to <code>getSerializedSize</code> and <code>serialize</code> when it can
+   * reduce processing time.
+   *
+   * @return  the exact number of bytes the object will take to serialize
+   */
+  long getSerializedSize(E value) throws IOException;
 
-	/**
-	 * Writes the object to the <code>OutputStream</code>.  <code>null</code> will
-	 * not be passed in.
-	 */
-	void serialize(E value, OutputStream out) throws IOException;
+  /**
+   * Writes the object to the <code>OutputStream</code>.  <code>null</code> will
+   * not be passed in.
+   */
+  void serialize(E value, OutputStream out) throws IOException;
 
-	/**
-	 * Restores an object from an <code>InputStream</code>.
-	 */
-	E deserialize(InputStream in) throws IOException;
+  /**
+   * Restores an object from an <code>InputStream</code>.
+   */
+  E deserialize(InputStream in) throws IOException;
 }

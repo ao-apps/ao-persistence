@@ -33,27 +33,27 @@ import junit.framework.TestSuite;
  */
 public class BlockBufferDynamicMappedTest extends BlockBufferTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(BlockBufferDynamicMappedTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(BlockBufferDynamicMappedTest.class);
+    return suite;
+  }
 
-	public BlockBufferDynamicMappedTest(String testName) {
-		super(testName);
-	}
+  public BlockBufferDynamicMappedTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
-		return new MappedPersistentBuffer(tempFile, protectionLevel);
-	}
+  @Override
+  public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
+    return new MappedPersistentBuffer(tempFile, protectionLevel);
+  }
 
-	@Override
-	public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
-		return new DynamicPersistentBlockBuffer(pbuffer);
-	}
+  @Override
+  public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
+    return new DynamicPersistentBlockBuffer(pbuffer);
+  }
 
-	@Override
-	public long getAllocationSize() throws IOException {
-		return fastRandom.nextInt(16384);
-	}
+  @Override
+  public long getAllocationSize() throws IOException {
+    return fastRandom.nextInt(16384);
+  }
 }

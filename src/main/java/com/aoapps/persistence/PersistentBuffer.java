@@ -49,136 +49,136 @@ import java.nio.BufferUnderflowException;
  */
 public interface PersistentBuffer extends Closeable {
 
-	/**
-	 * Checks if this buffer is closed.
-	 */
-	boolean isClosed();
+  /**
+   * Checks if this buffer is closed.
+   */
+  boolean isClosed();
 
-	/**
-	 * Closes this buffer.  It is OK to close an already closed buffer.
-	 */
-	@Override
-	void close() throws IOException;
+  /**
+   * Closes this buffer.  It is OK to close an already closed buffer.
+   */
+  @Override
+  void close() throws IOException;
 
-	/**
-	 * Gets the capacity of this buffer.
-	 */
-	long capacity() throws IOException;
+  /**
+   * Gets the capacity of this buffer.
+   */
+  long capacity() throws IOException;
 
-	/**
-	 * Sets the capacity of this buffer.  If the buffer is increased in size, the
-	 * new space will be zero-filled.  Setting the capacity may impose an
-	 * automatic <code>barrier(true)</code>, depending on implementation.  This
-	 * should be considered an expensive operation.
-	 */
-	void setCapacity(long newCapacity) throws IOException;
+  /**
+   * Sets the capacity of this buffer.  If the buffer is increased in size, the
+   * new space will be zero-filled.  Setting the capacity may impose an
+   * automatic <code>barrier(true)</code>, depending on implementation.  This
+   * should be considered an expensive operation.
+   */
+  void setCapacity(long newCapacity) throws IOException;
 
-	/**
-	 * Reads to the provided <code>byte[]</code>, starting at the provided
-	 * position and for the designated number of bytes.
-	 *
-	 * @exception  BufferUnderflowException on end of file
-	 */
-	void get(long position, byte[] buff, int off, int len) throws IOException;
+  /**
+   * Reads to the provided <code>byte[]</code>, starting at the provided
+   * position and for the designated number of bytes.
+   *
+   * @exception  BufferUnderflowException on end of file
+   */
+  void get(long position, byte[] buff, int off, int len) throws IOException;
 
-	/**
-	 * Reads to the provided <code>byte[]</code>, may read fewer than <code>len</code>
-	 * bytes, but will always read at least one byte.  Blocks if no data is
-	 * available.
-	 *
-	 * @exception  BufferUnderflowException on end of file
-	 */
-	int getSome(long position, byte[] buff, int off, int len) throws IOException;
+  /**
+   * Reads to the provided <code>byte[]</code>, may read fewer than <code>len</code>
+   * bytes, but will always read at least one byte.  Blocks if no data is
+   * available.
+   *
+   * @exception  BufferUnderflowException on end of file
+   */
+  int getSome(long position, byte[] buff, int off, int len) throws IOException;
 
-	/**
-	 * Reads a boolean at the provided position, zero is considered <code>false</code>
-	 * and any non-zero value is <code>true</code>.
-	 */
-	boolean getBoolean(long position) throws IOException;
+  /**
+   * Reads a boolean at the provided position, zero is considered <code>false</code>
+   * and any non-zero value is <code>true</code>.
+   */
+  boolean getBoolean(long position) throws IOException;
 
-	/**
-	 * Reads a byte at the provided position.
-	 */
-	byte get(long position) throws IOException;
+  /**
+   * Reads a byte at the provided position.
+   */
+  byte get(long position) throws IOException;
 
-	/**
-	 * Reads an integer at the provided position.
-	 */
-	int getInt(long position) throws IOException;
+  /**
+   * Reads an integer at the provided position.
+   */
+  int getInt(long position) throws IOException;
 
-	/**
-	 * Reads a long at the provided position.
-	 */
-	long getLong(long position) throws IOException;
+  /**
+   * Reads a long at the provided position.
+   */
+  long getLong(long position) throws IOException;
 
-	/**
-	 * Ensures that all values from the position for the provided length
-	 * are zeros.  This may or may not modify the buffer in the process.
-	 * The values will all be zero upon return.  Some implementations
-	 * may choose to overwrite zeros and return modified, others may choose
-	 * to detect zeros and avoid modifications.  Thus it is possible for
-	 * existing zeros to still result in a modification.
-	 */
-	void ensureZeros(long position, long len) throws IOException;
+  /**
+   * Ensures that all values from the position for the provided length
+   * are zeros.  This may or may not modify the buffer in the process.
+   * The values will all be zero upon return.  Some implementations
+   * may choose to overwrite zeros and return modified, others may choose
+   * to detect zeros and avoid modifications.  Thus it is possible for
+   * existing zeros to still result in a modification.
+   */
+  void ensureZeros(long position, long len) throws IOException;
 
-	/**
-	 * Puts a single value in the buffer.
-	 */
-	void put(long position, byte value) throws IOException;
+  /**
+   * Puts a single value in the buffer.
+   */
+  void put(long position, byte value) throws IOException;
 
-	/**
-	 * Writes the bytes to the provided position.  The buffer will not be expanded
-	 * automatically.
-	 *
-	 * @exception  BufferOverflowException on end of file
-	 */
-	void put(long position, byte[] buff, int off, int len) throws IOException;
+  /**
+   * Writes the bytes to the provided position.  The buffer will not be expanded
+   * automatically.
+   *
+   * @exception  BufferOverflowException on end of file
+   */
+  void put(long position, byte[] buff, int off, int len) throws IOException;
 
-	/**
-	 * Writes an integer at the provided position.  The buffer will not be expanded
-	 * automatically.
-	 *
-	 * @exception  BufferOverflowException on end of file
-	 */
-	void putInt(long position, int value) throws IOException;
+  /**
+   * Writes an integer at the provided position.  The buffer will not be expanded
+   * automatically.
+   *
+   * @exception  BufferOverflowException on end of file
+   */
+  void putInt(long position, int value) throws IOException;
 
-	/**
-	 * Writes a long at the provided position.  The buffer will not be expanded
-	 * automatically.
-	 *
-	 * @exception  BufferOverflowException on end of file
-	 */
-	void putLong(long position, long value) throws IOException;
+  /**
+   * Writes a long at the provided position.  The buffer will not be expanded
+   * automatically.
+   *
+   * @exception  BufferOverflowException on end of file
+   */
+  void putLong(long position, long value) throws IOException;
 
-	/**
-	 * Gets the protection level currently enforced by the buffer.
-	 *
-	 * @see  #barrier(boolean)
-	 */
-	ProtectionLevel getProtectionLevel();
+  /**
+   * Gets the protection level currently enforced by the buffer.
+   *
+   * @see  #barrier(boolean)
+   */
+  ProtectionLevel getProtectionLevel();
 
-	/**
-	 * Ensures that all writes before this barrier occur before all writes after
-	 * this barrier.  If <code>force</code> is <code>true</code>, will also
-	 * commit to physical media synchronously before returning.  This request
-	 * may be ignored or force downgraded to barrier-only depending on the current
-	 * protection level.
-	 *
-	 * @see  #getProtectionLevel()
-	 */
-	void barrier(boolean force) throws IOException;
+  /**
+   * Ensures that all writes before this barrier occur before all writes after
+   * this barrier.  If <code>force</code> is <code>true</code>, will also
+   * commit to physical media synchronously before returning.  This request
+   * may be ignored or force downgraded to barrier-only depending on the current
+   * protection level.
+   *
+   * @see  #getProtectionLevel()
+   */
+  void barrier(boolean force) throws IOException;
 
-	/**
-	 * Gets an input stream that reads from this buffer.  Bounds checking is performed.
-	 *
-	 * @exception  BufferUnderflowException on end of file
-	 */
-	InputStream getInputStream(long position, long length) throws IOException, BufferUnderflowException;
+  /**
+   * Gets an input stream that reads from this buffer.  Bounds checking is performed.
+   *
+   * @exception  BufferUnderflowException on end of file
+   */
+  InputStream getInputStream(long position, long length) throws IOException, BufferUnderflowException;
 
-	/**
-	 * Gets an output stream that writes to this buffer.  Bounds checking is performed.
-	 *
-	 * @exception  BufferUnderflowException on end of file
-	 */
-	OutputStream getOutputStream(long position, long length) throws IOException, BufferOverflowException;
+  /**
+   * Gets an output stream that writes to this buffer.  Bounds checking is performed.
+   *
+   * @exception  BufferUnderflowException on end of file
+   */
+  OutputStream getOutputStream(long position, long length) throws IOException, BufferOverflowException;
 }

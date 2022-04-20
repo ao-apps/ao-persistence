@@ -38,215 +38,244 @@ import java.nio.BufferUnderflowException;
  */
 public abstract class AbstractPersistentBuffer implements PersistentBuffer {
 
-	protected final ProtectionLevel protectionLevel;
-	private final byte[] ioBuffer = new byte[Long.BYTES];
+  protected final ProtectionLevel protectionLevel;
+  private final byte[] ioBuffer = new byte[Long.BYTES];
 
-	protected AbstractPersistentBuffer(ProtectionLevel protectionLevel) {
-		this.protectionLevel = protectionLevel;
-	}
+  protected AbstractPersistentBuffer(ProtectionLevel protectionLevel) {
+    this.protectionLevel = protectionLevel;
+  }
 
-	@Override
-	public ProtectionLevel getProtectionLevel() {
-		return protectionLevel;
-	}
+  @Override
+  public ProtectionLevel getProtectionLevel() {
+    return protectionLevel;
+  }
 
-	/**
-	 * Implemented as calls to <code>getSome(long,byte[],int,int)</code>
-	 *
-	 * @see  #getSome(long, byte[], int, int)
-	 */
-	@Override
-	public void get(long position, byte[] buff, int off, int len) throws IOException {
-		while(len > 0) {
-			int count = getSome(position, buff, off, len);
-			position += count;
-			off += count;
-			len -= count;
-		}
-	}
+  /**
+   * Implemented as calls to <code>getSome(long,byte[],int,int)</code>
+   *
+   * @see  #getSome(long, byte[], int, int)
+   */
+  @Override
+  public void get(long position, byte[] buff, int off, int len) throws IOException {
+    while (len > 0) {
+      int count = getSome(position, buff, off, len);
+      position += count;
+      off += count;
+      len -= count;
+    }
+  }
 
-	/**
-	 * Implemented as call to <code>readByte(long)</code>
-	 *
-	 * @see  #get(long)
-	 */
-	@Override
-	public boolean getBoolean(long position) throws IOException {
-		return get(position) != 0;
-	}
+  /**
+   * Implemented as call to <code>readByte(long)</code>
+   *
+   * @see  #get(long)
+   */
+  @Override
+  public boolean getBoolean(long position) throws IOException {
+    return get(position) != 0;
+  }
 
-	/**
-	 * Implemented as call to <code>get(long,byte[],int,int)</code>.  For performance
-	 * reasons, it is strongly recommended to provide a more efficient implementation
-	 * of this method.
-	 *
-	 * @see  #get(long, byte[], int, int)
-	 */
-	@Override
-	public byte get(long position) throws IOException {
-		get(position, ioBuffer, 0, Byte.BYTES);
-		return ioBuffer[0];
-	}
+  /**
+   * Implemented as call to <code>get(long,byte[],int,int)</code>.  For performance
+   * reasons, it is strongly recommended to provide a more efficient implementation
+   * of this method.
+   *
+   * @see  #get(long, byte[], int, int)
+   */
+  @Override
+  public byte get(long position) throws IOException {
+    get(position, ioBuffer, 0, Byte.BYTES);
+    return ioBuffer[0];
+  }
 
-	/**
-	 * Implemented as call to <code>get(long,byte[],int,int)</code>
-	 *
-	 * @see  #get(long, byte[], int, int)
-	 */
-	@Override
-	public int getInt(long position) throws IOException {
-		get(position, ioBuffer, 0, Integer.BYTES);
-		return IoUtils.bufferToInt(ioBuffer);
-	}
+  /**
+   * Implemented as call to <code>get(long,byte[],int,int)</code>
+   *
+   * @see  #get(long, byte[], int, int)
+   */
+  @Override
+  public int getInt(long position) throws IOException {
+    get(position, ioBuffer, 0, Integer.BYTES);
+    return IoUtils.bufferToInt(ioBuffer);
+  }
 
-	/**
-	 * Implemented as call to <code>get(long,byte[],int,int)</code>
-	 *
-	 * @see  #get(long, byte[], int, int)
-	 */
-	@Override
-	public long getLong(long position) throws IOException {
-		get(position, ioBuffer, 0, Long.BYTES);
-		return IoUtils.bufferToLong(ioBuffer);
-	}
+  /**
+   * Implemented as call to <code>get(long,byte[],int,int)</code>
+   *
+   * @see  #get(long, byte[], int, int)
+   */
+  @Override
+  public long getLong(long position) throws IOException {
+    get(position, ioBuffer, 0, Long.BYTES);
+    return IoUtils.bufferToLong(ioBuffer);
+  }
 
-	/**
-	 * Implemented as call to <code>put(long,byte[],int,int)</code>.  For performance
-	 * reasons, it is strongly recommended to provide a more efficient implementation
-	 * of this method.
-	 *
-	 * @see  #put(long, byte[], int, int)
-	 */
-	@Override
-	public void put(long position, byte value) throws IOException {
-		ioBuffer[0] = value;
-		put(position, ioBuffer, 0, Byte.BYTES);
-	}
+  /**
+   * Implemented as call to <code>put(long,byte[],int,int)</code>.  For performance
+   * reasons, it is strongly recommended to provide a more efficient implementation
+   * of this method.
+   *
+   * @see  #put(long, byte[], int, int)
+   */
+  @Override
+  public void put(long position, byte value) throws IOException {
+    ioBuffer[0] = value;
+    put(position, ioBuffer, 0, Byte.BYTES);
+  }
 
-	/**
-	 * Implemented as call to <code>write(long,byte[],int,int)</code>
-	 *
-	 * @see  #put(long, byte[], int, int)
-	 */
-	@Override
-	public void putInt(long position, int value) throws IOException {
-		IoUtils.intToBuffer(value, ioBuffer);
-		put(position, ioBuffer, 0, Integer.BYTES);
-	}
+  /**
+   * Implemented as call to <code>write(long,byte[],int,int)</code>
+   *
+   * @see  #put(long, byte[], int, int)
+   */
+  @Override
+  public void putInt(long position, int value) throws IOException {
+    IoUtils.intToBuffer(value, ioBuffer);
+    put(position, ioBuffer, 0, Integer.BYTES);
+  }
 
-	/**
-	 * Implemented as call to <code>write(long,byte[],int,int)</code>
-	 *
-	 * @see  #put(long, byte[], int, int)
-	 */
-	@Override
-	public void putLong(long position, long value) throws IOException {
-		IoUtils.longToBuffer(value, ioBuffer);
-		put(position, ioBuffer, 0, Long.BYTES);
-	}
+  /**
+   * Implemented as call to <code>write(long,byte[],int,int)</code>
+   *
+   * @see  #put(long, byte[], int, int)
+   */
+  @Override
+  public void putLong(long position, long value) throws IOException {
+    IoUtils.longToBuffer(value, ioBuffer);
+    put(position, ioBuffer, 0, Long.BYTES);
+  }
 
-	/**
-	 * Implemented as calls to <code>get(long)</code> and <code>getSome(long,byte[],int,int)</code>
-	 *
-	 * @see  #get(long)
-	 * @see  #getSome(long, byte[], int, int)
-	 */
-	@Override
-	public InputStream getInputStream(final long position, final long length) throws IOException, BufferUnderflowException {
-		return new InputStream() {
-			private boolean closed = false;
-			private long curPosition = position;
-			private long curRemaining = length;
+  /**
+   * Implemented as calls to <code>get(long)</code> and <code>getSome(long,byte[],int,int)</code>
+   *
+   * @see  #get(long)
+   * @see  #getSome(long, byte[], int, int)
+   */
+  @Override
+  public InputStream getInputStream(final long position, final long length) throws IOException, BufferUnderflowException {
+    return new InputStream() {
+      private boolean closed = false;
+      private long curPosition = position;
+      private long curRemaining = length;
 
-			@Override
-			public int read() throws IOException {
-				if(closed) throw new IOException("Stream closed");
-				if(curRemaining<1) throw new BufferUnderflowException();
-				int value = get(curPosition++)&255;
-				curRemaining--;
-				return value;
-			}
+      @Override
+      public int read() throws IOException {
+        if (closed) {
+          throw new IOException("Stream closed");
+        }
+        if (curRemaining<1) {
+          throw new BufferUnderflowException();
+        }
+        int value = get(curPosition++)&255;
+        curRemaining--;
+        return value;
+      }
 
-			@Override
-			public int read(byte[] b, int off, int len) throws IOException {
-				if(closed) throw new IOException("Stream closed");
-				if(len<0) throw new IllegalArgumentException("len<0: "+len);
-				if(len==0) return 0;
-				if(curRemaining<len) {
-					if(curRemaining<=0) return -1; // End of file
-					len = (int)curRemaining;
-				}
-				try {
-					int numBytes = getSome(curPosition, b, off, len);
-					curPosition+=numBytes;
-					curRemaining-=numBytes;
-					return numBytes;
-				} catch(BufferUnderflowException err) {
-					return -1;
-				}
-			}
+      @Override
+      public int read(byte[] b, int off, int len) throws IOException {
+        if (closed) {
+          throw new IOException("Stream closed");
+        }
+        if (len<0) {
+          throw new IllegalArgumentException("len<0: "+len);
+        }
+        if (len == 0) {
+          return 0;
+        }
+        if (curRemaining<len) {
+          if (curRemaining <= 0) {
+            // End of file
+            return -1;
+          }
+          len = (int)curRemaining;
+        }
+        try {
+          int numBytes = getSome(curPosition, b, off, len);
+          curPosition+=numBytes;
+          curRemaining-=numBytes;
+          return numBytes;
+        } catch (BufferUnderflowException err) {
+          return -1;
+        }
+      }
 
-			@Override
-			public long skip(long n) throws IOException {
-				if(closed) throw new IOException("Stream closed");
-				if(n<=0) return 0;
-				if(curRemaining<n) {
-					if(curRemaining<=0) return 0;
-					n = curRemaining;
-				}
-				curPosition+=n;
-				curRemaining-=n;
-				return n;
-			}
+      @Override
+      public long skip(long n) throws IOException {
+        if (closed) {
+          throw new IOException("Stream closed");
+        }
+        if (n <= 0) {
+          return 0;
+        }
+        if (curRemaining<n) {
+          if (curRemaining <= 0) {
+            return 0;
+          }
+          n = curRemaining;
+        }
+        curPosition+=n;
+        curRemaining-=n;
+        return n;
+      }
 
-			@Override
-			public int available() throws IOException {
-				if(closed) throw new IOException("Stream closed");
-				return 0;
-			}
+      @Override
+      public int available() throws IOException {
+        if (closed) {
+          throw new IOException("Stream closed");
+        }
+        return 0;
+      }
 
-			@Override
-			public void close() {
-				closed = true;
-			}
-		};
-	}
+      @Override
+      public void close() {
+        closed = true;
+      }
+    };
+  }
 
-	/**
-	 * Implemented as calls to <code>put(long,byte)</code>
-	 * and <code>put(long,byte[],int,int)</code>.
-	 *
-	 * @see  #put(long, byte)
-	 * @see  #put(long, byte[], int, int)
-	 */
-	@Override
-	public OutputStream getOutputStream(final long position, final long length) throws IOException, BufferOverflowException {
-		return new OutputStream() {
-			private boolean closed = false;
-			private long curPosition = position;
-			private long curRemaining = length;
+  /**
+   * Implemented as calls to <code>put(long,byte)</code>
+   * and <code>put(long,byte[],int,int)</code>.
+   *
+   * @see  #put(long, byte)
+   * @see  #put(long, byte[], int, int)
+   */
+  @Override
+  public OutputStream getOutputStream(final long position, final long length) throws IOException, BufferOverflowException {
+    return new OutputStream() {
+      private boolean closed = false;
+      private long curPosition = position;
+      private long curRemaining = length;
 
-			@Override
-			public void write(int b) throws IOException {
-				if(closed) throw new IOException("Stream closed");
-				if(curRemaining<1) throw new BufferOverflowException();
-				put(curPosition++, (byte)b);
-				curRemaining--;
-			}
+      @Override
+      public void write(int b) throws IOException {
+        if (closed) {
+          throw new IOException("Stream closed");
+        }
+        if (curRemaining<1) {
+          throw new BufferOverflowException();
+        }
+        put(curPosition++, (byte)b);
+        curRemaining--;
+      }
 
-			@Override
-			public void write(byte[] b, int off, int len) throws IOException {
-				if(closed) throw new IOException("Stream closed");
-				if(curRemaining<len) throw new BufferOverflowException();
-				put(curPosition, b, off, len);
-				curPosition+=len;
-				curRemaining-=len;
-			}
+      @Override
+      public void write(byte[] b, int off, int len) throws IOException {
+        if (closed) {
+          throw new IOException("Stream closed");
+        }
+        if (curRemaining<len) {
+          throw new BufferOverflowException();
+        }
+        put(curPosition, b, off, len);
+        curPosition+=len;
+        curRemaining-=len;
+      }
 
-			@Override
-			public void close() {
-				closed = true;
-			}
-		};
-	}
+      @Override
+      public void close() {
+        closed = true;
+      }
+    };
+  }
 }

@@ -35,17 +35,17 @@ import junit.framework.TestSuite;
  */
 public class PersistentLinkedListRandomAccessFileTest extends PersistentLinkedListTestParent {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(PersistentLinkedListRandomAccessFileTest.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(PersistentLinkedListRandomAccessFileTest.class);
+    return suite;
+  }
 
-	public PersistentLinkedListRandomAccessFileTest(String testName) {
-		super(testName);
-	}
+  public PersistentLinkedListRandomAccessFileTest(String testName) {
+    super(testName);
+  }
 
-	@Override
-	protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
-		return new RandomAccessFileBuffer(tempFile, protectionLevel);
-	}
+  @Override
+  protected PersistentBuffer getPersistentBuffer(File tempFile, ProtectionLevel protectionLevel) throws Exception {
+    return new RandomAccessFileBuffer(tempFile, protectionLevel);
+  }
 }

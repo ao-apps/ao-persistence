@@ -36,31 +36,31 @@ import java.io.OutputStream;
  */
 public class ByteArraySerializer implements Serializer<byte[]> {
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return false;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return false;
+  }
 
-	@Override
-	public long getSerializedSize(byte[] value) {
-		return (long)Integer.BYTES + value.length;
-	}
+  @Override
+  public long getSerializedSize(byte[] value) {
+    return (long)Integer.BYTES + value.length;
+  }
 
-	private final byte[] ioBuffer = new byte[Integer.BYTES];
+  private final byte[] ioBuffer = new byte[Integer.BYTES];
 
-	@Override
-	public void serialize(byte[] value, OutputStream out) throws IOException {
-		IoUtils.intToBuffer(value.length, ioBuffer);
-		out.write(ioBuffer, 0, Integer.BYTES);
-		out.write(value);
-	}
+  @Override
+  public void serialize(byte[] value, OutputStream out) throws IOException {
+    IoUtils.intToBuffer(value.length, ioBuffer);
+    out.write(ioBuffer, 0, Integer.BYTES);
+    out.write(value);
+  }
 
-	@Override
-	public byte[] deserialize(InputStream in) throws IOException {
-		IoUtils.readFully(in, ioBuffer, 0, Integer.BYTES);
-		int length = IoUtils.bufferToInt(ioBuffer);
-		byte[] value = new byte[length];
-		IoUtils.readFully(in, value, 0, length);
-		return value;
-	}
+  @Override
+  public byte[] deserialize(InputStream in) throws IOException {
+    IoUtils.readFully(in, ioBuffer, 0, Integer.BYTES);
+    int length = IoUtils.bufferToInt(ioBuffer);
+    byte[] value = new byte[length];
+    IoUtils.readFully(in, value, 0, length);
+    return value;
+  }
 }

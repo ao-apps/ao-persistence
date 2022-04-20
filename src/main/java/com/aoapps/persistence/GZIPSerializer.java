@@ -38,47 +38,47 @@ import java.util.zip.GZIPOutputStream;
  */
 public class GZIPSerializer<E> implements Serializer<E> {
 
-	private final Serializer<E> wrapped;
+  private final Serializer<E> wrapped;
 
-	private E lastSerialized = null;
-	private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+  private E lastSerialized = null;
+  private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-	public GZIPSerializer(Serializer<E> wrapped) {
-		this.wrapped = wrapped;
-	}
+  public GZIPSerializer(Serializer<E> wrapped) {
+    this.wrapped = wrapped;
+  }
 
-	private void serializeToBuffer(E value) throws IOException {
-		if(lastSerialized!=value) {
-			lastSerialized = null;
-			buffer.reset();
-			try (GZIPOutputStream gzout = new GZIPOutputStream(buffer)) {
-				wrapped.serialize(value, gzout);
-			}
-			lastSerialized = value;
-		}
-	}
+  private void serializeToBuffer(E value) throws IOException {
+    if (lastSerialized != value) {
+      lastSerialized = null;
+      buffer.reset();
+      try (GZIPOutputStream gzout = new GZIPOutputStream(buffer)) {
+        wrapped.serialize(value, gzout);
+      }
+      lastSerialized = value;
+    }
+  }
 
-	@Override
-	public boolean isFixedSerializedSize() {
-		return false;
-	}
+  @Override
+  public boolean isFixedSerializedSize() {
+    return false;
+  }
 
-	@Override
-	public long getSerializedSize(E value) throws IOException {
-		serializeToBuffer(value);
-		return buffer.size();
-	}
+  @Override
+  public long getSerializedSize(E value) throws IOException {
+    serializeToBuffer(value);
+    return buffer.size();
+  }
 
-	@Override
-	public void serialize(E value, OutputStream out) throws IOException {
-		serializeToBuffer(value);
-		buffer.writeTo(out);
-	}
+  @Override
+  public void serialize(E value, OutputStream out) throws IOException {
+    serializeToBuffer(value);
+    buffer.writeTo(out);
+  }
 
-	@Override
-	public E deserialize(InputStream in) throws IOException {
-		try (GZIPInputStream gzin = new GZIPInputStream(in)) {
-			return wrapped.deserialize(gzin);
-		}
-	}
+  @Override
+  public E deserialize(InputStream in) throws IOException {
+    try (GZIPInputStream gzin = new GZIPInputStream(in)) {
+      return wrapped.deserialize(gzin);
+    }
+  }
 }
