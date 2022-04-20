@@ -1,2 +1,10 @@
 # Significant manual code formatting clean-up…
 945f42ce74ff541211c10e64fbafcbb7063178f7
+# Cast math operands before assignment
+79e030c96c3858d38b91b009f70d346532d3660d
+# Added missing spaces after comma
+55692bf79a2988adfc2aea843b1c792ef55b4d7a
+# Generics whitespace consistency
+d3c7af61fe48718b715f8852524ad588808c90bb
+# Tab indent
+e3fc42068221b17d9c2af9f4c6d0816568aa948b
