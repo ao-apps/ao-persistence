@@ -44,7 +44,7 @@ public class CharArraySerializer implements Serializer<char[]> {
 
   @Override
   public long getSerializedSize(char[] value) {
-    return (long)Integer.BYTES + (value.length / Character.BYTES);
+    return (long) Integer.BYTES + (value.length / Character.BYTES);
   }
 
   @Override
@@ -65,7 +65,7 @@ public class CharArraySerializer implements Serializer<char[]> {
           charsIndex < count;
           charsIndex++, bytesIndex += Character.BYTES
         ) {
-          IoUtils.charToBuffer(chars[pos+charsIndex], bytes, bytesIndex);
+          IoUtils.charToBuffer(chars[pos + charsIndex], bytes, bytesIndex);
         }
         out.write(bytes, 0, count * Character.BYTES);
         pos += count;

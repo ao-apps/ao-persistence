@@ -42,7 +42,7 @@ public class ObjectSerializer<E> extends BufferedSerializer<E> {
 
   public ObjectSerializer(Class<E> type) {
     if (!Serializable.class.isAssignableFrom(type)) {
-      throw new IllegalArgumentException("Class is not Serializable: "+type.getName());
+      throw new IllegalArgumentException("Class is not Serializable: " + type.getName());
     }
     this.type = type;
   }

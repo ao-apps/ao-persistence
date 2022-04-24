@@ -62,24 +62,26 @@ public abstract class BlockBufferTestParent extends TestCase {
   static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
 
   public abstract PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException;
+
   public abstract PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException;
+
   public abstract long getAllocationSize() throws IOException;
 
   public void testAllocateDeallocate() throws Exception {
     try (
-      TempFileContext tempFileContext = new TempFileContext();
-      TempFile tempFile = tempFileContext.createTempFile("BlockBufferTestParent_")
-    ) {
+        TempFileContext tempFileContext = new TempFileContext();
+        TempFile tempFile = tempFileContext.createTempFile("BlockBufferTestParent_")
+        ) {
       try (PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))) {
         Set<Long> allocatedIds = new HashSet<>();
-        for (int c=0;c<TEST_LOOPS;c++) {
-          if (((c+1)%TEST_REPORT_INTERVAL) == 0) {
-            System.out.println(getClass()+": testAllocateDeallocate: Test loop "+(c+1)+" of " + TEST_LOOPS);
+        for (int c = 0; c < TEST_LOOPS; c++) {
+          if (((c + 1) % TEST_REPORT_INTERVAL) == 0) {
+            System.out.println(getClass() + ": testAllocateDeallocate: Test loop " + (c + 1) + " of " + TEST_LOOPS);
           }
           // Allocate some blocks, must not return duplicate ids.
           for (int d = 0; d < 1000; d++) {
             long id = blockBuffer.allocate(getAllocationSize());
-            assertTrue("Block id allocated twice: "+id, allocatedIds.add(id));
+            assertTrue("Block id allocated twice: " + id, allocatedIds.add(id));
           }
 
           // Iterate the block ids.  Each must be allocated.  All allocated must
@@ -95,7 +97,7 @@ public abstract class BlockBufferTestParent extends TestCase {
           // Randomly deallocate 900 of the entries
           List<Long> ids = new ArrayList<>(allocatedIds);
           Collections.shuffle(ids, fastRandom);
-          for (int d=0;d<500;d++) {
+          for (int d = 0; d < 500; d++) {
             long id = ids.get(d);
             blockBuffer.deallocate(id);
             allocatedIds.remove(id);
@@ -137,7 +139,7 @@ public abstract class BlockBufferTestParent extends TestCase {
         //System.out.println("DEBUG: Removing "+id+" from allocatedIds");
         ids.remove();
       }
-      assertTrue("partialIds.size()="+partialIds.size()+", recoveredIds.contains("+id+")="+recoveryContains+", partialIds.contains("+id+")="+partialContains, recoveryContains || partialContains);
+      assertTrue("partialIds.size()=" + partialIds.size() + ", recoveredIds.contains(" + id + ")=" + recoveryContains + ", partialIds.contains(" + id + ")=" + partialContains, recoveryContains || partialContains);
     }
   }
 
@@ -158,26 +160,26 @@ public abstract class BlockBufferTestParent extends TestCase {
         //System.out.println("DEBUG: Adding "+id+" to allocatedIds");
         allocatedIds.add(id);
       }
-      assertTrue("partialIds.size()="+partialIds.size()+", allocatedIds.contains("+id+")="+allocatedContains+", partialIds.contains("+id+")="+partialContains, allocatedContains || partialContains);
+      assertTrue("partialIds.size()=" + partialIds.size() + ", allocatedIds.contains(" + id + ")=" + allocatedContains + ", partialIds.contains(" + id + ")=" + partialContains, allocatedContains || partialContains);
     }
   }
 
   private void doTestFailureRecovery(ProtectionLevel protectionLevel) throws Exception {
     try (
-      TempFileContext tempFileContext = new TempFileContext();
-      TempFile tempFile = tempFileContext.createTempFile("BlockBufferTestParent_")
-    ) {
+        TempFileContext tempFileContext = new TempFileContext();
+        TempFile tempFile = tempFileContext.createTempFile("BlockBufferTestParent_")
+        ) {
       try {
         SortedSet<Long> allocatedIds = new TreeSet<>();
         SortedSet<Long> partialIds = new TreeSet<>(); // The ids that are added in this batch
         final int iterations = TEST_LOOPS;
-        for (int c=0;c<iterations;c++) {
+        for (int c = 0; c < iterations; c++) {
           long startNanos = System.nanoTime();
           partialIds.clear();
           try {
             try {
               try (PersistentBlockBuffer failingBlockBuffer = getBlockBuffer(new RandomFailBuffer(getBuffer(tempFile.getFile(), protectionLevel), true))) {
-                int batchSize = fastRandom.nextInt(100)+1;
+                int batchSize = fastRandom.nextInt(100) + 1;
                 for (int d = 0; d < batchSize; d++) {
                   long id = failingBlockBuffer.allocate(getAllocationSize());
                   partialIds.add(id);
@@ -194,7 +196,7 @@ public abstract class BlockBufferTestParent extends TestCase {
               throw err;
             }
           } catch (IOException err) {
-            System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": Allocate: Caught failure: "+err.toString());
+            System.out.println(protectionLevel + ": " + (c + 1) + " of " + iterations + ": Allocate: Caught failure: " + err.toString());
           }
           // With failure or not, the allocation should be consistent
           PersistentBlockBuffer recoveredBlockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), protectionLevel));
@@ -219,10 +221,10 @@ public abstract class BlockBufferTestParent extends TestCase {
               try {
                 try (PersistentBlockBuffer failingBlockBuffer = getBlockBuffer(new RandomFailBuffer(getBuffer(tempFile.getFile(), protectionLevel), true))) {
                   int batchSize = fastRandom.nextInt(50) + 1;
-                  if (batchSize>randomizedIds.size()) {
-                    batchSize=randomizedIds.size();
+                  if (batchSize > randomizedIds.size()) {
+                    batchSize = randomizedIds.size();
                   }
-                  for (int d=0;d<batchSize;d++) {
+                  for (int d = 0; d < batchSize; d++) {
                     Long id = randomizedIds.get(d);
                     assertTrue(partialIds.add(id));
                     assertTrue(allocatedIds.remove(id));
@@ -239,7 +241,7 @@ public abstract class BlockBufferTestParent extends TestCase {
                 throw err;
               }
             } catch (IOException err) {
-              System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": Deallocate: Caught failure: "+err.toString());
+              System.out.println(protectionLevel + ": " + (c + 1) + " of " + iterations + ": Deallocate: Caught failure: " + err.toString());
             }
           }
           // With failure or not, the allocation should be consistent
@@ -258,8 +260,8 @@ public abstract class BlockBufferTestParent extends TestCase {
           }
 
           long endNanos = System.nanoTime();
-          if (((c+1)%TEST_REPORT_INTERVAL) == 0) {
-            System.out.println(protectionLevel+": "+(c+1)+" of "+iterations+": Tested block buffer failure recovery in "+BigDecimal.valueOf((endNanos-startNanos)/1000, 3)+" ms");
+          if (((c + 1) % TEST_REPORT_INTERVAL) == 0) {
+            System.out.println(protectionLevel + ": " + (c + 1) + " of " + iterations + ": Tested block buffer failure recovery in " + BigDecimal.valueOf((endNanos - startNanos) / 1000, 3) + " ms");
           }
         }
       } finally {

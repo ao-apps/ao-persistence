@@ -87,25 +87,25 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    */
   public DynamicPersistentBlockBuffer(PersistentBuffer pbuffer) throws IOException {
     super(pbuffer);
-    for (int c=0;c<64;c++) {
+    for (int c = 0; c < 64; c++) {
       freeSpaceMaps.add(null);
     }
     // Build the free space maps and expand to end on an even block
     long capacity = pbuffer.capacity();
     long id = 0;
-    while (id<capacity) {
+    while (id < capacity) {
       assert isValidRange(id);
       byte header = pbuffer.get(id);
       int blockSizeBits = getBlockSizeBits(header);
       if (!isBlockAligned(id, blockSizeBits)) {
-        throw new IOException("Block not aligned: "+id);
+        throw new IOException("Block not aligned: " + id);
       }
       // Auto-expand if underlying buffer doesn't end on a block boundary, this may be the result of a partial increase in size
       long blockEnd = id + getBlockSize(blockSizeBits);
-      if (blockEnd>capacity) {
+      if (blockEnd > capacity) {
         // Could remove last block is unallocated, but the safer choice may be to grow the capacity and leave data intact
-        logger.warning("Expanding capacity to match block end: capacity="+capacity+", blockEnd="+blockEnd);
-        pbuffer.setCapacity(capacity=blockEnd);
+        logger.warning("Expanding capacity to match block end: capacity=" + capacity + ", blockEnd=" + blockEnd);
+        pbuffer.setCapacity(capacity = blockEnd);
       }
       if (!isAllocated(header)) {
         addFreeSpaceMap(id, blockSizeBits, capacity, true);
@@ -119,7 +119,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       }
       id = blockEnd;
     }
-    assert id == capacity : "id != capacity: "+id+" != "+capacity;
+    assert id == capacity : "id != capacity: " + id + " != " + capacity;
   }
 
   // <editor-fold desc="Bit Manipulation">
@@ -127,15 +127,15 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    * Space will always be allocated to align with this page size.
    */
   private static final long PAGE_SIZE = 0x1000L; // Must be a power of two.
-  private static final long PAGE_OFFSET_MASK = PAGE_SIZE-1;
+  private static final long PAGE_OFFSET_MASK = PAGE_SIZE - 1;
   private static final long PAGE_MASK = -PAGE_SIZE;
 
   private static boolean isAllocated(byte header) {
-    return (header&0x80) != 0;
+    return (header & 0x80) != 0;
   }
 
   private static int getBlockSizeBits(byte header) {
-    return header&0x3f;
+    return header & 0x3f;
   }
 
   /**
@@ -149,7 +149,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    * Gets the offset of an id within a page.
    */
   private static long getPageOffset(long id) {
-    return id&PAGE_OFFSET_MASK;
+    return id & PAGE_OFFSET_MASK;
   }
 
   /**
@@ -157,10 +157,11 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    */
   private static long getNearestPage(long id) {
     if (getPageOffset(id) != 0) {
-      id = (id & PAGE_MASK)+PAGE_SIZE;
+      id = (id & PAGE_MASK) + PAGE_SIZE;
     }
     return id;
   }
+
   // </editor-fold>
 
   // <editor-fold desc="Assertions and Data Consistency">
@@ -175,7 +176,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    * Makes sure the id is in the valid range: <code>0 &lt;= id &lt; capacity</code>
    */
   private boolean isValidRange(long id) throws IOException {
-    return id >= 0 && id<pbuffer.capacity();
+    return id >= 0 && id < pbuffer.capacity();
   }
 
   /**
@@ -185,7 +186,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   private boolean isBlockAligned(long id, int blockSizeBits) throws IOException {
     assert isValidRange(id);
     assert isValidBlockSizeBits(blockSizeBits);
-    return ((getBlockSize(blockSizeBits)-1)&id) == 0;
+    return ((getBlockSize(blockSizeBits) - 1) & id) == 0;
   }
 
   /**
@@ -194,7 +195,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   private boolean isBlockComplete(long id, int blockSizeBits) throws IOException {
     assert isValidRange(id);
     assert isValidBlockSizeBits(blockSizeBits);
-    return (id+getBlockSize(blockSizeBits)) <= pbuffer.capacity();
+    return (id + getBlockSize(blockSizeBits)) <= pbuffer.capacity();
   }
 
   /**
@@ -207,10 +208,11 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   private boolean isAllocated(long id) throws IOException {
     assert isValidRange(id);
     byte header = pbuffer.get(id);
-    assert isBlockAligned(id, getBlockSizeBits(header)) : "Block not aligned: "+id;
-    assert isBlockComplete(id, getBlockSizeBits(header)) : "Block is incomplete: "+id;
+    assert isBlockAligned(id, getBlockSizeBits(header)) : "Block not aligned: " + id;
+    assert isBlockComplete(id, getBlockSizeBits(header)) : "Block is incomplete: " + id;
     return isAllocated(header);
   }
+
   // </editor-fold>
 
   // <editor-fold desc="Allocation and Deallocation">
@@ -230,20 +232,20 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
     assert !isAllocated(id);
     // Group as much as possible within the same power-of-two block
     boolean blockSizeBitsUpdated = false;
-    while (blockSizeBits<0x3f) {
-      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: "+id;
-      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: "+id;
+    while (blockSizeBits < 0x3f) {
+      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: " + id;
+      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: " + id;
       long blockSize = getBlockSize(blockSizeBits);
-      long blockOffsetMask = blockSize-1;
+      long blockOffsetMask = blockSize - 1;
       // Only allow grouping if id is aligned with the current number of bits
-      if ((id&blockOffsetMask) != 0) {
+      if ((id & blockOffsetMask) != 0) {
         break;
       }
       long biggerBlockSize = blockSize << 1;
       long biggerBlockMask = -biggerBlockSize;
-      long idBiggerBlockMask = id&biggerBlockMask;
+      long idBiggerBlockMask = id & biggerBlockMask;
       long prevId = id - blockSize;
-      if (prevId >= 0 && (prevId&biggerBlockMask) == idBiggerBlockMask) {
+      if (prevId >= 0 && (prevId & biggerBlockMask) == idBiggerBlockMask) {
         // The block to the left must be the same number of bits and be unallocated
         byte prevHeader = pbuffer.get(prevId);
         if (isAllocated(prevHeader) || blockSizeBits != getBlockSizeBits(prevHeader)) {
@@ -254,22 +256,22 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
           // Remove prev from FSM
           SortedSet<Long> fsm = freeSpaceMaps.get(blockSizeBits);
           if (fsm == null) {
-            throw new AssertionError("fsm is null for bits="+blockSizeBits);
+            throw new AssertionError("fsm is null for bits=" + blockSizeBits);
           }
           if (!fsm.remove(prevId)) {
-            throw new AssertionError("fsm for bits="+blockSizeBits+" did not contain prevId="+prevId);
+            throw new AssertionError("fsm for bits=" + blockSizeBits + " did not contain prevId=" + prevId);
           }
           blockSizeBits++;
           blockSizeBitsUpdated = true;
         }
       } else {
         // Stop if groupPrevOnly or only group right if the pbuffer has room for the bigger parent
-        if (groupPrevOnly || (id+biggerBlockSize)>capacity) {
+        if (groupPrevOnly || (id + biggerBlockSize) > capacity) {
           // Stop grouping
           break;
         } else {
           long nextId = id + blockSize;
-          assert (nextId&biggerBlockMask) == idBiggerBlockMask;
+          assert (nextId & biggerBlockMask) == idBiggerBlockMask;
           // The block to the right must be the same number of bits and be unallocated
           byte nextHeader = pbuffer.get(nextId);
           if (isAllocated(nextHeader) || blockSizeBits != getBlockSizeBits(nextHeader)) {
@@ -279,10 +281,10 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
             // Remove next from FSM
             SortedSet<Long> fsm = freeSpaceMaps.get(blockSizeBits);
             if (fsm == null) {
-              throw new AssertionError("fsm is null for bits="+blockSizeBits);
+              throw new AssertionError("fsm is null for bits=" + blockSizeBits);
             }
             if (!fsm.remove(nextId)) {
-              throw new AssertionError("fsm for bits="+blockSizeBits+" did not contain nextId="+nextId);
+              throw new AssertionError("fsm for bits=" + blockSizeBits + " did not contain nextId=" + nextId);
             }
             blockSizeBits++;
             blockSizeBitsUpdated = true;
@@ -294,11 +296,11 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       // Redo the same assertions above because id and blockSizeBits may have changed
       assert isValidRange(id);
       assert isValidBlockSizeBits(blockSizeBits);
-      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: "+id;
-      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: "+id;
-      assert !isAllocated(pbuffer.get(id)) : "Block is allocated: "+id;
+      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: " + id;
+      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: " + id;
+      assert !isAllocated(pbuffer.get(id)) : "Block is allocated: " + id;
       assert pbuffer.get(id) != blockSizeBits;
-      pbuffer.put(id, (byte)blockSizeBits);
+      pbuffer.put(id, (byte) blockSizeBits);
       //pbuffer.barrier(false); // Not required because if this write fails either side will still be consistent?
     }
     SortedSet<Long> fsm = freeSpaceMaps.get(blockSizeBits);
@@ -306,7 +308,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       freeSpaceMaps.set(blockSizeBits, fsm = new TreeSet<>());
     }
     if (!fsm.add(id)) {
-      throw new AssertionError("Free space map already contains entry: "+id);
+      throw new AssertionError("Free space map already contains entry: " + id);
     }
     //System.out.println("DEBUG: Added to fsm: fsm["+blockSizeBits+"].size()="+fsm.size());
   }
@@ -322,6 +324,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   private long splitAllocate(int blockSizeBits, long capacity) throws IOException {
     return splitAllocate(blockSizeBits, capacity, 0);
   }
+
   private long splitAllocate(int blockSizeBits, long capacity, int recursionDepth) throws IOException {
     assert isValidBlockSizeBits(blockSizeBits);
     assert capacity >= 0;
@@ -329,8 +332,8 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
     if (fsm != null && !fsm.isEmpty()) {
       // No split needed
       Long id = fsm.first();
-      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: "+id;
-      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: "+id;
+      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: " + id;
+      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: " + id;
       fsm.remove(id);
       return id;
     } else {
@@ -339,23 +342,23 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
         return -1;
       }
       long blockSize = getBlockSize(blockSizeBits);
-      if (blockSize>capacity) {
+      if (blockSize > capacity) {
         return -1;
       }
       // Try split
-      long biggerAvailableId = splitAllocate(blockSizeBits+1, capacity, recursionDepth+1);
+      long biggerAvailableId = splitAllocate(blockSizeBits + 1, capacity, recursionDepth + 1);
       // No bigger available
       if (biggerAvailableId == -1) {
         return -1;
       }
-      assert isBlockAligned(biggerAvailableId, blockSizeBits+1) : "Block not aligned: "+biggerAvailableId;
-      assert isBlockComplete(biggerAvailableId, blockSizeBits+1) : "Block is incomplete: "+biggerAvailableId;
+      assert isBlockAligned(biggerAvailableId, blockSizeBits + 1) : "Block not aligned: " + biggerAvailableId;
+      assert isBlockComplete(biggerAvailableId, blockSizeBits + 1) : "Block is incomplete: " + biggerAvailableId;
       // Split the bigger one, adding the right half to the free space map
-      long nextId = biggerAvailableId+blockSize;
-      assert isBlockAligned(nextId, blockSizeBits) : "Block not aligned: "+nextId;
-      assert isBlockComplete(nextId, blockSizeBits) : "Block is incomplete: "+nextId;
+      long nextId = biggerAvailableId + blockSize;
+      assert isBlockAligned(nextId, blockSizeBits) : "Block not aligned: " + nextId;
+      assert isBlockComplete(nextId, blockSizeBits) : "Block is incomplete: " + nextId;
       if (pbuffer.get(nextId) != blockSizeBits) {
-        pbuffer.put(nextId, (byte)blockSizeBits);
+        pbuffer.put(nextId, (byte) blockSizeBits);
         if (recursionDepth == 0) {
           // When splitting, the right side must have appropriate size headers before left side is updated
           barrier(false);
@@ -365,8 +368,8 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
         freeSpaceMaps.set(blockSizeBits, fsm = new TreeSet<>());
       }
       fsm.add(nextId);
-      assert pbuffer.get(biggerAvailableId) != (byte)blockSizeBits;
-      pbuffer.put(biggerAvailableId, (byte)blockSizeBits);
+      assert pbuffer.get(biggerAvailableId) != (byte) blockSizeBits;
+      pbuffer.put(biggerAvailableId, (byte) blockSizeBits);
       // pbuffer.barrier(false); // Not required because writes will be constrained to the returned block, and if the header is not updated it will remain unallocated at its previous size
       return biggerAvailableId;
     }
@@ -379,27 +382,27 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
     //System.out.println("DEBUG: start="+start+", capacity="+capacity+", capacity/start="+((float)capacity/(float)start));
     //long iterations = 0;
     // TODO: Do not combine to the first block of size blockSizeBits and return it directly, avoiding call to addFSM and splitAllocate?
-    while (start<capacity) {
+    while (start < capacity) {
       // Find the largest power of two block that aligns with the start and fits between start and end
       int bits = 1;
-      while (bits<0x3f) {
-        if ((start&((1L << bits)-1)) != 0) {
+      while (bits < 0x3f) {
+        if ((start & ((1L << bits) - 1)) != 0) {
           // Not aligned
           break;
         }
         long blockEnd = start + (1L << bits);
-        if (blockEnd<0 || blockEnd>capacity) {
+        if (blockEnd < 0 || blockEnd > capacity) {
           // Outside capacity
           break;
         }
         bits++;
       }
       bits--;
-      assert isBlockAligned(start, bits) : "Block not aligned: "+start;
-      assert isBlockComplete(start, bits) : "Block is incomplete: "+start;
-      if (bits>0) {
-        assert pbuffer.get(start) != (byte)bits;
-        pbuffer.put(start, (byte)bits);
+      assert isBlockAligned(start, bits) : "Block not aligned: " + start;
+      assert isBlockComplete(start, bits) : "Block is incomplete: " + start;
+      if (bits > 0) {
+        assert pbuffer.get(start) != (byte) bits;
+        pbuffer.put(start, (byte) bits);
         //pbuffer.barrier(false); // Not necessary because free space will be combined an recovery for TIGHT.  BALANCED will combine when needed, and FAST allocates minimally
       }
       addFreeSpaceMap(start, bits, capacity, true);
@@ -415,8 +418,8 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    */
   @Override
   public long allocate(long minimumSize) throws IOException {
-    if (minimumSize<0) {
-      throw new IllegalArgumentException("minimumSize<0: "+minimumSize);
+    if (minimumSize < 0) {
+      throw new IllegalArgumentException("minimumSize<0: " + minimumSize);
     }
     modCount++;
     // Determine the min block size for the provided input
@@ -426,16 +429,16 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
     if (id != -1) {
       assert isValidRange(id);
       assert blockSizeBits == getBlockSizeBits(pbuffer.get(id));
-      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: "+id;
-      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: "+id;
-      assert !isAllocated(pbuffer.get(id)) : "Block is allocated: "+id;
-      assert pbuffer.get(id) != (byte)(0x80 | blockSizeBits);
-      pbuffer.put(id, (byte)(0x80 | blockSizeBits));
+      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: " + id;
+      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: " + id;
+      assert !isAllocated(pbuffer.get(id)) : "Block is allocated: " + id;
+      assert pbuffer.get(id) != (byte) (0x80 | blockSizeBits);
+      pbuffer.put(id, (byte) (0x80 | blockSizeBits));
       //pbuffer.barrier(false); // TODO: necessary?
     } else {
       // No block available and no blocks may be combined to fulfill allocation, increase capacity
       long blockSize = getBlockSize(blockSizeBits);
-      assert blockSize>minimumSize; // Must have one byte extra for the header
+      assert blockSize > minimumSize; // Must have one byte extra for the header
       long blockMask = blockSize - 1;
       assert blockMask >= 0;
       // Align new block
@@ -444,14 +447,14 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       if (blockOffset != 0) {
         // Expanding existing allocation to the right to align the current block
         long expandBytes = blockSize - blockOffset;
-        assert expandBytes>0 && expandBytes<blockSize;
+        assert expandBytes > 0 && expandBytes < blockSize;
         blockStart += expandBytes;
       }
       assert (blockStart & blockMask) == 0;
       long newCapacity = blockStart + blockSize;
       // Grow the file by at least 25% its previous size
       long percentCapacity = capacity + (capacity >> 2);
-      if (percentCapacity>newCapacity) {
+      if (percentCapacity > newCapacity) {
         newCapacity = percentCapacity;
       }
       // Align with page
@@ -463,24 +466,24 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       // The expansion must have caused free space that can fulfill this allocation.
       id = splitAllocate(blockSizeBits, newCapacity);
       if (id == -1) {
-        throw new AssertionError("Free space not available after expansion: capacity="+capacity+", newCapacity="+newCapacity);
+        throw new AssertionError("Free space not available after expansion: capacity=" + capacity + ", newCapacity=" + newCapacity);
       }
       assert isValidRange(id);
       assert blockSizeBits == getBlockSizeBits(pbuffer.get(id));
-      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: "+id;
-      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: "+id;
-      assert !isAllocated(pbuffer.get(id)) : "Block is allocated: "+id;
-      assert pbuffer.get(id) != (byte)(0x80 | blockSizeBits);
-      pbuffer.put(id, (byte)(0x80 | blockSizeBits));
+      assert isBlockAligned(id, blockSizeBits) : "Block not aligned: " + id;
+      assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: " + id;
+      assert !isAllocated(pbuffer.get(id)) : "Block is allocated: " + id;
+      assert pbuffer.get(id) != (byte) (0x80 | blockSizeBits);
+      pbuffer.put(id, (byte) (0x80 | blockSizeBits));
       //pbuffer.barrier(false); // TODO: necessary?
     }
     // These assertions cause a failure that is unexpected
     assert isValidRange(id);
     assert blockSizeBits == getBlockSizeBits(pbuffer.get(id));
-    assert isBlockAligned(id, blockSizeBits) : "Block not aligned: "+id;
-    assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: "+id;
-    assert isAllocated(pbuffer.get(id)) : "Block not allocated: "+id;
-    assert freeSpaceMaps.get(blockSizeBits) == null || !freeSpaceMaps.get(blockSizeBits).contains(id) : "Block still in free space maps: "+id;
+    assert isBlockAligned(id, blockSizeBits) : "Block not aligned: " + id;
+    assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: " + id;
+    assert isAllocated(pbuffer.get(id)) : "Block not allocated: " + id;
+    assert freeSpaceMaps.get(blockSizeBits) == null || !freeSpaceMaps.get(blockSizeBits).contains(id) : "Block still in free space maps: " + id;
     return id;
   }
 
@@ -489,17 +492,18 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
     assert isValidRange(id);
     byte header = pbuffer.get(id);
     int blockSizeBits = getBlockSizeBits(header);
-    assert isBlockAligned(id, blockSizeBits) : "Block not aligned: "+id;
-    assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: "+id;
+    assert isBlockAligned(id, blockSizeBits) : "Block not aligned: " + id;
+    assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: " + id;
     if (!isAllocated(header)) {
-      throw new AssertionError("Block not allocated: "+id);
+      throw new AssertionError("Block not allocated: " + id);
     }
     modCount++;
-    assert pbuffer.get(id) != (byte)(header&0x7f);
-    pbuffer.put(id, (byte)(header&0x7f));
+    assert pbuffer.get(id) != (byte) (header & 0x7f);
+    pbuffer.put(id, (byte) (header & 0x7f));
     //pbuffer.barrier(false); // TODO: necessary?
     addFreeSpaceMap(id, blockSizeBits, pbuffer.capacity(), false);
   }
+
   // </editor-fold>
 
   // <editor-fold desc="PersistentBlockBuffer Implementation">
@@ -517,11 +521,11 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
         }
         try {
           long capacity = pbuffer.capacity();
-          while (nextId<capacity) {
+          while (nextId < capacity) {
             byte header = pbuffer.get(nextId);
             int blockSizeBits = getBlockSizeBits(header);
-            assert isBlockAligned(nextId, blockSizeBits) : "Block not aligned: "+nextId;
-            assert isBlockComplete(nextId, blockSizeBits) : "Block is incomplete: "+nextId;
+            assert isBlockAligned(nextId, blockSizeBits) : "Block not aligned: " + nextId;
+            assert isBlockComplete(nextId, blockSizeBits) : "Block is incomplete: " + nextId;
             if (isAllocated(header)) {
               return true;
             }
@@ -540,11 +544,11 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
         }
         try {
           long capacity = pbuffer.capacity();
-          while (nextId<capacity) {
+          while (nextId < capacity) {
             byte header = pbuffer.get(nextId);
             int blockSizeBits = getBlockSizeBits(header);
-            assert isBlockAligned(nextId, blockSizeBits) : "Block not aligned: "+nextId;
-            assert isBlockComplete(nextId, blockSizeBits) : "Block is incomplete: "+nextId;
+            assert isBlockAligned(nextId, blockSizeBits) : "Block not aligned: " + nextId;
+            assert isBlockComplete(nextId, blockSizeBits) : "Block is incomplete: " + nextId;
             long ptr = nextId;
             nextId += getBlockSize(blockSizeBits);
             if (isAllocated(header)) {
@@ -587,10 +591,10 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
     assert isValidRange(id);
     byte header = pbuffer.get(id);
     int blockSizeBits = getBlockSizeBits(header);
-    assert isBlockAligned(id, blockSizeBits) : "Block not aligned: "+id;
-    assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: "+id;
+    assert isBlockAligned(id, blockSizeBits) : "Block not aligned: " + id;
+    assert isBlockComplete(id, blockSizeBits) : "Block is incomplete: " + id;
     if (!isAllocated(header)) {
-      throw new AssertionError("Block not allocated: "+id);
+      throw new AssertionError("Block not allocated: " + id);
     }
     return getBlockSize(blockSizeBits) - 1;
   }
@@ -598,7 +602,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   // The block data starts one byte past the block header
   @Override
   protected long getBlockAddress(long id) throws IOException {
-    assert isAllocated(id) : "Block not allocated: "+id;
+    assert isAllocated(id) : "Block not allocated: " + id;
     return id + 1;
   }
 

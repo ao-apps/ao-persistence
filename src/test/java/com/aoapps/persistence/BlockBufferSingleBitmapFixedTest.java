@@ -49,7 +49,7 @@ public class BlockBufferSingleBitmapFixedTest extends BlockBufferTestParent {
 
   @Override
   public PersistentBlockBuffer getBlockBuffer(PersistentBuffer pbuffer) throws IOException {
-    return new FixedPersistentBlockBuffer(pbuffer, (1L<<30));
+    return new FixedPersistentBlockBuffer(pbuffer, (1L << 30));
   }
 
   @Override

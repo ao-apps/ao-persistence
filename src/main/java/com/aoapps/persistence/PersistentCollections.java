@@ -79,13 +79,13 @@ public final class PersistentCollections {
    * @return  true  when the byteBuffer was written to
    */
   public static boolean ensureZeros(RandomAccessFile raf, long position, long count) throws IOException {
-    if (count<0) {
-      throw new IllegalArgumentException("count<0: "+count);
+    if (count < 0) {
+      throw new IllegalArgumentException("count<0: " + count);
     }
     boolean modified = false;
     byte[] buff = BufferManager.getBytes();
     try {
-      while (count>BufferManager.BUFFER_SIZE) {
+      while (count > BufferManager.BUFFER_SIZE) {
         raf.seek(position);
         raf.readFully(buff, 0, BufferManager.BUFFER_SIZE);
         if (!Arrays.equals(buff, zeros)) {
@@ -96,12 +96,12 @@ public final class PersistentCollections {
         position += BufferManager.BUFFER_SIZE;
         count -= BufferManager.BUFFER_SIZE;
       }
-      if (count>0) {
+      if (count > 0) {
         raf.seek(position);
-        raf.readFully(buff, 0, (int)count);
-        if (!AoArrays.equals(buff, zeros, 0, (int)count)) {
+        raf.readFully(buff, 0, (int) count);
+        if (!AoArrays.equals(buff, zeros, 0, (int) count)) {
           raf.seek(position);
-          raf.write(zeros, 0, (int)count);
+          raf.write(zeros, 0, (int) count);
           modified = true;
         }
       }
@@ -121,8 +121,8 @@ public final class PersistentCollections {
    */
   // TODO: Try with readLong instead of copying the array values
   public static boolean ensureZeros(ByteBuffer byteBuffer, int position, int count) {
-    if (count<0) {
-      throw new IllegalArgumentException("count<0: "+count);
+    if (count < 0) {
+      throw new IllegalArgumentException("count<0: " + count);
     }
     boolean modified = false;
     /*
@@ -163,7 +163,7 @@ public final class PersistentCollections {
       while (count > 0 && (position & (Long.BYTES - 1)) != 0) {
         byte b = byteBuffer.get();
         if (b != 0) {
-          byteBuffer.put(position, (byte)0);
+          byteBuffer.put(position, (byte) 0);
           modified = true;
         }
         position++;
@@ -186,7 +186,7 @@ public final class PersistentCollections {
       while (count > 0) {
         byte b = byteBuffer.get();
         if (b != 0) {
-          byteBuffer.put(position, (byte)0);
+          byteBuffer.put(position, (byte) 0);
           modified = true;
         }
         position++;
@@ -240,13 +240,13 @@ public final class PersistentCollections {
     // No mmap for 32-bit
     String dataModel = System.getProperty("sun.arch.data.model");
     if (
-      "32".equals(dataModel)
+        "32".equals(dataModel)
     ) {
       return new RandomAccessFileBuffer();
     }
     // Use mmap for 64-bit
     if (
-      !"64".equals(dataModel)
+        !"64".equals(dataModel)
     ) {
       logger.log(Level.WARNING, "Unexpected value for system property sun.arch.data.model, assuming 64-bit virtual machine: sun.arch.data.model={0}", dataModel);
     }
@@ -270,7 +270,7 @@ public final class PersistentCollections {
   public static PersistentBuffer getPersistentBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel, long maximumCapacity) throws IOException {
     if (maximumCapacity < (1L << 30)) {
       long len = raf.length();
-      if (maximumCapacity<len) {
+      if (maximumCapacity < len) {
         maximumCapacity = len;
       }
     }
@@ -281,13 +281,13 @@ public final class PersistentCollections {
     // No mmap for 32-bit
     String dataModel = System.getProperty("sun.arch.data.model");
     if (
-      "32".equals(dataModel)
+        "32".equals(dataModel)
     ) {
       return new RandomAccessFileBuffer(raf, protectionLevel);
     }
     // Use mmap for 64-bit
     if (
-      !"64".equals(dataModel)
+        !"64".equals(dataModel)
     ) {
       logger.log(Level.WARNING, "Unexpected value for system property sun.arch.data.model, assuming 64-bit virtual machine: sun.arch.data.model={0}", dataModel);
     }
@@ -300,37 +300,37 @@ public final class PersistentCollections {
   @SuppressWarnings("unchecked")
   public static <E> Serializer<E> getSerializer(Class<E> type) {
     if (type == Boolean.class) {
-      return (Serializer<E>)new BooleanSerializer();
+      return (Serializer<E>) new BooleanSerializer();
     }
     if (type == Byte.class) {
-      return (Serializer<E>)new ByteSerializer();
+      return (Serializer<E>) new ByteSerializer();
     }
     if (type == Character.class) {
-      return (Serializer<E>)new CharacterSerializer();
+      return (Serializer<E>) new CharacterSerializer();
     }
     if (type == Double.class) {
-      return (Serializer<E>)new DoubleSerializer();
+      return (Serializer<E>) new DoubleSerializer();
     }
     if (type == Float.class) {
-      return (Serializer<E>)new FloatSerializer();
+      return (Serializer<E>) new FloatSerializer();
     }
     if (type == Integer.class) {
-      return (Serializer<E>)new IntegerSerializer();
+      return (Serializer<E>) new IntegerSerializer();
     }
     if (type == Long.class) {
-      return (Serializer<E>)new LongSerializer();
+      return (Serializer<E>) new LongSerializer();
     }
     if (type == Short.class) {
-      return (Serializer<E>)new ShortSerializer();
+      return (Serializer<E>) new ShortSerializer();
     }
     // Arrays
     Class<?> componentType = type.getComponentType();
     if (componentType != null) {
       if (componentType == Byte.class) {
-        return (Serializer<E>)new ByteArraySerializer();
+        return (Serializer<E>) new ByteArraySerializer();
       }
       if (componentType == Character.class) {
-        return (Serializer<E>)new CharArraySerializer();
+        return (Serializer<E>) new CharArraySerializer();
       }
     }
     // Default Java serialization
@@ -349,27 +349,27 @@ public final class PersistentCollections {
    *                              for linked list pointers, for example.
    */
   public static PersistentBlockBuffer getPersistentBlockBuffer(Serializer<?> serializer, PersistentBuffer pbuffer, long additionalBlockSpace) throws IOException {
-    if (additionalBlockSpace<0) {
-      throw new IllegalArgumentException("additionalBlockSpace<0: "+additionalBlockSpace);
+    if (additionalBlockSpace < 0) {
+      throw new IllegalArgumentException("additionalBlockSpace<0: " + additionalBlockSpace);
     }
     if (serializer.isFixedSerializedSize()) {
       // Use power-of-two fixed size blocks if possible
       long serSize = serializer.getSerializedSize(null);
       long minimumSize = serSize + additionalBlockSpace;
-      if (minimumSize<0) {
-        throw new AssertionError("Long wraparound: "+serSize+"+"+minimumSize+"="+minimumSize);
+      if (minimumSize < 0) {
+        throw new AssertionError("Long wraparound: " + serSize + "+" + minimumSize + "=" + minimumSize);
       }
       if (minimumSize == 0) {
-        minimumSize=1;
+        minimumSize = 1;
       }
       long highestOneBit = Long.highestOneBit(minimumSize);
       return new FixedPersistentBlockBuffer(
-        pbuffer,
-        highestOneBit == (1L<<62)
-        ? minimumSize           // In range 2^62-2^63-1, cannot round up to next highest, use minimum size
-        : minimumSize == highestOneBit
-        ? minimumSize           // minimumSize is a power of two
-        : (highestOneBit<<1)    // use next-highest power of two
+          pbuffer,
+          highestOneBit == (1L << 62)
+              ? minimumSize           // In range 2^62-2^63-1, cannot round up to next highest, use minimum size
+              : minimumSize == highestOneBit
+              ? minimumSize           // minimumSize is a power of two
+              : (highestOneBit << 1)    // use next-highest power of two
       );
     }
     // Then use dynamic sized blocks

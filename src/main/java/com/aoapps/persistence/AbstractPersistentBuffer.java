@@ -163,10 +163,10 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
         if (closed) {
           throw new IOException("Stream closed");
         }
-        if (curRemaining<1) {
+        if (curRemaining < 1) {
           throw new BufferUnderflowException();
         }
-        int value = get(curPosition++)&255;
+        int value = get(curPosition++) & 255;
         curRemaining--;
         return value;
       }
@@ -176,23 +176,23 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
         if (closed) {
           throw new IOException("Stream closed");
         }
-        if (len<0) {
-          throw new IllegalArgumentException("len<0: "+len);
+        if (len < 0) {
+          throw new IllegalArgumentException("len<0: " + len);
         }
         if (len == 0) {
           return 0;
         }
-        if (curRemaining<len) {
+        if (curRemaining < len) {
           if (curRemaining <= 0) {
             // End of file
             return -1;
           }
-          len = (int)curRemaining;
+          len = (int) curRemaining;
         }
         try {
           int numBytes = getSome(curPosition, b, off, len);
-          curPosition+=numBytes;
-          curRemaining-=numBytes;
+          curPosition += numBytes;
+          curRemaining -= numBytes;
           return numBytes;
         } catch (BufferUnderflowException err) {
           return -1;
@@ -207,14 +207,14 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
         if (n <= 0) {
           return 0;
         }
-        if (curRemaining<n) {
+        if (curRemaining < n) {
           if (curRemaining <= 0) {
             return 0;
           }
           n = curRemaining;
         }
-        curPosition+=n;
-        curRemaining-=n;
+        curPosition += n;
+        curRemaining -= n;
         return n;
       }
 
@@ -252,10 +252,10 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
         if (closed) {
           throw new IOException("Stream closed");
         }
-        if (curRemaining<1) {
+        if (curRemaining < 1) {
           throw new BufferOverflowException();
         }
-        put(curPosition++, (byte)b);
+        put(curPosition++, (byte) b);
         curRemaining--;
       }
 
@@ -264,12 +264,12 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
         if (closed) {
           throw new IOException("Stream closed");
         }
-        if (curRemaining<len) {
+        if (curRemaining < len) {
           throw new BufferOverflowException();
         }
         put(curPosition, b, off, len);
-        curPosition+=len;
-        curRemaining-=len;
+        curPosition += len;
+        curRemaining -= len;
       }
 
       @Override

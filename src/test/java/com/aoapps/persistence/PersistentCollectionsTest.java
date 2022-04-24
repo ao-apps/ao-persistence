@@ -59,7 +59,7 @@ public class PersistentCollectionsTest extends TestCase {
   }
 
   public void testGetPersistentBuffer() throws Exception {
-    PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(1L<<20);
+    PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(1L << 20);
     smallBuffer.close();
 
     PersistentBuffer largeBuffer = PersistentCollections.getPersistentBuffer(Long.MAX_VALUE);
@@ -69,7 +69,7 @@ public class PersistentCollectionsTest extends TestCase {
   public void testCharToBuffer() throws Exception {
     byte[] buff = new byte[Character.BYTES];
     for (int i = 0; i < ITERATIONS; i++) {
-      char value = (char)fastRandom.nextInt(Character.MAX_VALUE + 1);
+      char value = (char) fastRandom.nextInt(Character.MAX_VALUE + 1);
       IoUtils.charToBuffer(value, buff);
       char result = IoUtils.bufferToChar(buff);
       assertEquals(value, result);
@@ -79,7 +79,7 @@ public class PersistentCollectionsTest extends TestCase {
   public void testShortToBuffer() throws Exception {
     byte[] buff = new byte[Short.BYTES];
     for (int i = 0; i < ITERATIONS; i++) {
-      short value = (short)(fastRandom.nextInt(1 << Short.SIZE) + Short.MIN_VALUE);
+      short value = (short) (fastRandom.nextInt(1 << Short.SIZE) + Short.MIN_VALUE);
       IoUtils.shortToBuffer(value, buff);
       short result = IoUtils.bufferToShort(buff);
       assertEquals(value, result);
@@ -112,15 +112,15 @@ public class PersistentCollectionsTest extends TestCase {
       // Update 1/8192 of buffer with random values
       for (int d = 0; d < (ENSURE_ZEROS_TEST_SIZE >>> 13); d++) {
         buffer.put(
-          fastRandom.nextInt() & (ENSURE_ZEROS_TEST_SIZE - 1),
-          (byte)fastRandom.nextInt()
+            fastRandom.nextInt() & (ENSURE_ZEROS_TEST_SIZE - 1),
+            (byte) fastRandom.nextInt()
         );
       }
       long startNanos = System.nanoTime();
       buffer.ensureZeros(0, ENSURE_ZEROS_TEST_SIZE);
       totalNanos += System.nanoTime() - startNanos;
     }
-    System.out.println(buffer.getClass().getName()+": ensureZeros in " + BigDecimal.valueOf(totalNanos, 6)+" ms");
+    System.out.println(buffer.getClass().getName() + ": ensureZeros in " + BigDecimal.valueOf(totalNanos, 6) + " ms");
   }
 
   public void testEnsureZeros() throws Exception {

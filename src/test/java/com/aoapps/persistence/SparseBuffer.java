@@ -79,25 +79,25 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 
   @Override
   public void setCapacity(long newCapacity) throws IOException {
-    if (newCapacity<0) {
-      throw new IllegalArgumentException("capacity<0: "+capacity);
+    if (newCapacity < 0) {
+      throw new IllegalArgumentException("capacity<0: " + capacity);
     }
     if (protectionLevel == ProtectionLevel.READ_ONLY) {
       throw new ReadOnlyBufferException();
     }
-    if (newCapacity>capacity) {
+    if (newCapacity > capacity) {
       // TODO: Zero the partial part of the last page when growing
     }
     this.capacity = newCapacity;
     // Discard any pages above new capacity
     long highestPage = newCapacity >>> BIT_SHIFT;
-    if ((newCapacity&0x7ff) != 0) {
+    if ((newCapacity & 0x7ff) != 0) {
       highestPage++;
     }
     Iterator<Long> keyIter = buffers.keySet().iterator();
     while (keyIter.hasNext()) {
       long key = keyIter.next();
-      if (key>highestPage) {
+      if (key > highestPage) {
         keyIter.remove();
       }
     }
@@ -111,18 +111,18 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 
   @Override
   public void get(long position, byte[] buff, int off, int len) throws IOException {
-    if ((position+len)>capacity) {
+    if ((position + len) > capacity) {
       throw new BufferUnderflowException();
     }
     // TODO: More efficient algorithm using blocks calling System.arraycopy.
     long lastBufferNum = -1;
     byte[] lastBuffer = null;
-    while (len>0) {
+    while (len > 0) {
       long blockNum = position >>> BIT_SHIFT;
       if (blockNum != lastBufferNum) {
         lastBuffer = buffers.get(lastBufferNum = blockNum);
       }
-      buff[off] = lastBuffer == null ? 0 : lastBuffer[(int)(position & BLOCK_MASK)];
+      buff[off] = lastBuffer == null ? 0 : lastBuffer[(int) (position & BLOCK_MASK)];
       position++;
       off++;
       len--;
@@ -139,13 +139,13 @@ public class SparseBuffer extends AbstractPersistentBuffer {
     if (protectionLevel == ProtectionLevel.READ_ONLY) {
       throw new ReadOnlyBufferException();
     }
-    if ((position+len)>capacity) {
+    if ((position + len) > capacity) {
       throw new BufferOverflowException();
     }
     // TODO: More efficient algorithm using blocks calling System.arraycopy.
     long lastBufferNum = -1;
     byte[] lastBuffer = null;
-    while (len>0) {
+    while (len > 0) {
       long blockNum = position >>> BIT_SHIFT;
       if (blockNum != lastBufferNum) {
         lastBuffer = buffers.get(lastBufferNum = blockNum);
@@ -156,7 +156,7 @@ public class SparseBuffer extends AbstractPersistentBuffer {
         buffers.put(lastBufferNum, lastBuffer = new byte[4096]);
       }
       if (lastBuffer != null) {
-        lastBuffer[(int)(position & BLOCK_MASK)] = value;
+        lastBuffer[(int) (position & BLOCK_MASK)] = value;
       }
       position++;
       off++;

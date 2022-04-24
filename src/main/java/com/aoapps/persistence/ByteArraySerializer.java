@@ -43,7 +43,7 @@ public class ByteArraySerializer implements Serializer<byte[]> {
 
   @Override
   public long getSerializedSize(byte[] value) {
-    return (long)Integer.BYTES + value.length;
+    return (long) Integer.BYTES + value.length;
   }
 
   private final byte[] ioBuffer = new byte[Integer.BYTES];

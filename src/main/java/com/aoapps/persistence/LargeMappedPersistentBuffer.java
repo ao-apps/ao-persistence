@@ -130,7 +130,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   /**
    * @deprecated The finalization mechanism is inherently problematic.
    */
-  @Deprecated(since="9")
+  @Deprecated(since = "9")
   @Override
   @SuppressWarnings("FinalizeDeclaration")
   protected void finalize() throws Throwable {
@@ -162,14 +162,14 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
     long len = raf.length();
     long maxBuffNum = len >>> BUFFER_NUM_BIT_SHIFT;
     if (maxBuffNum >= Integer.MAX_VALUE) {
-      throw new IOException("file too large for LargeMappedPersistentBuffer: "+len);
+      throw new IOException("file too large for LargeMappedPersistentBuffer: " + len);
     }
-    int buffNumInt = (int)maxBuffNum;
+    int buffNumInt = (int) maxBuffNum;
     // Expand list
     while (mappedBuffers.size() <= buffNumInt) {
-      long mapStart = ((long)mappedBuffers.size()) << BUFFER_NUM_BIT_SHIFT;
+      long mapStart = ((long) mappedBuffers.size()) << BUFFER_NUM_BIT_SHIFT;
       long size = raf.length() - mapStart;
-      if (size>BUFFER_SIZE) {
+      if (size > BUFFER_SIZE) {
         size = BUFFER_SIZE;
       }
       mappedBuffers.add(channel.map(protectionLevel == ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, mapStart, size));
@@ -180,21 +180,21 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   private static int getBufferNum(long position) throws IOException {
-    if (position<0) {
-      throw new IllegalArgumentException("position<0: "+position);
+    if (position < 0) {
+      throw new IllegalArgumentException("position<0: " + position);
     }
     long buffNum = position >>> BUFFER_NUM_BIT_SHIFT;
     if (buffNum >= Integer.MAX_VALUE) {
-      throw new IOException("position too large for LargeMappedPersistentBuffer: "+position);
+      throw new IOException("position too large for LargeMappedPersistentBuffer: " + position);
     }
-    return (int)buffNum;
+    return (int) buffNum;
   }
 
   /**
    * Gets the position as an integer or throws IOException if too big for a mapped buffer.
    */
   private static int getIndex(long position) {
-    return (int)(position&BUFFER_INDEX_MASK);
+    return (int) (position & BUFFER_INDEX_MASK);
   }
 
   @Override
@@ -203,8 +203,8 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
     if (oldLength != newLength) {
       // Remove any buffers that could be affected
       long affectedFrom = getBufferNum(Math.min(oldLength, newLength));
-      while (mappedBuffers.size()>affectedFrom) {
-        int index = mappedBuffers.size()-1;
+      while (mappedBuffers.size() > affectedFrom) {
+        int index = mappedBuffers.size() - 1;
         MappedByteBuffer mappedBuffer = mappedBuffers.get(index);
         if (modifiedBuffers != null) {
           if (modifiedBuffers.get(index)) {
@@ -216,16 +216,16 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
       }
       raf.setLength(newLength);
       fillMappedBuffers();
-      if (newLength>oldLength) {
+      if (newLength > oldLength) {
         // Ensure zero-filled
-        ensureZeros(oldLength, newLength-oldLength);
+        ensureZeros(oldLength, newLength - oldLength);
       }
     }
   }
 
   @Override
   public void get(long position, byte[] buff, int off, int len) throws IOException {
-    if (len>0) {
+    if (len > 0) {
       int bufferNum = getBufferNum(position);
       int bufferStart = getIndex(position);
       int bufferSize = BUFFER_SIZE - bufferStart;
@@ -268,18 +268,18 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 
   @Override
   public void ensureZeros(long position, long len) throws IOException {
-    if (len>0) {
+    if (len > 0) {
       int bufferNum = getBufferNum(position);
       int bufferStart = getIndex(position);
       int bufferSize = BUFFER_SIZE - bufferStart;
       do {
         if (bufferSize > len) {
-          bufferSize = (int)len;
+          bufferSize = (int) len;
         }
         MappedByteBuffer mappedBuffer = mappedBuffers.get(bufferNum);
         if (
-          PersistentCollections.ensureZeros(mappedBuffer, bufferStart, bufferSize)
-          && modifiedBuffers != null
+            PersistentCollections.ensureZeros(mappedBuffer, bufferStart, bufferSize)
+                && modifiedBuffers != null
         ) {
           modifiedBuffers.set(bufferNum, true);
         }
@@ -312,7 +312,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 
   @Override
   public void put(long position, byte[] buff, int off, int len) throws IOException {
-    if (len>0) {
+    if (len > 0) {
       int bufferNum = getBufferNum(position);
       int bufferStart = getIndex(position);
       int bufferSize = BUFFER_SIZE - bufferStart;
@@ -349,7 +349,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   @Override
   public void barrier(boolean force) throws IOException {
     if (protectionLevel.compareTo(ProtectionLevel.BARRIER) >= 0) {
-      for (int c=0, len=mappedBuffers.size(); c<len; c++) {
+      for (int c = 0, len = mappedBuffers.size(); c < len; c++) {
         if (modifiedBuffers.get(c)) {
           mappedBuffers.get(c).force();
           modifiedBuffers.set(c, false);
@@ -367,16 +367,16 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   @Override
   public int getInt(long position) throws IOException {
     int startBufferNum = getBufferNum(position);
-    int endBufferNum = getBufferNum(position+3);
+    int endBufferNum = getBufferNum(position + 3);
     if (startBufferNum == endBufferNum) {
       return mappedBuffers.get(startBufferNum).getInt(getIndex(position));
     } else {
       // Boundary condition
       return
-          ((get(position)&255) << 24)
-        + ((get(position+1)&255) << 16)
-        + ((get(position+2)&255) << 8)
-        + (get(position+3)&255)
+          ((get(position) & 255) << 24)
+              + ((get(position + 1) & 255) << 16)
+              + ((get(position + 2) & 255) << 8)
+              + (get(position + 3) & 255)
       ;
     }
   }
@@ -384,20 +384,20 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   @Override
   public long getLong(long position) throws IOException {
     int startBufferNum = getBufferNum(position);
-    int endBufferNum = getBufferNum(position+7);
+    int endBufferNum = getBufferNum(position + 7);
     if (startBufferNum == endBufferNum) {
       return mappedBuffers.get(startBufferNum).getLong(getIndex(position));
     } else {
       // Boundary condition
       return
-          ((get(position)&255L) << 56)
-        + ((get(position+1)&255L) << 48)
-        + ((get(position+2)&255L) << 40)
-        + ((get(position+3)&255L) << 32)
-        + ((get(position+4)&255L) << 24)
-        + ((get(position+5)&255L) << 16)
-        + ((get(position+6)&255L) << 8)
-        + (get(position+7)&255L)
+          ((get(position) & 255L) << 56)
+              + ((get(position + 1) & 255L) << 48)
+              + ((get(position + 2) & 255L) << 40)
+              + ((get(position + 3) & 255L) << 32)
+              + ((get(position + 4) & 255L) << 24)
+              + ((get(position + 5) & 255L) << 16)
+              + ((get(position + 6) & 255L) << 8)
+              + (get(position + 7) & 255L)
       ;
     }
   }
@@ -405,7 +405,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   @Override
   public void putInt(long position, int value) throws IOException {
     int startBufferNum = getBufferNum(position);
-    int endBufferNum = getBufferNum(position+3);
+    int endBufferNum = getBufferNum(position + 3);
     if (startBufferNum == endBufferNum) {
       mappedBuffers.get(startBufferNum).putInt(getIndex(position), value);
       if (modifiedBuffers != null) {
@@ -413,17 +413,17 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
       }
     } else {
       // Boundary condition
-      put(position, (byte)(value >>> 24));
-      put(position+1, (byte)(value >>> 16));
-      put(position+2, (byte)(value >>> 8));
-      put(position+3, (byte)value);
+      put(position, (byte) (value >>> 24));
+      put(position + 1, (byte) (value >>> 16));
+      put(position + 2, (byte) (value >>> 8));
+      put(position + 3, (byte) value);
     }
   }
 
   @Override
   public void putLong(long position, long value) throws IOException {
     int startBufferNum = getBufferNum(position);
-    int endBufferNum = getBufferNum(position+7);
+    int endBufferNum = getBufferNum(position + 7);
     if (startBufferNum == endBufferNum) {
       mappedBuffers.get(startBufferNum).putLong(getIndex(position), value);
       if (modifiedBuffers != null) {
@@ -431,14 +431,14 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
       }
     } else {
       // Boundary condition
-      put(position, (byte)(value >>> 56));
-      put(position+1, (byte)(value >>> 48));
-      put(position+2, (byte)(value >>> 40));
-      put(position+3, (byte)(value >>> 32));
-      put(position+4, (byte)(value >>> 24));
-      put(position+5, (byte)(value >>> 16));
-      put(position+6, (byte)(value >>> 8));
-      put(position+7, (byte)value);
+      put(position, (byte) (value >>> 56));
+      put(position + 1, (byte) (value >>> 48));
+      put(position + 2, (byte) (value >>> 40));
+      put(position + 3, (byte) (value >>> 32));
+      put(position + 4, (byte) (value >>> 24));
+      put(position + 5, (byte) (value >>> 16));
+      put(position + 6, (byte) (value >>> 8));
+      put(position + 7, (byte) value);
     }
   }
 }

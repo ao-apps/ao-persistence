@@ -63,14 +63,14 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
    */
   private enum FailureMethod {
     capacity {
-      @Override
-      @SuppressWarnings("AssertWithSideEffects")
-      int getFailInterval() {
-        int failInterval = 5000;
-        assert (failInterval=500000) != 0; // Intentional assertion side-effect to reduce failure frequency due to higher buffer access rates
-        return failInterval;
-      }
-    },
+    @Override
+    @SuppressWarnings("AssertWithSideEffects")
+    int getFailInterval() {
+      int failInterval = 5000;
+      assert (failInterval = 500000) != 0; // Intentional assertion side-effect to reduce failure frequency due to higher buffer access rates
+      return failInterval;
+    }
+  },
     setCapacity {
       @Override
       int getFailInterval() {
@@ -82,7 +82,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
       @SuppressWarnings("AssertWithSideEffects")
       int getFailInterval() {
         int failInterval = 5000;
-        assert (failInterval=50000) != 0; // Intentional assertion side-effect to reduce failure frequency due to higher buffer access rates
+        assert (failInterval = 50000) != 0; // Intentional assertion side-effect to reduce failure frequency due to higher buffer access rates
         return failInterval;
       }
     },
@@ -98,6 +98,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
         return 5000;
       }
     };
+
     abstract int getFailInterval();
   }
 
@@ -146,19 +147,19 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
           List<Long> sectors = new ArrayList<>(writeCache.keySet());
           Collections.shuffle(sectors, fastRandom);
           int numToWrite = fastRandom.nextInt(sectors.size());
-          for (int c=0; c<numToWrite; c++) {
+          for (int c = 0; c < numToWrite; c++) {
             long sector = sectors.get(c);
-            long sectorEnd = sector+SECTOR_SIZE;
-            if (sectorEnd>capacity) {
+            long sectorEnd = sector + SECTOR_SIZE;
+            if (sectorEnd > capacity) {
               sectorEnd = capacity;
             }
-            wrapped.put(sector, writeCache.get(sector), 0, (int)(sectorEnd-sector));
+            wrapped.put(sector, writeCache.get(sector), 0, (int) (sectorEnd - sector));
           }
           writeCache.clear();
         }
         wrapped.barrier(true);
         wrapped.close();
-        throw new IOException(failureMethod+": Random simulated failure.  The stream will be unusable to simulate power failure or software crash.");
+        throw new IOException(failureMethod + ": Random simulated failure.  The stream will be unusable to simulate power failure or software crash.");
       }
     }
   }
@@ -169,11 +170,11 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
       // Write current write cache in full
       for (Map.Entry<Long, byte[]> entry : writeCache.entrySet()) {
         long sector = entry.getKey();
-        long sectorEnd = sector+SECTOR_SIZE;
-        if (sectorEnd>capacity) {
+        long sectorEnd = sector + SECTOR_SIZE;
+        if (sectorEnd > capacity) {
           sectorEnd = capacity;
         }
-        wrapped.put(sector, entry.getValue(), 0, (int)(sectorEnd-sector));
+        wrapped.put(sector, entry.getValue(), 0, (int) (sectorEnd - sector));
       }
       writeCache.clear();
     }
@@ -224,7 +225,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
         assert newCapacity > sector;
         if (newCapacity < sectorEnd) {
           // Also, zero-out any part of the last sector (beyond newCapacity) if it is a cached write
-          Arrays.fill(entry.getValue(), (int)(newCapacity - sector), SECTOR_SIZE, (byte)0);
+          Arrays.fill(entry.getValue(), (int) (newCapacity - sector), SECTOR_SIZE, (byte) 0);
         }
       }
     }
@@ -234,38 +235,38 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
   @Override
   public int getSome(long position, final byte[] buff, int off, int len) throws IOException {
     checkClosed();
-    if (position<0) {
-      throw new IllegalArgumentException("position<0: "+position);
+    if (position < 0) {
+      throw new IllegalArgumentException("position<0: " + position);
     }
-    if (off<0) {
-      throw new IllegalArgumentException("off<0: "+off);
+    if (off < 0) {
+      throw new IllegalArgumentException("off<0: " + off);
     }
-    if (len<0) {
-      throw new IllegalArgumentException("len<0: "+len);
+    if (len < 0) {
+      throw new IllegalArgumentException("len<0: " + len);
     }
-    final long end = position+len;
+    final long end = position + len;
     assert end <= capacity();
     randomFail(FailureMethod.getSome);
     int bytesRead = 0;
-    while (position<end) {
-      long sector = position&(-SECTOR_SIZE);
-      assert (sector&(SECTOR_SIZE-1)) == 0 : "Sector not aligned";
-      int buffEnd = off + (SECTOR_SIZE+(int)(sector-position));
-      if (buffEnd>(off+len)) {
-        buffEnd = off+len;
+    while (position < end) {
+      long sector = position & (-SECTOR_SIZE);
+      assert (sector & (SECTOR_SIZE - 1)) == 0 : "Sector not aligned";
+      int buffEnd = off + (SECTOR_SIZE + (int) (sector - position));
+      if (buffEnd > (off + len)) {
+        buffEnd = off + len;
       }
-      int bytesToRead = buffEnd-off;
+      int bytesToRead = buffEnd - off;
       assert bytesToRead <= len;
       byte[] cached = writeCache.get(sector);
       int count;
       if (cached != null) {
-        System.arraycopy(cached, (int)(position-sector), buff, off, bytesToRead);
+        System.arraycopy(cached, (int) (position - sector), buff, off, bytesToRead);
         count = bytesToRead;
       } else {
         count = wrapped.getSome(position, buff, off, bytesToRead);
       }
       bytesRead += count;
-      if (count<bytesToRead) {
+      if (count < bytesToRead) {
         break;
       }
       position += count;
@@ -283,40 +284,40 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
   @Override
   public void put(long position, byte[] buff, int off, int len) throws IOException {
     checkClosed();
-    if (position<0) {
-      throw new IllegalArgumentException("position<0: "+position);
+    if (position < 0) {
+      throw new IllegalArgumentException("position<0: " + position);
     }
-    if (off<0) {
-      throw new IllegalArgumentException("off<0: "+off);
+    if (off < 0) {
+      throw new IllegalArgumentException("off<0: " + off);
     }
-    if (len<0) {
-      throw new IllegalArgumentException("len<0: "+len);
+    if (len < 0) {
+      throw new IllegalArgumentException("len<0: " + len);
     }
     long capacity = capacity();
-    final long end = position+len;
+    final long end = position + len;
     assert end <= capacity;
     randomFail(FailureMethod.put);
-    while (position<end) {
-      long sector = position&(-SECTOR_SIZE);
-      assert (sector&(SECTOR_SIZE-1)) == 0 : "Sector not aligned";
-      int buffEnd = off + (SECTOR_SIZE+(int)(sector-position));
-      if (buffEnd>(off+len)) {
-        buffEnd = off+len;
+    while (position < end) {
+      long sector = position & (-SECTOR_SIZE);
+      assert (sector & (SECTOR_SIZE - 1)) == 0 : "Sector not aligned";
+      int buffEnd = off + (SECTOR_SIZE + (int) (sector - position));
+      if (buffEnd > (off + len)) {
+        buffEnd = off + len;
       }
-      int bytesToWrite = buffEnd-off;
+      int bytesToWrite = buffEnd - off;
       byte[] cached = writeCache.get(sector);
       if (cached == null) {
         // Populate cache (consider capacity)
         cached = new byte[SECTOR_SIZE];
-        long sectorEnd = sector+SECTOR_SIZE;
-        if (sectorEnd>capacity) {
+        long sectorEnd = sector + SECTOR_SIZE;
+        if (sectorEnd > capacity) {
           sectorEnd = capacity;
         }
-        wrapped.get(sector, cached, 0, (int)(sectorEnd-sector));
+        wrapped.get(sector, cached, 0, (int) (sectorEnd - sector));
         writeCache.put(sector, cached);
       }
       // Update cache only (do not write-through)
-      System.arraycopy(buff, off, cached, (int)(position-sector), bytesToWrite);
+      System.arraycopy(buff, off, cached, (int) (position - sector), bytesToWrite);
       position += bytesToWrite;
       off += bytesToWrite;
       len -= bytesToWrite;

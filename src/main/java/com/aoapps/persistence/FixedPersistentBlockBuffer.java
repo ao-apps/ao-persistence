@@ -87,7 +87,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
   public FixedPersistentBlockBuffer(PersistentBuffer pbuffer, long blockSize) {
     super(pbuffer);
     if (blockSize <= 0) {
-      throw new IllegalArgumentException("blockSize <= 0: "+blockSize);
+      throw new IllegalArgumentException("blockSize <= 0: " + blockSize);
     }
     this.blockSize = blockSize;
 
@@ -97,16 +97,16 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
       singleBitmap = true;
       bitmapSize = 1;
     } else {
-      long smallestPowerOfTwo = 1L << (64-1-numZeros);
+      long smallestPowerOfTwo = 1L << (64 - 1 - numZeros);
       assert smallestPowerOfTwo == Long.highestOneBit(blockSize);
       if (smallestPowerOfTwo != blockSize) {
         //smallestPowerOfTwo <<= 1;
         numZeros--;
       }
-      if (numZeros <= (64-1-30)) {
+      if (numZeros <= (64 - 1 - 30)) {
         // Only a single bit map at the beginning of the file
         singleBitmap = true;
-        bitmapSize = 1L << (numZeros-3);
+        bitmapSize = 1L << (numZeros - 3);
       } else {
         // Multiple bit maps spread throughout the file
         singleBitmap = false;
@@ -156,8 +156,8 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
    */
   @Override
   public long allocate(long minimumSize) throws IOException {
-    if (minimumSize>blockSize) {
-      throw new IOException("minimumSize>blockSize: "+minimumSize+">"+blockSize);
+    if (minimumSize > blockSize) {
+      throw new IOException("minimumSize>blockSize: " + minimumSize + ">" + blockSize);
     }
     // Check known first
     if (!knownFreeIds.isEmpty()) {
@@ -166,36 +166,36 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
       long freeId = freeIdL;
       long bitmapBitsAddress = getBitMapBitsAddress(freeId);
       byte bits = pbuffer.get(bitmapBitsAddress);
-      int bit = 1 << (freeId&7);
+      int bit = 1 << (freeId & 7);
       modCount++;
-      pbuffer.put(bitmapBitsAddress, (byte)(bits | bit));
+      pbuffer.put(bitmapBitsAddress, (byte) (bits | bit));
       return freeId;
     }
     long bitmapBitsAddress = getBitMapBitsAddress(lowestFreeId);
     long capacity = pbuffer.capacity();
-    while (bitmapBitsAddress<capacity) {
+    while (bitmapBitsAddress < capacity) {
       byte bits = pbuffer.get(bitmapBitsAddress);
       if (bits != -1) {
         // Check as many bits as possible
-        for (int bit = 1 << (lowestFreeId&7); bit != 0x100; bit <<= 1) {
-          if ((bits&bit) == 0) {
+        for (int bit = 1 << (lowestFreeId & 7); bit != 0x100; bit <<= 1) {
+          if ((bits & bit) == 0) {
             modCount++;
-            pbuffer.put(bitmapBitsAddress, (byte)(bits | bit));
+            pbuffer.put(bitmapBitsAddress, (byte) (bits | bit));
             return lowestFreeId++;
           }
           lowestFreeId++;
         }
       } else {
         // All ones, go to the next byte
-        lowestFreeId = (lowestFreeId & 0xfffffffffffffff8L)+8L;
+        lowestFreeId = (lowestFreeId & 0xfffffffffffffff8L) + 8L;
       }
       bitmapBitsAddress = getBitMapBitsAddress(lowestFreeId);
     }
     // Grow the underlying storage to make room for the bitmap space.
-    assert (lowestFreeId&7) == 0 : "lowestFreeId must be the beginning of a byte";
+    assert (lowestFreeId & 7) == 0 : "lowestFreeId must be the beginning of a byte";
     modCount++;
-    expandCapacity(capacity, bitmapBitsAddress+1);
-    pbuffer.put(bitmapBitsAddress, (byte)1);
+    expandCapacity(capacity, bitmapBitsAddress + 1);
+    pbuffer.put(bitmapBitsAddress, (byte) 1);
     return lowestFreeId++;
   }
 
@@ -208,15 +208,15 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
     long bitmapBitsAddress = getBitMapBitsAddress(id);
     byte bits = pbuffer.get(bitmapBitsAddress);
     int bit = 1 << (id & 7);
-    if ((bits&bit) == 0) {
-      throw new IllegalStateException("Block already deallocated: "+id);
+    if ((bits & bit) == 0) {
+      throw new IllegalStateException("Block already deallocated: " + id);
     }
     knownFreeIds.add(id);
     // else if (id < lowestFreeId) {
     //   lowestFreeId = id;
     // }
     modCount++;
-    pbuffer.put(bitmapBitsAddress, (byte)(bits ^ bit));
+    pbuffer.put(bitmapBitsAddress, (byte) (bits ^ bit));
   }
 
   @Override
@@ -233,19 +233,19 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
         try {
           long bitmapBitsAddress = getBitMapBitsAddress(nextId);
           long capacity = pbuffer.capacity();
-          while (bitmapBitsAddress<capacity) {
+          while (bitmapBitsAddress < capacity) {
             byte bits = pbuffer.get(bitmapBitsAddress);
             if (bits != 0) {
               // Check as many bits as possible
-              for (int bit = 1 << (nextId&7); bit != 0x100; bit <<= 1) {
-                if ((bits&bit) != 0) {
+              for (int bit = 1 << (nextId & 7); bit != 0x100; bit <<= 1) {
+                if ((bits & bit) != 0) {
                   return true;
                 }
                 nextId++;
               }
             } else {
               // All zero, go to the next byte
-              nextId = (nextId & 0xfffffffffffffff8L)+8L;
+              nextId = (nextId & 0xfffffffffffffff8L) + 8L;
             }
             bitmapBitsAddress = getBitMapBitsAddress(nextId);
           }
@@ -262,19 +262,19 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
         try {
           long bitmapBitsAddress = getBitMapBitsAddress(nextId);
           long capacity = pbuffer.capacity();
-          while (bitmapBitsAddress<capacity) {
+          while (bitmapBitsAddress < capacity) {
             byte bits = pbuffer.get(bitmapBitsAddress);
             if (bits != 0) {
               // Check as many bits as possible
-              for (int bit = 1 << (nextId&7); bit != 0x100; bit <<= 1) {
-                if ((bits&bit) != 0) {
+              for (int bit = 1 << (nextId & 7); bit != 0x100; bit <<= 1) {
+                if ((bits & bit) != 0) {
                   return lastId = nextId++;
                 }
                 nextId++;
               }
             } else {
               // All zero, go to the next byte
-              nextId = (nextId & 0xfffffffffffffff8L)+8L;
+              nextId = (nextId & 0xfffffffffffffff8L) + 8L;
             }
             bitmapBitsAddress = getBitMapBitsAddress(nextId);
           }
@@ -310,12 +310,12 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
   protected void expandCapacity(long oldCapacity, long newCapacity) throws IOException {
     // Grow the file by at least 25% its previous size
     long percentCapacity = oldCapacity + (oldCapacity >> 2);
-    if (percentCapacity>newCapacity) {
+    if (percentCapacity > newCapacity) {
       newCapacity = percentCapacity;
     }
     // Align with page
-    if ((newCapacity&0xfff) != 0) {
-      newCapacity = (newCapacity & 0xfffffffffffff000L)+4096L;
+    if ((newCapacity & 0xfff) != 0) {
+      newCapacity = (newCapacity & 0xfffffffffffff000L) + 4096L;
     }
     //System.out.println("DEBUG: newCapacity="+newCapacity);
     pbuffer.setCapacity(newCapacity);
@@ -328,7 +328,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
   @Override
   protected void ensureCapacity(long capacity) throws IOException {
     long curCapacity = pbuffer.capacity();
-    if (curCapacity<capacity) {
+    if (curCapacity < capacity) {
       expandCapacity(curCapacity, capacity);
     }
   }

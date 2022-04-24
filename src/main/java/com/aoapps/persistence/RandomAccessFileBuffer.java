@@ -107,7 +107,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
   /**
    * @deprecated The finalization mechanism is inherently problematic.
    */
-  @Deprecated(since="9")
+  @Deprecated(since = "9")
   @Override
   @SuppressWarnings("FinalizeDeclaration")
   protected void finalize() throws Throwable {
@@ -136,7 +136,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
   public void setCapacity(long newLength) throws IOException {
     long oldLength = capacity();
     raf.setLength(newLength);
-    if (newLength>oldLength) {
+    if (newLength > oldLength) {
       // Ensure zero-filled
       ensureZeros(oldLength, newLength - oldLength);
     }
@@ -146,7 +146,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
   public int getSome(long position, byte[] buff, int off, int len) throws IOException {
     raf.seek(position);
     int count = raf.read(buff, off, len);
-    if (count<0) {
+    if (count < 0) {
       throw new BufferUnderflowException();
     }
     return count;
@@ -181,7 +181,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
 
   @Override
   public void put(long position, byte[] buff, int off, int len) throws IOException {
-    if ((position+len)>capacity()) {
+    if ((position + len) > capacity()) {
       throw new BufferOverflowException();
     }
     raf.seek(position);

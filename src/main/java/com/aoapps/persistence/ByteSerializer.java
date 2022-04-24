@@ -56,6 +56,6 @@ public class ByteSerializer implements Serializer<Byte> {
     if (value == -1) {
       throw new EOFException();
     }
-    return (byte)value;
+    return (byte) value;
   }
 }

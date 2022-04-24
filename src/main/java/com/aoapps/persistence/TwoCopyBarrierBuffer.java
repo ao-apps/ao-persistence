@@ -146,7 +146,9 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 
   private static final Set<TwoCopyBarrierBuffer> shutdownBuffers = new HashSet<>();
 
-  private static class FieldLock {/* Empty lock class to help heap profile */}
+  private static class FieldLock {
+    // Empty lock class to help heap profile
+  }
 
   /**
    * TODO: Is there a way we can combine the force calls between all buffers?
@@ -176,12 +178,12 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         final boolean[] wrote = {false};
         final int size = toClose.size();
         // The maximum number of threads will be 100 or 1/20th of the number of buffers, whichever is larger
-        int maxNumThreads = Math.max(100, size/20);
+        int maxNumThreads = Math.max(100, size / 20);
         int numThreads = Math.min(maxNumThreads, size);
         // TODO: This concurrency really didn't help much :(
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
         try {
-          for (int c=0;c<size;c++) {
+          for (int c = 0; c < size; c++) {
             final TwoCopyBarrierBuffer buffer = toClose.get(c);
             executorService.submit(() -> {
               synchronized (fieldLock) {
@@ -190,9 +192,9 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
                 if (timeSince <= -60000 || timeSince >= 60000) {
                   if (logger.isLoggable(Level.INFO)) {
                     logger.info(
-                      (size == 1)
-                      ? "Closing the TwoCopyBarrierBuffer."
-                      : "Closing TwoCopyBarrierBuffer " + counter[0] + " of " + size+"."
+                        (size == 1)
+                            ? "Closing the TwoCopyBarrierBuffer."
+                            : "Closing TwoCopyBarrierBuffer " + counter[0] + " of " + size + "."
                     );
                   }
                   wrote[0] = true;
@@ -217,9 +219,9 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
               terminated = executorService.awaitTermination(3600, TimeUnit.SECONDS);
               if (!terminated && logger.isLoggable(Level.INFO)) {
                 logger.info(
-                  (size == 1)
-                  ? "Waiting for the TwoCopyBarrierBuffer to close."
-                  : "Waiting for all " + size + " TwoCopyBarrierBuffers to close."
+                    (size == 1)
+                        ? "Waiting for the TwoCopyBarrierBuffer to close."
+                        : "Waiting for all " + size + " TwoCopyBarrierBuffers to close."
                 );
               }
             } catch (InterruptedException err) {
@@ -232,15 +234,16 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         synchronized (fieldLock) {
           if (wrote[0] && logger.isLoggable(Level.INFO)) {
             logger.info(
-              (size == 1)
-              ? "Finished closing the TwoCopyBarrierBuffer."
-              : "Finished closing all " + size + " TwoCopyBarrierBuffers."
+                (size == 1)
+                    ? "Finished closing the TwoCopyBarrierBuffer."
+                    : "Finished closing all " + size + " TwoCopyBarrierBuffers."
             );
           }
         }
       }
     }
   };
+
   static {
     Runtime.getRuntime().addShutdownHook(shutdownHook);
   }
@@ -252,7 +255,10 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   private final int sectorSize;
   private final long asynchronousCommitDelay;
   private final long synchronousCommitDelay;
-  private static class CacheLock {/* Empty lock class to help heap profile */}
+
+  private static class CacheLock {
+    // Empty lock class to help heap profile
+  }
   private final CacheLock cacheLock = new CacheLock();
 
   // All modifiable fields are protected by cacheLock
@@ -271,11 +277,11 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
    * </p>
    */
   private SortedMap<Long, byte[]>
-    // Changes since the current (most up-to-date) file was last updated
-    currentWriteCache = new TreeMap<>(),
-    // Changes since the old (previous version) file was last updated.  This
-    // is a superset of <code>currentWriteCache</code>.
-    oldWriteCache = new TreeMap<>()
+      // Changes since the current (most up-to-date) file was last updated
+      currentWriteCache = new TreeMap<>(),
+      // Changes since the old (previous version) file was last updated.  This
+      // is a superset of <code>currentWriteCache</code>.
+      oldWriteCache = new TreeMap<>()
   ;
   private long capacity; // The underlying storage is not extended until commit time.
   private RandomAccessFile raf; // Reads on non-cached data are read from here (this is the current file) - this is read-only
@@ -355,16 +361,16 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   public TwoCopyBarrierBuffer(File file, ProtectionLevel protectionLevel, int sectorSize, long asynchronousCommitDelay, long synchronousCommitDelay) throws IOException {
     super(protectionLevel);
     if (Integer.bitCount(sectorSize) != 1) {
-      throw new IllegalArgumentException("sectorSize is not a power of two: "+sectorSize);
+      throw new IllegalArgumentException("sectorSize is not a power of two: " + sectorSize);
     }
-    if (sectorSize<1) {
-      throw new IllegalArgumentException("sectorSize<1: "+sectorSize);
+    if (sectorSize < 1) {
+      throw new IllegalArgumentException("sectorSize<1: " + sectorSize);
     }
-    if (asynchronousCommitDelay<0) {
-      throw new IllegalArgumentException("asynchronousCommitDelay<0: "+asynchronousCommitDelay);
+    if (asynchronousCommitDelay < 0) {
+      throw new IllegalArgumentException("asynchronousCommitDelay<0: " + asynchronousCommitDelay);
     }
-    if (synchronousCommitDelay<0) {
-      throw new IllegalArgumentException("synchronousCommitDelay<0: "+synchronousCommitDelay);
+    if (synchronousCommitDelay < 0) {
+      throw new IllegalArgumentException("synchronousCommitDelay<0: " + synchronousCommitDelay);
     }
     this.tempFileContext = null;
     this.file = file;
@@ -412,20 +418,20 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
     try (InputStream oldIn = new FileInputStream(oldFile)) {
       byte[] buff = new byte[sectorSize];
       byte[] oldBuff = new byte[sectorSize];
-      for (long sector=0; sector<capacity; sector+=sectorSize) {
-        long sectorEnd = sector+sectorSize;
-        if (sectorEnd>capacity) {
+      for (long sector = 0; sector < capacity; sector += sectorSize) {
+        long sectorEnd = sector + sectorSize;
+        if (sectorEnd > capacity) {
           sectorEnd = capacity;
         }
-        int inBytes = (int)(sectorEnd - sector);
-        assert inBytes>0;
+        int inBytes = (int) (sectorEnd - sector);
+        assert inBytes > 0;
         // Read current bytes
         raf.readFully(buff, 0, inBytes);
-        if (sectorEnd>oldCapacity) {
+        if (sectorEnd > oldCapacity) {
           // Old capacity too small, add to oldWriteCache if can't assume all zeros
-          if (sector<oldCapacity || !AoArrays.allEquals(buff, 0, inBytes, (byte)0)) {
-            if (inBytes<sectorSize) {
-              Arrays.fill(buff, sectorSize-inBytes, sectorSize, (byte)0);
+          if (sector < oldCapacity || !AoArrays.allEquals(buff, 0, inBytes, (byte) 0)) {
+            if (inBytes < sectorSize) {
+              Arrays.fill(buff, sectorSize - inBytes, sectorSize, (byte) 0);
             }
             oldWriteCache.put(sector, buff);
             buff = new byte[sectorSize];
@@ -435,8 +441,8 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
           IoUtils.readFully(oldIn, oldBuff, 0, inBytes);
           if (!AoArrays.equals(buff, oldBuff, 0, inBytes)) {
             // Not equal, add to oldWriteCache
-            if (inBytes<sectorSize) {
-              Arrays.fill(buff, sectorSize-inBytes, sectorSize, (byte)0);
+            if (inBytes < sectorSize) {
+              Arrays.fill(buff, sectorSize - inBytes, sectorSize, (byte) 0);
             }
             oldWriteCache.put(sector, buff);
             buff = new byte[sectorSize];
@@ -465,7 +471,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         long oldLength = newRaf.length();
         if (capacity != oldLength) {
           newRaf.setLength(capacity);
-          if (capacity>oldLength) {
+          if (capacity > oldLength) {
             // Ensure zero-filled
             PersistentCollections.ensureZeros(newRaf, oldLength, capacity - oldLength);
           }
@@ -474,13 +480,13 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         for (Map.Entry<Long, byte[]> entry : oldWriteCache.entrySet()) {
           long sector = entry.getKey();
           assert sector < capacity;
-          assert (sector & (sectorSize-1)) == 0 : "Sector not aligned";
+          assert (sector & (sectorSize - 1)) == 0 : "Sector not aligned";
           long sectorEnd = sector + sectorSize;
-          if (sectorEnd>capacity) {
+          if (sectorEnd > capacity) {
             sectorEnd = capacity;
           }
           newRaf.seek(sector);
-          newRaf.write(entry.getValue(), 0, (int)(sectorEnd - sector));
+          newRaf.write(entry.getValue(), 0, (int) (sectorEnd - sector));
         }
         if (protectionLevel.compareTo(ProtectionLevel.BARRIER) >= 0) {
           newRaf.getChannel().force(false);
@@ -534,7 +540,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   private void checkClosed() throws IOException {
     assert Thread.holdsLock(cacheLock);
     if (isClosed) {
-      throw new IOException("TwoCopyBarrierBuffer(\""+file.getPath()+"\") is closed");
+      throw new IOException("TwoCopyBarrierBuffer(\"" + file.getPath() + "\") is closed");
     }
   }
 
@@ -573,13 +579,13 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         public void run() {
           synchronized (cacheLock) {
             if (
-              // Ignore if canceled
-              asynchronousCommitTimerTask == this
+                // Ignore if canceled
+                asynchronousCommitTimerTask == this
             ) {
               asynchronousCommitTimerTask = null;
               if (
-                // Nothing to write?
-                firstWriteTime != -1
+                  // Nothing to write?
+                  firstWriteTime != -1
               ) {
                 // Only flush after asynchronousCommitDelay milliseconds have passed
                 long timeSince = System.currentTimeMillis() - firstWriteTime;
@@ -599,7 +605,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         }
       };
       long delay = (firstWriteTime + asynchronousCommitDelay) - System.currentTimeMillis();
-      if (delay<0) {
+      if (delay < 0) {
         delay = 0;
       }
       asynchronousCommitTimer.schedule(asynchronousCommitTimerTask, delay);
@@ -624,7 +630,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
             assert newCapacity > sector;
             if (newCapacity < sectorEnd) {
               // Also, zero-out any part of the last sector (beyond newCapacity) if it is a cached write
-              Arrays.fill(entry.getValue(), (int)(newCapacity - sector), sectorSize, (byte)0);
+              Arrays.fill(entry.getValue(), (int) (newCapacity - sector), sectorSize, (byte) 0);
             }
           }
         }
@@ -638,23 +644,23 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   public byte get(long position) throws IOException {
     synchronized (cacheLock) {
       checkClosed();
-      if (position<0) {
-        throw new IllegalArgumentException("position<0: "+position);
+      if (position < 0) {
+        throw new IllegalArgumentException("position<0: " + position);
       }
-      assert position<capacity;
-      long sector = position&(-sectorSize);
-      assert (sector&(sectorSize-1)) == 0 : "Sector not aligned";
+      assert position < capacity;
+      long sector = position & (-sectorSize);
+      assert (sector & (sectorSize - 1)) == 0 : "Sector not aligned";
       byte[] cached = oldWriteCache.get(sector);
       if (cached != null) {
-        return cached[(int)(position-sector)];
+        return cached[(int) (position - sector)];
       } else {
         long rafLength = raf.length();
-        if (position<rafLength) {
+        if (position < rafLength) {
           raf.seek(position);
           return raf.readByte();
         } else {
           // Extended past end of raf, assume zeros that will be written during commit
-          return (byte)0;
+          return (byte) 0;
         }
       }
     }
@@ -664,35 +670,35 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   public int getSome(long position, final byte[] buff, int off, int len) throws IOException {
     synchronized (cacheLock) {
       checkClosed();
-      if (position<0) {
-        throw new IllegalArgumentException("position<0: "+position);
+      if (position < 0) {
+        throw new IllegalArgumentException("position<0: " + position);
       }
-      if (off<0) {
-        throw new IllegalArgumentException("off<0: "+off);
+      if (off < 0) {
+        throw new IllegalArgumentException("off<0: " + off);
       }
-      if (len<0) {
-        throw new IllegalArgumentException("len<0: "+len);
+      if (len < 0) {
+        throw new IllegalArgumentException("len<0: " + len);
       }
-      final long end = position+len;
+      final long end = position + len;
       assert end <= capacity;
       int bytesRead = 0;
-      while (position<end) {
-        long sector = position&(-sectorSize);
-        assert (sector&(sectorSize-1)) == 0 : "Sector not aligned";
-        int buffEnd = off + (sectorSize+(int)(sector-position));
-        if (buffEnd>(off+len)) {
-          buffEnd = off+len;
+      while (position < end) {
+        long sector = position & (-sectorSize);
+        assert (sector & (sectorSize - 1)) == 0 : "Sector not aligned";
+        int buffEnd = off + (sectorSize + (int) (sector - position));
+        if (buffEnd > (off + len)) {
+          buffEnd = off + len;
         }
-        int bytesToRead = buffEnd-off;
+        int bytesToRead = buffEnd - off;
         assert bytesToRead <= len;
         byte[] cached = oldWriteCache.get(sector);
         int count;
         if (cached != null) {
-          System.arraycopy(cached, (int)(position-sector), buff, off, bytesToRead);
+          System.arraycopy(cached, (int) (position - sector), buff, off, bytesToRead);
           count = bytesToRead;
         } else {
           long rafLength = raf.length();
-          if (position<rafLength) {
+          if (position < rafLength) {
             raf.seek(position);
             count = raf.read(buff, off, bytesToRead);
             if (count == -1) {
@@ -700,12 +706,12 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
             }
           } else {
             // Extended past end of raf, assume zeros that will be written during commit
-            Arrays.fill(buff, off, buffEnd, (byte)0);
+            Arrays.fill(buff, off, buffEnd, (byte) 0);
             count = bytesToRead;
           }
         }
         bytesRead += count;
-        if (count<bytesToRead) {
+        if (count < bytesToRead) {
           break;
         }
         position += count;
@@ -720,25 +726,25 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   public void put(long position, byte value) throws IOException {
     synchronized (cacheLock) {
       checkClosed();
-      if (position<0) {
-        throw new IllegalArgumentException("position<0: "+position);
+      if (position < 0) {
+        throw new IllegalArgumentException("position<0: " + position);
       }
-      assert position<capacity;
-      final long sector = position&(-sectorSize);
-      assert (sector&(sectorSize-1)) == 0 : "Sector not aligned";
+      assert position < capacity;
+      final long sector = position & (-sectorSize);
+      assert (sector & (sectorSize - 1)) == 0 : "Sector not aligned";
       byte[] oldCached = oldWriteCache.get(sector);
       if (oldCached != null) {
         if (currentWriteCache.containsKey(sector)) {
           // Already in current cache, update always because only dirty sectors are in the current cache.
           // Update cache only (do not write-through)
-          oldCached[(int)(position-sector)] = value;
+          oldCached[(int) (position - sector)] = value;
         } else {
           // Only add to current cache when data changed (save flash writes)
-          if (oldCached[(int)(position-sector)] != value) {
+          if (oldCached[(int) (position - sector)] != value) {
             markFirstWriteTime();
             currentWriteCache.put(sector, oldCached); // Shares the byte[] buffer
             // Update cache only (do not write-through)
-            oldCached[(int)(position-sector)] = value;
+            oldCached[(int) (position - sector)] = value;
           }
         }
       } else {
@@ -746,12 +752,12 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         long rafLength = raf.length();
         // Only add to caches when data changed (save flash writes)
         byte curValue;
-        if (position<rafLength) {
+        if (position < rafLength) {
           raf.seek(position);
           curValue = raf.readByte();
         } else {
           // Past end, assume zero
-          curValue = (byte)0;
+          curValue = (byte) 0;
         }
         if (curValue != value) {
           byte[] readBuff = new byte[sectorSize];
@@ -759,22 +765,22 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
           {
             int offset = 0;
             int bytesLeft = sectorSize;
-            while (bytesLeft>0) {
-              long seek = sector+offset;
-              if (seek<rafLength) {
+            while (bytesLeft > 0) {
+              long seek = sector + offset;
+              if (seek < rafLength) {
                 raf.seek(seek);
-                long readEnd = seek+bytesLeft;
-                if (readEnd>rafLength) {
+                long readEnd = seek + bytesLeft;
+                if (readEnd > rafLength) {
                   readEnd = rafLength;
                 }
-                int readLen = (int)(readEnd - seek);
+                int readLen = (int) (readEnd - seek);
                 raf.readFully(readBuff, offset, readLen);
-                offset+=readLen;
-                bytesLeft-=readLen;
+                offset += readLen;
+                bytesLeft -= readLen;
               } else {
                 // Assume zeros that are already in readBuff
-                offset+=bytesLeft;
-                bytesLeft=0;
+                offset += bytesLeft;
+                bytesLeft = 0;
               }
             }
           }
@@ -782,7 +788,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
           currentWriteCache.put(sector, readBuff); // Shares the byte[] buffer
           oldWriteCache.put(sector, readBuff); // Shares the byte[] buffer
           // Update cache only (do not write-through)
-          readBuff[(int)(position-sector)] = value;
+          readBuff[(int) (position - sector)] = value;
         }
       }
     }
@@ -797,40 +803,40 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   public void put(long position, byte[] buff, int off, int len) throws IOException {
     synchronized (cacheLock) {
       checkClosed();
-      if (position<0) {
-        throw new IllegalArgumentException("position<0: "+position);
+      if (position < 0) {
+        throw new IllegalArgumentException("position<0: " + position);
       }
-      if (off<0) {
-        throw new IllegalArgumentException("off<0: "+off);
+      if (off < 0) {
+        throw new IllegalArgumentException("off<0: " + off);
       }
-      if (len<0) {
-        throw new IllegalArgumentException("len<0: "+len);
+      if (len < 0) {
+        throw new IllegalArgumentException("len<0: " + len);
       }
       long rafLength = -1;
-      final long end = position+len;
+      final long end = position + len;
       assert end <= capacity;
       byte[] readBuff = null;
-      while (position<end) {
-        final long sector = position&(-sectorSize);
-        assert (sector&(sectorSize-1)) == 0 : "Sector not aligned";
-        int buffEnd = off + (sectorSize+(int)(sector-position));
-        if (buffEnd>(off+len)) {
-          buffEnd = off+len;
+      while (position < end) {
+        final long sector = position & (-sectorSize);
+        assert (sector & (sectorSize - 1)) == 0 : "Sector not aligned";
+        int buffEnd = off + (sectorSize + (int) (sector - position));
+        if (buffEnd > (off + len)) {
+          buffEnd = off + len;
         }
-        int bytesToWrite = buffEnd-off;
+        int bytesToWrite = buffEnd - off;
         byte[] oldCached = oldWriteCache.get(sector);
         if (oldCached != null) {
           if (currentWriteCache.containsKey(sector)) {
             // Already in current cache, update always because only dirty sectors are in the current cache.
             // Update cache only (do not write-through)
-            System.arraycopy(buff, off, oldCached, (int)(position-sector), bytesToWrite);
+            System.arraycopy(buff, off, oldCached, (int) (position - sector), bytesToWrite);
           } else {
             // Only add to current cache when data changed (save flash writes)
-            if (!AoArrays.equals(buff, off, oldCached, (int)(position-sector), bytesToWrite)) {
+            if (!AoArrays.equals(buff, off, oldCached, (int) (position - sector), bytesToWrite)) {
               markFirstWriteTime();
               currentWriteCache.put(sector, oldCached); // Shares the byte[] buffer
               // Update cache only (do not write-through)
-              System.arraycopy(buff, off, oldCached, (int)(position-sector), bytesToWrite);
+              System.arraycopy(buff, off, oldCached, (int) (position - sector), bytesToWrite);
             }
           }
         } else {
@@ -846,35 +852,35 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
           {
             int offset = 0;
             int bytesLeft = sectorSize;
-            while (bytesLeft>0) {
-              long seek = sector+offset;
-              if (seek<rafLength) {
+            while (bytesLeft > 0) {
+              long seek = sector + offset;
+              if (seek < rafLength) {
                 raf.seek(seek);
-                long readEnd = seek+bytesLeft;
-                if (readEnd>rafLength) {
+                long readEnd = seek + bytesLeft;
+                if (readEnd > rafLength) {
                   readEnd = rafLength;
                 }
-                int readLen = (int)(readEnd - seek);
+                int readLen = (int) (readEnd - seek);
                 raf.readFully(readBuff, offset, readLen);
-                offset+=readLen;
-                bytesLeft-=readLen;
+                offset += readLen;
+                bytesLeft -= readLen;
               } else {
                 // Assume zeros
                 if (!isNewBuff) {
-                  Arrays.fill(readBuff, offset, sectorSize, (byte)0);
+                  Arrays.fill(readBuff, offset, sectorSize, (byte) 0);
                 }
-                offset+=bytesLeft;
-                bytesLeft=0;
+                offset += bytesLeft;
+                bytesLeft = 0;
               }
             }
           }
           // Only add to caches when data changed (save flash writes)
-          if (!AoArrays.equals(buff, off, readBuff, (int)(position-sector), bytesToWrite)) {
+          if (!AoArrays.equals(buff, off, readBuff, (int) (position - sector), bytesToWrite)) {
             markFirstWriteTime();
             currentWriteCache.put(sector, readBuff); // Shares the byte[] buffer
             oldWriteCache.put(sector, readBuff); // Shares the byte[] buffer
             // Update cache only (do not write-through)
-            System.arraycopy(buff, off, readBuff, (int)(position-sector), bytesToWrite);
+            System.arraycopy(buff, off, readBuff, (int) (position - sector), bytesToWrite);
             readBuff = null; // Create new array next time needed
           }
         }

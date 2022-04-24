@@ -130,20 +130,20 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
    * Gets the position as an integer or throws IOException if too big for a mapped buffer.
    */
   private static int getIndex(long position) throws IOException {
-    if (position<0) {
-      throw new IllegalArgumentException("position<0: "+position);
+    if (position < 0) {
+      throw new IllegalArgumentException("position<0: " + position);
     }
-    if (position>Integer.MAX_VALUE) {
-      throw new IOException("position too large for MappedPersistentBuffer: "+position);
+    if (position > Integer.MAX_VALUE) {
+      throw new IOException("position too large for MappedPersistentBuffer: " + position);
     }
-    return (int)position;
+    return (int) position;
   }
 
   @Override
   public void setCapacity(long newLength) throws IOException {
     long oldLength = capacity();
     if (oldLength != newLength) {
-      if (newLength<oldLength) {
+      if (newLength < oldLength) {
         if (modified) {
           if ((protectionLevel.compareTo(ProtectionLevel.BARRIER) >= 0)) {
             mappedBuffer.force();
@@ -153,7 +153,7 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
         mappedBuffer = channel.map(protectionLevel == ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, 0, newLength);
       }
       raf.setLength(newLength);
-      if (newLength>oldLength) {
+      if (newLength > oldLength) {
         if (modified) {
           if ((protectionLevel.compareTo(ProtectionLevel.BARRIER) >= 0)) {
             mappedBuffer.force();
@@ -162,7 +162,7 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
         }
         mappedBuffer = channel.map(protectionLevel == ProtectionLevel.READ_ONLY ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, 0, newLength);
         // Ensure zero-filled
-        ensureZeros(oldLength, newLength-oldLength);
+        ensureZeros(oldLength, newLength - oldLength);
       }
     }
   }
@@ -190,10 +190,10 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
 
   @Override
   public void ensureZeros(long position, long len) throws IOException {
-    if (len>0) {
+    if (len > 0) {
       // Check bounds with getIndex
       int endIndex = getIndex(position + len - 1);
-      if (PersistentCollections.ensureZeros(mappedBuffer, getIndex(position), (int)len)) {
+      if (PersistentCollections.ensureZeros(mappedBuffer, getIndex(position), (int) len)) {
         modified = true;
       }
     }
