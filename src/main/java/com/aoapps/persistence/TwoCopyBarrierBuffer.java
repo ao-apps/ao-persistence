@@ -285,7 +285,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   ;
   private long capacity; // The underlying storage is not extended until commit time.
   private RandomAccessFile raf; // Reads on non-cached data are read from here (this is the current file) - this is read-only
-  private boolean isClosed = false;
+  private boolean isClosed;
   private long firstWriteTime = -1; // The time the first cached entry was written since the last commit
   private TimerTask asynchronousCommitTimerTask;
 

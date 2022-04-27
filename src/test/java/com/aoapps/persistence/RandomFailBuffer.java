@@ -115,7 +115,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 
   private final PersistentBuffer wrapped;
   private final boolean allowFailures;
-  private boolean isClosed = false;
+  private boolean isClosed;
 
   /**
    * Keeps track of the last version of all sectors that have been written.  Each

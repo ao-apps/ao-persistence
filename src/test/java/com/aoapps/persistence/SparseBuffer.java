@@ -47,8 +47,8 @@ public class SparseBuffer extends AbstractPersistentBuffer {
 
   private static final int BLOCK_MASK = BLOCK_SIZE - 1;
 
-  private boolean isClosed = false;
-  private long capacity = 0L;
+  private boolean isClosed;
+  private long capacity;
   private final Map<Long, byte[]> buffers = new HashMap<>();
 
   /**
