@@ -28,9 +28,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Writes and reads serialized forms of objects to and from <code>OutputStream</code> and <code>InputStreams</code>.
- * There is no need to handle <code>null</code> values as they will not be passed-in.
- * All <code>Serializers</code> should be considered not thread-safe.
+ * Writes and reads serialized forms of objects to and from {@link OutputStream} and {@link InputStream}.
+ * There is no need to handle {@code null} values as they will not be passed-in.
+ * All {@link Serializer Serializers} should be considered not thread-safe.
  *
  * @author  AO Industries, Inc.
  */
@@ -39,13 +39,13 @@ public interface Serializer<E> {
   /**
    * If a serializer always creates the same number of bytes, containers can
    * choose a fixed-size block for higher performance.  If this method
-   * returns <code>true</code>, <code>getSerializedSize</code> must return
-   * the same value for every access, it may be accessed with a <code>null</code>
+   * returns {@code true}, {@link #getSerializedSize(java.lang.Object)} must return
+   * the same value for every access, it may be accessed with a {@code null}
    * parameter, and it may be accessed less than once per serialized object.
    *
    * @return  To indicate that the same number of bytes will be created, return
-   *          <code>true</code>.  Otherwise, there may be a dynamic number of
-   *          bytes and return <code>false</code>.
+   *          {@code true}.  Otherwise, there may be a dynamic number of
+   *          bytes and return {@code false}.
    */
   boolean isFixedSerializedSize();
 
@@ -56,26 +56,26 @@ public interface Serializer<E> {
    * </p>
    * The common pattern is:
    * <ol>
-   *   <li>Get size from <code>getSerializedSize</code></li>
+   *   <li>Get size from {@link #getSerializedSize(java.lang.Object)}</li>
    *   <li>Allocate appropriate space</li>
-   *   <li>Write serialized object with <code>serialize</code></li>
+   *   <li>Write serialized object with {@link #serialize(java.lang.Object, java.io.OutputStream)}</li>
    * </ol>
    * It may be best to remember the most recently used object between calls
-   * to <code>getSerializedSize</code> and <code>serialize</code> when it can
-   * reduce processing time.
+   * to {@link #getSerializedSize(java.lang.Object)} and {@link #serialize(java.lang.Object, java.io.OutputStream)}
+   * when it can reduce processing time.
    *
    * @return  the exact number of bytes the object will take to serialize
    */
   long getSerializedSize(E value) throws IOException;
 
   /**
-   * Writes the object to the <code>OutputStream</code>.  <code>null</code> will
+   * Writes the object to the {@link OutputStream}.  {@code null} will
    * not be passed in.
    */
   void serialize(E value, OutputStream out) throws IOException;
 
   /**
-   * Restores an object from an <code>InputStream</code>.
+   * Restores an object from an {@link InputStream}.
    */
   E deserialize(InputStream in) throws IOException;
 }

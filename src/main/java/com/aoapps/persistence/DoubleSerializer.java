@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Serializes <code>Double</code> objects.
+ * Serializes {@link Double} objects.
  * This class is not thread safe.
  *
  * @author  AO Industries, Inc.

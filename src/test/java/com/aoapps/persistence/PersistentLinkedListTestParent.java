@@ -40,7 +40,7 @@ import java.util.Random;
 import junit.framework.TestCase;
 
 /**
- * Tests the <code>LinkedFileList</code> against the standard <code>LinkedList</code>
+ * Tests the {@link PersistentLinkedList} against the standard {@link LinkedList}
  * by performing equal, random actions on each and ensuring equal results.
  *
  * @author  AO Industries, Inc.
@@ -276,7 +276,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
   }
 
   /**
-   * Tests the time complexity by adding many elements and making sure the time stays near linear
+   * Tests the time complexity by adding many elements and making sure the time stays near linear.
    */
   public void testAddRandomStrings() throws Exception {
     try (
@@ -312,7 +312,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
   }
 
   /**
-   * Tests the time complexity by adding many elements and making sure the time stays near linear
+   * Tests the time complexity by adding many elements and making sure the time stays near linear.
    */
   public void testAddRandomIntegers() throws Exception {
     try (
@@ -348,7 +348,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
   }
 
   /**
-   * Tests the time complexity for integers (all null to avoid serialization)
+   * Tests the time complexity for integers (all null to avoid serialization).
    */
   public void testAddNull() throws Exception {
     try (
@@ -594,7 +594,8 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
           String partial = null;
           try {
             try {
-              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
+              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(
+                  new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
                 int batchSize = fastRandom.nextInt(100) + 1;
                 for (int d = 0; d < batchSize; d++) {
                   partial = Long.toString(sequence.getNextSequenceValue());
@@ -613,17 +614,18 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
           } catch (IOException err) {
             System.out.println(protectionLevel + ": " + (c + 1) + " of " + iterations + ": addFirst: Caught failure: " + err.toString());
           }
-          // Check consistency
-          {
-            try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), protectionLevel), String.class)) {
-              checkRecoveryConsistency(heapList, linkedFileList, partial);
+            // Check consistency
+            {
+              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), protectionLevel), String.class)) {
+                checkRecoveryConsistency(heapList, linkedFileList, partial);
+              }
             }
-          }
           // removeLast
           partial = null;
           try {
             try {
-              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
+              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(
+                  new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
                 int batchSize = fastRandom.nextInt(95) + 1;
                 if (batchSize > linkedFileList.size()) {
                   batchSize = linkedFileList.size();
@@ -653,7 +655,8 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
           partial = null;
           try {
             try {
-              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
+              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(
+                  new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
                 int batchSize = fastRandom.nextInt(100) + 1;
                 for (int d = 0; d < batchSize; d++) {
                   partial = Long.toString(sequence.getNextSequenceValue());
@@ -680,7 +683,8 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
           partial = null;
           try {
             try {
-              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
+              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(
+                  new RandomFailBuffer(getPersistentBuffer(tempFile.getFile(), protectionLevel), allowFailure), String.class)) {
                 int batchSize = fastRandom.nextInt(95) + 1;
                 if (batchSize > linkedFileList.size()) {
                   batchSize = linkedFileList.size();

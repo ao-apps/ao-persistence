@@ -29,6 +29,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
+ * Tests {@link SparseBuffer} and {@link FixedPersistentBlockBuffer}.
+ *
  * @author  AO Industries, Inc.
  */
 public class BlockBufferSingleBitmapFixedTest extends BlockBufferTestParent {
@@ -58,7 +60,7 @@ public class BlockBufferSingleBitmapFixedTest extends BlockBufferTestParent {
   }
 
   /**
-   * This test is not compatible with non-persistent {@link SparseBuffer}
+   * This test is not compatible with non-persistent {@link SparseBuffer}.
    */
   @Override
   public void testFailureRecoveryBarrier() {
@@ -66,7 +68,7 @@ public class BlockBufferSingleBitmapFixedTest extends BlockBufferTestParent {
   }
 
   /**
-   * This test is not compatible with non-persistent {@link SparseBuffer}
+   * This test is not compatible with non-persistent {@link SparseBuffer}.
    */
   @Override
   public void testFailureRecoveryForce() {

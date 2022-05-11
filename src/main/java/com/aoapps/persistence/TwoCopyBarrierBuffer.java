@@ -55,13 +55,13 @@ import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * <p>
- * Java does not support write barriers without a complete <code>force</code> call,
+ * Java does not support write barriers without a complete {@code force} call,
  * this class works-around this issue by maintaining two copies of the file and
- * updating the older copy to be the newer copy occasionally on <code>barrier(false)</code>
- * and immediately on <code>barrier(true)</code> (if protectionLevel is high enough).
+ * updating the older copy to be the newer copy occasionally on {@link #barrier(boolean) barrier(false)}
+ * and immediately on {@link #barrier(boolean) barrier(true)} (if protectionLevel is high enough).
  * </p>
  * <p>
- * All instances also share a <code>{@link Timer Timer}</code> to perform automatic
+ * All instances also share a {@link Timer Timer} to perform automatic
  * background flushing of caches.  Automatic flushing is single-threaded to favor
  * low load averages over timely flushes.
  * </p>
@@ -89,6 +89,7 @@ import org.apache.commons.lang3.NotImplementedException;
  * Two copies of the file are maintained.  The most recent version of the file
  * will normally be named with the regular name, but other versions will exist
  * with .old or .new appended to the filename.  The exact order of update is:
+ * </p>
  * <ol>
  *   <li>Rename <code><i>filename</i>.old</code> to <code><i>filename</i>.new</code></li>
  *   <li>Write new version of all data to <code><i>filename</i>.new</code></li>
@@ -151,14 +152,18 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   }
 
   /**
+   * Flushes all cached writes on shutdown.
+   * <p>
    * TODO: Is there a way we can combine the force calls between all buffers?
    * 1) Use recursion to get lock on all individual buffers - or use newer locks
    * 2) Write new versions of all files.
    * 3) Perform a single sync (will this take as long as individual fsync's?)
    * 4) Rename all files.
    * Deadlock concerns?  Performance benefits?
-   *
+   * </p>
+   * <p>
    * Could the background commit thread take a similar strategy?
+   * </p>
    */
   @SuppressWarnings({"UseSpecificCatch", "TooBroadCatch"})
   private static final Thread shutdownHook = new Thread("TwoCopyBarrierBuffer.shutdownHook") {
@@ -259,39 +264,48 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   private static class CacheLock {
     // Empty lock class to help heap profile
   }
+
   private final CacheLock cacheLock = new CacheLock();
 
   // All modifiable fields are protected by cacheLock
 
-  /**
-   * <p>
+  /*
    * Keeps track of the last version of all sectors that have been written.  Each
-   * entry will be <code>sectorSize</code> in length, even if at the end of the
+   * entry will be {@link #sectorSize} in length, even if at the end of the
    * capacity.
-   * </p>
-   * <p>
+   *
    * Each copy of the file has its own write cache, which is flushed separately.
    * This is done to avoid unnecessary reads while still keeping the files
-   * synchronized.  However, the actual <code>byte[]</code> of cached data
+   * synchronized.  However, the actual {@code byte[]} of cached data
    * is shared between the two maps.
-   * </p>
    */
-  private SortedMap<Long, byte[]>
-      // Changes since the current (most up-to-date) file was last updated
-      currentWriteCache = new TreeMap<>(),
-      // Changes since the old (previous version) file was last updated.  This
-      // is a superset of <code>currentWriteCache</code>.
-      oldWriteCache = new TreeMap<>()
-  ;
-  private long capacity; // The underlying storage is not extended until commit time.
-  private RandomAccessFile raf; // Reads on non-cached data are read from here (this is the current file) - this is read-only
+  /**
+   * Changes since the current (most up-to-date) file was last updated.
+   */
+  private SortedMap<Long, byte[]> currentWriteCache = new TreeMap<>();
+  /**
+   * Changes since the old (previous version) file was last updated.  This
+   * is a superset of {@link #currentWriteCache}.
+   */
+  private SortedMap<Long, byte[]> oldWriteCache = new TreeMap<>();
+  /**
+   * The underlying storage is not extended until commit time.
+   */
+  private long capacity;
+  /**
+   * Reads on non-cached data are read from here (this is the current file) - this is read-only.
+   */
+  private RandomAccessFile raf;
   private boolean isClosed;
-  private long firstWriteTime = -1; // The time the first cached entry was written since the last commit
+  /**
+   * The time the first cached entry was written since the last commit.
+   */
+  private long firstWriteTime = -1;
   private TimerTask asynchronousCommitTimerTask;
 
   /**
    * Creates a read-write buffer backed by temporary files.  The protection level
-   * is set to <code>NONE</code>.  The temporary file will be deleted when this
+   * is set to {@link ProtectionLevel#NONE}.  The temporary file will be deleted when this
    * buffer is closed or on JVM shutdown.
    * Uses default sectorSize of 4096, asynchronous commit delay of 5 seconds, and synchronous commit delay of 60 seconds.
    * A shutdown hook is not registered.
@@ -311,7 +325,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   * Creates a read-write buffer with {@link ProtectionLevel#BARRIER} protection level.
    * Uses default sectorSize of 4096, asynchronous commit delay of 5 seconds, and synchronous commit delay of 60 seconds.
    */
   public TwoCopyBarrierBuffer(String name) throws IOException {
@@ -327,7 +341,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   * Creates a read-write buffer with {@link ProtectionLevel#BARRIER} protection level.
    * Uses default sectorSize of 4096, asynchronous commit delay of 5 seconds, and synchronous commit delay of 60 seconds.
    */
   public TwoCopyBarrierBuffer(File file) throws IOException {
@@ -343,7 +357,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a buffer.  Synchronizes the two copies of the file.  Populates the <code>oldWriteCache</code> with
+   * Creates a buffer.  Synchronizes the two copies of the file.  Populates the {@link #oldWriteCache} with
    * any data the doesn't match the newer version of the file.  This means that both files are read completely
    * at start-up in order to provide the most efficient synchronization later.
    *
@@ -352,7 +366,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
    * @param sectorSize        The size of the sectors cached and written.  For best results this should
    *                          match the underlying filesystem block size.  Must be a power of two &gt;= 1.
    * @param asynchronousCommitDelay The number of milliseconds before a background thread syncs uncommitted data to
-   *                                the underlying storage.  A value of <code>Long.MAX_VALUE</code> will avoid any
+   *                                the underlying storage.  A value of {@link Long#MAX_VALUE} will avoid any
    *                                overhead of background thread management.
    * @param synchronousCommitDelay  The number of milliseconds before a the calling thread syncs uncommitted data to
    *                                the underlying storage.
@@ -458,7 +472,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   /**
    * Writes any modified data to the older copy of the file and makes it the new copy.
    *
-   * @param isClosing  when <code>true</code>, will not reopen raf.
+   * @param isClosing  when {@code true}, will not reopen raf.
    */
   private void flushWriteCache(boolean isClosing) throws IOException {
     assert Thread.holdsLock(cacheLock);
@@ -761,29 +775,29 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         }
         if (curValue != value) {
           byte[] readBuff = new byte[sectorSize];
-          // Scoping block
-          {
-            int offset = 0;
-            int bytesLeft = sectorSize;
-            while (bytesLeft > 0) {
-              long seek = sector + offset;
-              if (seek < rafLength) {
-                raf.seek(seek);
-                long readEnd = seek + bytesLeft;
-                if (readEnd > rafLength) {
-                  readEnd = rafLength;
+            // Scoping block
+            {
+              int offset = 0;
+              int bytesLeft = sectorSize;
+              while (bytesLeft > 0) {
+                long seek = sector + offset;
+                if (seek < rafLength) {
+                  raf.seek(seek);
+                  long readEnd = seek + bytesLeft;
+                  if (readEnd > rafLength) {
+                    readEnd = rafLength;
+                  }
+                  int readLen = (int) (readEnd - seek);
+                  raf.readFully(readBuff, offset, readLen);
+                  offset += readLen;
+                  bytesLeft -= readLen;
+                } else {
+                  // Assume zeros that are already in readBuff
+                  offset += bytesLeft;
+                  bytesLeft = 0;
                 }
-                int readLen = (int) (readEnd - seek);
-                raf.readFully(readBuff, offset, readLen);
-                offset += readLen;
-                bytesLeft -= readLen;
-              } else {
-                // Assume zeros that are already in readBuff
-                offset += bytesLeft;
-                bytesLeft = 0;
               }
             }
-          }
           markFirstWriteTime();
           currentWriteCache.put(sector, readBuff); // Shares the byte[] buffer
           oldWriteCache.put(sector, readBuff); // Shares the byte[] buffer
@@ -848,32 +862,32 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
           if (isNewBuff) {
             readBuff = new byte[sectorSize];
           }
-          // Scoping block
-          {
-            int offset = 0;
-            int bytesLeft = sectorSize;
-            while (bytesLeft > 0) {
-              long seek = sector + offset;
-              if (seek < rafLength) {
-                raf.seek(seek);
-                long readEnd = seek + bytesLeft;
-                if (readEnd > rafLength) {
-                  readEnd = rafLength;
+            // Scoping block
+            {
+              int offset = 0;
+              int bytesLeft = sectorSize;
+              while (bytesLeft > 0) {
+                long seek = sector + offset;
+                if (seek < rafLength) {
+                  raf.seek(seek);
+                  long readEnd = seek + bytesLeft;
+                  if (readEnd > rafLength) {
+                    readEnd = rafLength;
+                  }
+                  int readLen = (int) (readEnd - seek);
+                  raf.readFully(readBuff, offset, readLen);
+                  offset += readLen;
+                  bytesLeft -= readLen;
+                } else {
+                  // Assume zeros
+                  if (!isNewBuff) {
+                    Arrays.fill(readBuff, offset, sectorSize, (byte) 0);
+                  }
+                  offset += bytesLeft;
+                  bytesLeft = 0;
                 }
-                int readLen = (int) (readEnd - seek);
-                raf.readFully(readBuff, offset, readLen);
-                offset += readLen;
-                bytesLeft -= readLen;
-              } else {
-                // Assume zeros
-                if (!isNewBuff) {
-                  Arrays.fill(readBuff, offset, sectorSize, (byte) 0);
-                }
-                offset += bytesLeft;
-                bytesLeft = 0;
               }
             }
-          }
           // Only add to caches when data changed (save flash writes)
           if (!AoArrays.equals(buff, off, readBuff, (int) (position - sector), bytesToWrite)) {
             markFirstWriteTime();

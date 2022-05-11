@@ -28,13 +28,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.BufferOverflowException;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 /**
  * A persistent set of blocks of arbitrary data.  Each block may be any
  * 64-bit size.  All implementations should have a relatively efficient
  * iteration in forward direction.  Some implementations may also have
- * efficient indexed access, and will implement the <code>RandomAccessPersistentBlockBuffer</code>
+ * efficient indexed access, and will implement the <code>TODO: Link to RandomAccessPersistentBlockBuffer</code>
  * interface.
  *
  * @author  AO Industries, Inc.
@@ -62,7 +63,7 @@ public interface PersistentBlockBuffer extends Closeable {
 
   /**
    * Ensures that all writes before this barrier occur before all writes after
-   * this barrier.  If <code>force</code> is <code>true</code>, will also
+   * this barrier.  If {@code force} is {@code true}, will also
    * commit to physical media synchronously before returning.  This request
    * may be ignored or force downgraded to barrier-only depending on the current
    * protection level.
@@ -80,10 +81,10 @@ public interface PersistentBlockBuffer extends Closeable {
    * requirement.
    * </p>
    * <p>
-   * The <code>remove()</code> method may be used from the iterator in order
+   * The {@link Iterator#remove()} method may be used from the iterator in order
    * to deallocate a block.  The block allocation should not be modified
    * during the iteration through any means other than the iterator itself.
-   * An attempt will be made to throw <code>ConcurrentModificationException</code>
+   * An attempt will be made to throw {@link ConcurrentModificationException}
    * in this case, but this is only intended to catch bugs.
    * </p>
    */
@@ -93,17 +94,17 @@ public interface PersistentBlockBuffer extends Closeable {
    * <p>
    * Allocates a new block buffer that is at least as large as the requested space.
    * The id should always be {@code >= 0}, higher level data structures may use the
-   * negative values for other purposes, such as indicating <code>null</code>
-   * with <code>-1</code>.
+   * negative values for other purposes, such as indicating {@code null}
+   * with {@code -1}.
    * </p>
    * <p>
    * In order to ensure the block allocation is completely in persistent storage,
-   * <code>{@link #barrier(boolean) barrier}</code> must be called.  This allows
-   * the contents of the block to be written and combined into a single <code>barrier</code>
-   * call.  If the system fails before <code>barrier</code> is called, the block
+   * {@link #barrier(boolean) barrier} must be called.  This allows
+   * the contents of the block to be written and combined into a single {@link #barrier(boolean)}
+   * call.  If the system fails before {@link #barrier(boolean)} is called, the block
    * may either be allocated or deallocated - it is up to higher-level data
    * structures to determine which is the case.  In no event, however, will failing
-   * to call <code>barrier</code> after <code>allocate</code> cause corruption
+   * to call {@link #barrier(boolean)} after {@link #allocate(long)} cause corruption
    * beyond that just described.
    * </p>
    * <p>
@@ -120,11 +121,11 @@ public interface PersistentBlockBuffer extends Closeable {
    * or possibly different id.  The space may also be reclaimed.
    * </p>
    * <p>
-   * <code>{@link #barrier(boolean) barrier}</code> does not need to be called
+   * {@link #barrier(boolean) barrier} does not need to be called
    * after a deallocation, but if not called previously deallocated blocks
    * may reappear after a system failure.  It is up to higher-level data structures
-   * to detect this.  In no event, however, will failing to call <code>barrier</code>
-   * after <code>deallocate</code> cause corruption beyond that just described.
+   * to detect this.  In no event, however, will failing to call {@link #barrier(boolean)}
+   * after {@link #deallocate(long)} cause corruption beyond that just described.
    * </p>
    *
    * @throws IllegalStateException if the block is not allocated.

@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * Tests the <code>PersistentCollections</code> class.
+ * Tests the {@link PersistentCollections} class.
  *
  * @author  AO Industries, Inc.
  */
@@ -54,10 +54,16 @@ public class PersistentCollectionsTest extends TestCase {
     return suite;
   }
 
+  /**
+   * Creates new {@link PersistentCollections} test.
+   */
   public PersistentCollectionsTest(String testName) {
     super(testName);
   }
 
+  /**
+   * Tests {@link PersistentCollections#getPersistentBuffer(long)}.
+   */
   public void testGetPersistentBuffer() throws Exception {
     PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(1L << 20);
     smallBuffer.close();
@@ -66,6 +72,9 @@ public class PersistentCollectionsTest extends TestCase {
     largeBuffer.close();
   }
 
+  /**
+   * Tests {@link IoUtils#charToBuffer(char, byte[])}.
+   */
   public void testCharToBuffer() throws Exception {
     byte[] buff = new byte[Character.BYTES];
     for (int i = 0; i < ITERATIONS; i++) {
@@ -76,6 +85,9 @@ public class PersistentCollectionsTest extends TestCase {
     }
   }
 
+  /**
+   * Tests {@link IoUtils#shortToBuffer(short, byte[])}.
+   */
   public void testShortToBuffer() throws Exception {
     byte[] buff = new byte[Short.BYTES];
     for (int i = 0; i < ITERATIONS; i++) {
@@ -86,6 +98,9 @@ public class PersistentCollectionsTest extends TestCase {
     }
   }
 
+  /**
+   * Tests {@link IoUtils#intToBuffer(int, byte[])}.
+   */
   public void testIntToBuffer() throws Exception {
     byte[] buff = new byte[Integer.BYTES];
     for (int i = 0; i < ITERATIONS; i++) {
@@ -96,6 +111,9 @@ public class PersistentCollectionsTest extends TestCase {
     }
   }
 
+  /**
+   * Tests {@link IoUtils#longToBuffer(long, byte[])}.
+   */
   public void testLongToBuffer() throws Exception {
     byte[] buff = new byte[Long.BYTES];
     for (int i = 0; i < ITERATIONS; i++) {
@@ -123,6 +141,9 @@ public class PersistentCollectionsTest extends TestCase {
     System.out.println(buffer.getClass().getName() + ": ensureZeros in " + BigDecimal.valueOf(totalNanos, 6) + " ms");
   }
 
+  /**
+   * Tests all zeros.
+   */
   public void testEnsureZeros() throws Exception {
     try (PersistentBuffer smallBuffer = PersistentCollections.getPersistentBuffer(ENSURE_ZEROS_TEST_SIZE)) {
       smallBuffer.setCapacity(ENSURE_ZEROS_TEST_SIZE);

@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Uses a set of <code>MappedByteBuffer</code> for persistence.  Each buffer
+ * Uses a set of {@link MappedByteBuffer} for persistence.  Each buffer
  * covers a maximum of 2^30 bytes.  This handles mapping of up to
  * 2^30 * 2^31-2 bytes.
  *
@@ -62,7 +62,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 
   /**
    * Creates a read-write buffer backed by a temporary file.  The protection level
-   * is set to <code>NONE</code>.  The temporary file will be deleted when this
+   * is set to {@link ProtectionLevel#NONE}.  The temporary file will be deleted when this
    * buffer is closed or on JVM shutdown.
    */
   public LargeMappedPersistentBuffer() throws IOException {
@@ -77,7 +77,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   * Creates a read-write buffer with {@link ProtectionLevel#BARRIER} protection level.
    */
   public LargeMappedPersistentBuffer(String name) throws IOException {
     this(new RandomAccessFile(name, "rw"), ProtectionLevel.BARRIER);
@@ -91,7 +91,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   * Creates a read-write buffer with {@link ProtectionLevel#BARRIER} protection level.
    */
   public LargeMappedPersistentBuffer(File file) throws IOException {
     this(new RandomAccessFile(file, "rw"), ProtectionLevel.BARRIER);
@@ -105,7 +105,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a buffer using the provided <code>RandomAccessFile</code>.
+   * Creates a buffer using the provided {@link RandomAccessFile}.
    */
   public LargeMappedPersistentBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel) throws IOException {
     super(protectionLevel);
@@ -125,20 +125,6 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   @Override
   public boolean isClosed() {
     return closed;
-  }
-
-  /**
-   * @deprecated The finalization mechanism is inherently problematic.
-   */
-  @Deprecated(since = "9")
-  @Override
-  @SuppressWarnings("FinalizeDeclaration")
-  protected void finalize() throws Throwable {
-    try {
-      close();
-    } finally {
-      super.finalize();
-    }
   }
 
   @Override
@@ -343,7 +329,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * There is not currently a way to provide a barrier without using <code>force</code>.
+   * There is not currently a way to provide a barrier without using {@code force}.
    * This just uses force for both.
    */
   @Override
@@ -376,8 +362,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
           ((get(position) & 255) << 24)
               + ((get(position + 1) & 255) << 16)
               + ((get(position + 2) & 255) << 8)
-              + (get(position + 3) & 255)
-      ;
+              + (get(position + 3) & 255);
     }
   }
 
@@ -397,8 +382,7 @@ public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
               + ((get(position + 4) & 255L) << 24)
               + ((get(position + 5) & 255L) << 16)
               + ((get(position + 6) & 255L) << 8)
-              + (get(position + 7) & 255L)
-      ;
+              + (get(position + 7) & 255L);
     }
   }
 

@@ -33,7 +33,7 @@ import java.util.TreeSet;
 
 /**
  * <p>
- * Treats a <code>PersistentBuffer</code> as a set of allocatable blocks.
+ * Treats a {@link PersistentBuffer} as a set of allocatable blocks.
  * Each block is stored in a block of fixed size.  The first block has an id
  * of zero, and the blocks go up by ones.  The storage address is determined
  * from this logical id on the fly.  The storage address and the block address
@@ -152,7 +152,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 
   /**
    * Allocates a block.
-   * This does not directly cause any <code>barrier</code>s.
+   * This does not directly cause any {@linkplain #barrier(boolean) barriers}.
    */
   @Override
   public long allocate(long minimumSize) throws IOException {
@@ -201,7 +201,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 
   /**
    * Deallocates the block for the provided id.
-   * This does not directly cause any <code>barrier</code>s.
+   * This does not directly cause any {@linkplain #barrier(boolean) barriers}.
    */
   @Override
   public void deallocate(long id) throws IOException {
@@ -254,6 +254,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
           throw new UncheckedIOException(err);
         }
       }
+
       @Override
       public Long next() throws NoSuchElementException {
         if (expectedModCount != modCount) {
@@ -283,6 +284,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
           throw new UncheckedIOException(err);
         }
       }
+
       @Override
       public void remove() {
         try {

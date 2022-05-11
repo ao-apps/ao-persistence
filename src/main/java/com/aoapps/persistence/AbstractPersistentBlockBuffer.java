@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Base class for any implementation that treats a <code>PersistentBuffer</code>
+ * Base class for any implementation that treats a {@link PersistentBuffer}
  * as a set of allocatable blocks.
  *
  * @author  AO Industries, Inc.

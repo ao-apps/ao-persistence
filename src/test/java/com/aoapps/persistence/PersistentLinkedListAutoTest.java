@@ -25,11 +25,12 @@ package com.aoapps.persistence;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.util.LinkedList;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Tests the <code>LinkedFileList</code> against the standard <code>LinkedList</code>
+ * Tests the {@link PersistentLinkedList} against the standard {@link LinkedList}
  * by performing equal, random actions on each and ensuring equal results.
  *
  * @author  AO Industries, Inc.

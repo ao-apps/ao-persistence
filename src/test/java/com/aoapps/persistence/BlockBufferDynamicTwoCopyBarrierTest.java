@@ -29,6 +29,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
+ * Tests {@link DynamicPersistentBlockBuffer} and {@link TwoCopyBarrierBuffer}.
+ *
  * @author  AO Industries, Inc.
  */
 public class BlockBufferDynamicTwoCopyBarrierTest extends BlockBufferTestParent {

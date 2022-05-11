@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Serializes <code>Integer</code> objects.
+ * Serializes {@link Integer} objects.
  * This class is not thread safe.
  *
  * @author  AO Industries, Inc.

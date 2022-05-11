@@ -31,10 +31,10 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 /**
- * Uses <code>MappedByteBuffer</code> for persistence.  It maps the entire file
+ * Uses {@link MappedByteBuffer} for persistence.  It maps the entire file
  * at once into a single buffer.  For this reason, it is limited to a maximum
  * buffer size of 2^31-1.  To use memory mapping for larger buffers, at a slight
- * performance cost, use <code>LargeMappedPersistentBuffer</code>.
+ * performance cost, use {@link LargeMappedPersistentBuffer}.
  *
  * @see  LargeMappedPersistentBuffer
  *
@@ -53,7 +53,7 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
 
   /**
    * Creates a read-write buffer backed by a temporary file.  The protection level
-   * is set to <code>NONE</code>.  The temporary file will be deleted when this
+   * is set to {@link ProtectionLevel#NONE}.  The temporary file will be deleted when this
    * buffer is closed or on JVM shutdown.
    */
   public MappedPersistentBuffer() throws IOException {
@@ -67,7 +67,7 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   * Creates a read-write buffer with {@link ProtectionLevel#BARRIER} protection level.
    */
   public MappedPersistentBuffer(String name) throws IOException {
     this(new RandomAccessFile(name, "rw"), ProtectionLevel.BARRIER);
@@ -81,7 +81,7 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   * Creates a read-write buffer with {@link ProtectionLevel#BARRIER} protection level.
    */
   public MappedPersistentBuffer(File file) throws IOException {
     this(new RandomAccessFile(file, "rw"), ProtectionLevel.BARRIER);
@@ -95,7 +95,7 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a buffer using the provided <code>RandomAccessFile</code>.
+   * Creates a buffer using the provided {@link RandomAccessFile}.
    */
   public MappedPersistentBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel) throws IOException {
     super(protectionLevel);
@@ -216,7 +216,7 @@ public class MappedPersistentBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * There is not currently a way to provide a barrier without using <code>force</code>.
+   * There is not currently a way to provide a barrier without using {@code force}.
    * This just uses force for both.
    */
   @Override

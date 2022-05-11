@@ -49,9 +49,9 @@ import org.apache.commons.lang3.NotImplementedException;
  * </p>
  * <ol>
  *   <li>Writes of a single sector will either be completely written or not written at all - no in-between states.</li>
- *   <li>Writes of different sectors between <code>force</code> calls can occur in any order</li>
+ *   <li>Writes of different sectors between {@code force} calls can occur in any order</li>
  *   <li>Writes of a single sector will occur in order - an older version of the sector will never overwrite a newer version</li>
- *   <li>The wrapped <code>PersistentBuffer</code> correctly implements the <code>{@link PersistentBuffer#barrier(boolean) barrier}</code> method.
+ *   <li>The wrapped {@link PersistentBuffer} correctly implements the {@link PersistentBuffer#barrier(boolean) barrier} method.
  * </ol>
  *
  * @author  AO Industries, Inc.
@@ -63,14 +63,14 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
    */
   private enum FailureMethod {
     capacity {
-    @Override
-    @SuppressWarnings("AssertWithSideEffects")
-    int getFailInterval() {
-      int failInterval = 5000;
-      assert (failInterval = 500000) != 0; // Intentional assertion side-effect to reduce failure frequency due to higher buffer access rates
-      return failInterval;
-    }
-  },
+      @Override
+      @SuppressWarnings("AssertWithSideEffects")
+      int getFailInterval() {
+        int failInterval = 5000;
+        assert (failInterval = 500000) != 0; // Intentional assertion side-effect to reduce failure frequency due to higher buffer access rates
+        return failInterval;
+      }
+    },
     setCapacity {
       @Override
       int getFailInterval() {
@@ -119,13 +119,13 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 
   /**
    * Keeps track of the last version of all sectors that have been written.  Each
-   * entry will be <code>SECTOR_SIZE</code> in length, even if at the end of the
+   * entry will be {@link #SECTOR_SIZE} in length, even if at the end of the
    * capacity.
    */
   private final Map<Long, byte[]> writeCache = new HashMap<>();
 
   /**
-   * Creates a read-write test buffer with protection level <code>NONE</code>.
+   * Creates a read-write test buffer with protection level {@link ProtectionLevel#NONE}.
    */
   public RandomFailBuffer(PersistentBuffer wrapped, boolean allowFailures) {
     super(wrapped.getProtectionLevel());

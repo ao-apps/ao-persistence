@@ -29,7 +29,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Tests the <code>RandomFailBuffer</code> in no-fail mode.
+ * Tests the {@link RandomFailBuffer} in no-fail mode.
  *
  * @author  AO Industries, Inc.
  */

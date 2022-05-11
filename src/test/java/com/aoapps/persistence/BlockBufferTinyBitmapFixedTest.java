@@ -34,6 +34,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
+ * Tests many small writes and reads.
+ *
  * @author  AO Industries, Inc.
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -65,11 +67,14 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
     return fastRandom.nextBoolean() ? 1 : 0;
   }
 
+  /**
+   * Tests allocation.
+   */
   public void testAllocateMany() throws Exception {
     try (
-      TempFileContext tempFileContext = new TempFileContext();
-      TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
-      PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
+        TempFileContext tempFileContext = new TempFileContext();
+        TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
+        PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
         ) {
       for (int c = 0; c < HOW_MANY; c++) {
         blockBuffer.allocate(1);
@@ -77,11 +82,14 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
     }
   }
 
+  /**
+   * Tests deallocation.
+   */
   public void testAllocateDeallocateMany() throws Exception {
     try (
-      TempFileContext tempFileContext = new TempFileContext();
-      TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
-      PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
+        TempFileContext tempFileContext = new TempFileContext();
+        TempFile tempFile = tempFileContext.createTempFile("BlockBufferTinyBitmapFixedTest_");
+        PersistentBlockBuffer blockBuffer = getBlockBuffer(getBuffer(tempFile.getFile(), ProtectionLevel.NONE))
         ) {
       List<Long> ids = new ArrayList<>(HOW_MANY);
       long startNanos = System.nanoTime();

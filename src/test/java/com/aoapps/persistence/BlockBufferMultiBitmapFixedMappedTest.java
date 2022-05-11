@@ -29,6 +29,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
+ * Tests {@link MappedPersistentBuffer} and {@link FixedPersistentBlockBuffer}.
+ *
  * @author  AO Industries, Inc.
  */
 public class BlockBufferMultiBitmapFixedMappedTest extends BlockBufferTestParent {

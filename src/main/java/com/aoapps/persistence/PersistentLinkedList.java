@@ -29,6 +29,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.util.AbstractSequentialList;
 import java.util.Collection;
@@ -40,12 +41,14 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * <p>
- * Serializes and stores objects in a persistent buffer.  Unlike <code>FileList</code> which
- * is intended for efficient <code>RandomAccess</code>,
+ * Serializes and stores objects in a persistent buffer.  Unlike {@link com.aoapps.hodgepodge.io.FileList} which
+ * is intended for efficient {@link RandomAccess},
  * this is a linked list implementation and has the expected benefits and costs.
  * There are no size limits to the stored data.
  * </p>
@@ -55,8 +58,8 @@ import java.util.logging.Logger;
  * </p>
  * <p>
  * The objects are serialized using the standard Java serialization, unless a
- * <code>Serializer</code> is provided.  If an object that is not <code>Serializable</code>
- * is to be stored, a <code>Serializer</code> must be provided.  <code>Serializer</code>s
+ * {@link Serializer} is provided.  If an object that is not {@link Serializable}
+ * is to be stored, a {@link Serializer} must be provided.  {@link Serializer Serializers}
  * may also provide a more efficient or more compact representation of an object.
  * </p>
  * <p>
@@ -70,17 +73,17 @@ import java.util.logging.Logger;
  *     Offset   Type  Description
  *      0- 3    ASCII "PLL\n"
  *      4- 7    int   version
- *      8-15    long  block id of the head or <code>END_PTR</code> if empty.
- *     16-23    long  block id of the tail or <code>END_PTR</code> if empty.
+ *      8-15    long  block id of the head or {@code END_PTR} if empty.
+ *     16-23    long  block id of the tail or {@code END_PTR} if empty.
  * </pre>
  * <p>
  * Each entry consists of:
  * </p>
  * <pre>
  *     Offset   Name        Type     Description
- *       0- 7   next        long     block id of next, <code>END_PTR</code> for last element
- *       8-15   prev        long     block id of prev, <code>END_PTR</code> for first element
- *      16-23   dataSize    long     the size of the serialized data, <code>-1</code> means null element
+ *       0- 7   next        long     block id of next, {@code END_PTR} for last element
+ *       8-15   prev        long     block id of prev, {@code END_PTR} for first element
+ *      16-23   dataSize    long     the size of the serialized data, {@code -1} means null element
  *      24+     data        data     the binary data
  * </pre>
  *
@@ -131,17 +134,17 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   }
 
   /**
-   * The block offset for <code>next</code>.
+   * The block offset for {@code next}.
    */
   private static final int NEXT_OFFSET = 0;
 
   /**
-   * The block offset for <code>prev</code>.
+   * The block offset for {@code prev}.
    */
   private static final int PREV_OFFSET = NEXT_OFFSET + NEXT_BYTES;
 
   /**
-   * The block offset for <code>dataSize</code>.
+   * The block offset for {@code dataSize}.
    */
   private static final int DATA_SIZE_OFFSET = PREV_OFFSET + PREV_BYTES;
 
@@ -151,7 +154,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   private static final int DATA_OFFSET = DATA_SIZE_OFFSET + DATA_SIZE_OFFSET_BYTES;
 
   /**
-   * Value used to indicate <code>null</code> data.
+   * Value used to indicate {@code null} data.
    */
   private static final long DATA_SIZE_NULL = -1;
 
@@ -162,9 +165,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   // Cached for higher performance
   private long metaDataBlockId;
-  private long _head;
-  private long _tail;
-  private long _size;
+  private long cachedHead;
+  private long cachedTail;
+  private long cachedSize;
 
   // <editor-fold desc="Constructors">
   /**
@@ -235,10 +238,10 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   // <editor-fold desc="Pointer Management">
   /**
-   * Gets the head pointer or <code>TAIL_PTR</code> if the list is empty.
+   * Gets the head pointer or {@code TAIL_PTR} if the list is empty.
    */
   private long getHead() {
-    return _head;
+    return cachedHead;
   }
 
   /**
@@ -247,11 +250,11 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   private void setHead(long head) throws IOException {
     assert head == END_PTR || isValidRange(head);
     blockBuffer.putLong(metaDataBlockId, HEAD_OFFSET, head);
-    this._head = head;
+    this.cachedHead = head;
   }
 
   private long getTail() {
-    return _tail;
+    return cachedTail;
   }
 
   /**
@@ -260,7 +263,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   private void setTail(long tail) throws IOException {
     assert tail == END_PTR || isValidRange(tail);
     blockBuffer.putLong(metaDataBlockId, TAIL_OFFSET, tail);
-    this._tail = tail;
+    this.cachedTail = tail;
   }
 
   /**
@@ -346,7 +349,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    */
   private void remove(long ptr) throws IOException {
     assert isValidRange(ptr);
-    assert _size > 0;
+    assert cachedSize > 0;
     long prev = getPrev(ptr);
     long next = getNext(ptr);
     if (prev == END_PTR) {
@@ -372,11 +375,11 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
     // a large part of the data during crash recovery of unrecoverably corrupted
     // data.
     blockBuffer.barrier(true);
-    _size--;
+    cachedSize--;
   }
 
   /**
-   * Adds an entry.  Allocates, writes the header and data, barrier, link-in, barrier, _size++
+   * Adds an entry.  Allocates, writes the header and data, barrier, link-in, barrier, cachedSize++
    * If the serializer is fixed size, will preallocate and serialize directly
    * the block.  Otherwise, it serializes to a buffer, and then allocates the
    * appropriate amount of space.
@@ -386,8 +389,8 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
     //System.err.println("DEBUG: addEntry: element="+element);
     assert next == END_PTR || isValidRange(next);
     assert prev == END_PTR || isValidRange(prev);
-    if (_size == Long.MAX_VALUE) {
-      throw new IOException("List is full: _size == Long.MAX_VALUE");
+    if (cachedSize == Long.MAX_VALUE) {
+      throw new IOException("List is full: cachedSize == Long.MAX_VALUE");
     }
 
     // Allocate and write new entry
@@ -429,7 +432,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
     // Barrier, to make sure links are correct
     blockBuffer.barrier(true);
     // Increment size
-    _size++;
+    cachedSize++;
     return newPtr;
   }
 
@@ -473,13 +476,13 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    *       <li>File version is supported</li>
    *     </ol>
    *   </li>
-   *   <li>_head is the correct value</li>
-   *   <li>_tail is the correct value</li>
-   *   <li>if _head == END_PTR then _tail == END_PTR</li>
-   *   <li>if _tail == END_PTR then _head == END_PTR</li>
+   *   <li>cachedHead is the correct value</li>
+   *   <li>cachedTail is the correct value</li>
+   *   <li>if cachedHead == END_PTR then cachedTail == END_PTR</li>
+   *   <li>if cachedTail == END_PTR then cachedHead == END_PTR</li>
    *   <li>Makes sure all pointers point to allocated blocks</li>
-   *   <li>{@code _head == END_PTR || _head->prev == END_PTR}</li>
-   *   <li>{@code _tail == END_PTR || _tail->next == END_PTR}</li>
+   *   <li>{@code cachedHead == END_PTR || cachedHead->prev == END_PTR}</li>
+   *   <li>{@code cachedTail == END_PTR || cachedTail->next == END_PTR}</li>
    *   <li>For each node:
    *     <ol type="a">
    *       <li>Only seen once (detect loops)</li>
@@ -488,10 +491,11 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    *     </ol>
    *   </li>
    *   <li>No unreferenced allocated blocks</li>
-   *   <li>_size matches the actual size</li>
+   *   <li>cachedSize matches the actual size</li>
    * </ol>
-   *
+   * <p>
    * Assumptions used in this implementation:
+   * </p>
    * <ol>
    *   <li>Blocks that are allocated but not referenced may contain incomplete data.</li>
    *   <li>A block with any reference to it is both allocated and has complete data.</li>
@@ -500,7 +504,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    * </ol>
    *
    * @param autoCorrect Will correct inconsistencies that arise from an unclean shutdown.
-   *                    Logs any corrections made to <code>logger</code> with level <code>INFO</code>.
+   *                    Logs any corrections made to {@link #logger} with level {@link Level#INFO}.
    *
    * @exception  IOException if IO error occurs during check
    * @exception  IllegalStateException when in an inconsistent state and, if autoCorrect, is uncorrectable
@@ -511,12 +515,12 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
   private void dumpPointer(long ptr) throws IOException {
-    System.err.println("_head=" + _head);
-    if (_head != END_PTR) {
-      System.err.println("  _head->next=" + getNext(_head));
+    System.err.println("cachedHead=" + cachedHead);
+    if (cachedHead != END_PTR) {
+      System.err.println("  cachedHead->next=" + getNext(cachedHead));
     }
-    if (_head != END_PTR) {
-      System.err.println("  _head->prev=" + getPrev(_head));
+    if (cachedHead != END_PTR) {
+      System.err.println("  cachedHead->prev=" + getPrev(cachedHead));
     }
     System.err.println("ptr=" + ptr);
     if (ptr != END_PTR) {
@@ -533,12 +537,12 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
         System.err.println("    ptr->prev.prev=" + getPrev(prev));
       }
     }
-    System.err.println("_tail=" + _tail);
-    if (_tail != END_PTR) {
-      System.err.println("  _tail->next=" + getNext(_tail));
+    System.err.println("cachedTail=" + cachedTail);
+    if (cachedTail != END_PTR) {
+      System.err.println("  cachedTail->next=" + getNext(cachedTail));
     }
-    if (_tail != END_PTR) {
-      System.err.println("  _tail->prev=" + getPrev(_tail));
+    if (cachedTail != END_PTR) {
+      System.err.println("  cachedTail->prev=" + getPrev(cachedTail));
     }
   }
 
@@ -549,31 +553,31 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
     // Meta data block is present and complete
     Iterator<Long> ids = blockBuffer.iterateBlockIds();
     if (ids.hasNext()) {
-      // metaDataBlockId is the correct value
-      {
-        long correctMetaDataBlockId = ids.next();
-        if (metaDataBlockId != correctMetaDataBlockId) {
-          if (!isInit) {
-            if (!autoCorrect) {
-              throw new IllegalStateException("metaDataBlockId != correctMetaDataBlockId: " + metaDataBlockId + " != " + correctMetaDataBlockId);
+        // metaDataBlockId is the correct value
+        {
+          long correctMetaDataBlockId = ids.next();
+          if (metaDataBlockId != correctMetaDataBlockId) {
+            if (!isInit) {
+              if (!autoCorrect) {
+                throw new IllegalStateException("metaDataBlockId != correctMetaDataBlockId: " + metaDataBlockId + " != " + correctMetaDataBlockId);
+              }
+              logger.info("metaDataBlockId != correctMetaDataBlockId: " + metaDataBlockId + " != " + correctMetaDataBlockId + " - correcting");
             }
-            logger.info("metaDataBlockId != correctMetaDataBlockId: " + metaDataBlockId + " != " + correctMetaDataBlockId + " - correcting");
+            metaDataBlockId = correctMetaDataBlockId;
           }
-          metaDataBlockId = correctMetaDataBlockId;
         }
-      }
       blockBuffer.get(metaDataBlockId, 0, ioBuffer, 0, MAGIC.length);
       // Magic value is correct
       if (!AoArrays.equals(ioBuffer, MAGIC, 0, MAGIC.length)) {
         throw new IllegalStateException("File does not appear to be a PersistentLinkedList (MAGIC mismatch)");
       }
-      // File version is supported
-      {
-        int version = blockBuffer.getInt(metaDataBlockId, MAGIC.length);
-        if (version != VERSION) {
-          throw new IllegalStateException("Unsupported file version: " + version);
+        // File version is supported
+        {
+          int version = blockBuffer.getInt(metaDataBlockId, MAGIC.length);
+          if (version != VERSION) {
+            throw new IllegalStateException("Unsupported file version: " + version);
+          }
         }
-      }
 
       // Get the set of all allocated ids (except the meta data id).
       Map<Long, Boolean> allocatedIds = new HashMap<>();
@@ -581,123 +585,127 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
         allocatedIds.put(ids.next(), false);
       }
 
-      // _head is the correct value
-      {
-        long correctHead = blockBuffer.getLong(metaDataBlockId, HEAD_OFFSET);
-        if (_head != correctHead) {
-          if (!isInit) {
-            if (!autoCorrect) {
-              throw new IllegalStateException("_head != correctHead: " + _head + " != " + correctHead);
+        // cachedHead is the correct value
+        {
+          long correctHead = blockBuffer.getLong(metaDataBlockId, HEAD_OFFSET);
+          if (cachedHead != correctHead) {
+            if (!isInit) {
+              if (!autoCorrect) {
+                throw new IllegalStateException("cachedHead != correctHead: " + cachedHead + " != " + correctHead);
+              }
+              logger.info("cachedHead != correctMetaDataBlockId: " + cachedHead + " != " + correctHead + " - correcting");
             }
-            logger.info("_head != correctMetaDataBlockId: " + _head + " != " + correctHead + " - correcting");
+            cachedHead = correctHead;
           }
-          _head = correctHead;
         }
-      }
       // Make sure head points to an allocated block.
-      if (_head != END_PTR && !allocatedIds.containsKey(_head)) {
-        throw new IllegalStateException("_head points to unallocated block: " + _head);
+      if (cachedHead != END_PTR && !allocatedIds.containsKey(cachedHead)) {
+        throw new IllegalStateException("cachedHead points to unallocated block: " + cachedHead);
       }
-      // _tail is the correct value
-      {
-        long correctTail = blockBuffer.getLong(metaDataBlockId, TAIL_OFFSET);
-        if (_tail != correctTail) {
-          if (!isInit) {
-            if (!autoCorrect) {
-              throw new IllegalStateException("_tail != correctTail: " + _tail + " != " + correctTail);
+        // cachedTail is the correct value
+        {
+          long correctTail = blockBuffer.getLong(metaDataBlockId, TAIL_OFFSET);
+          if (cachedTail != correctTail) {
+            if (!isInit) {
+              if (!autoCorrect) {
+                throw new IllegalStateException("cachedTail != correctTail: " + cachedTail + " != " + correctTail);
+              }
+              logger.info("cachedTail != correctMetaDataBlockId: " + cachedTail + " != " + correctTail + " - correcting");
             }
-            logger.info("_tail != correctMetaDataBlockId: " + _tail + " != " + correctTail + " - correcting");
+            cachedTail = correctTail;
           }
-          _tail = correctTail;
         }
-      }
       // Make sure tail points to an allocated block.
-      if (_tail != END_PTR && !allocatedIds.containsKey(_tail)) {
-        throw new IllegalStateException("_tail points to unallocated block: " + _tail);
+      if (cachedTail != END_PTR && !allocatedIds.containsKey(cachedTail)) {
+        throw new IllegalStateException("cachedTail points to unallocated block: " + cachedTail);
       }
-      // if _head == END_PTR then _tail == END_PTR
-      if (_head == END_PTR && _tail != END_PTR) {
+      // if cachedHead == END_PTR then cachedTail == END_PTR
+      if (cachedHead == END_PTR && cachedTail != END_PTR) {
         if (!autoCorrect) {
-          throw new IllegalStateException("_head == END_PTR && _tail != END_PTR: _tail=" + _tail);
+          throw new IllegalStateException("cachedHead == END_PTR && cachedTail != END_PTR: cachedTail=" + cachedTail);
         }
         // Partial delete or add, recover
-        logger.info("_head == END_PTR && _tail != END_PTR: _tail=" + _tail + " - recovering partial add or remove");
-        long prev = getPrev(_tail);
+        logger.info("cachedHead == END_PTR && cachedTail != END_PTR: cachedTail=" + cachedTail + " - recovering partial add or remove");
+        long prev = getPrev(cachedTail);
         if (prev != END_PTR) {
-          throw new IllegalStateException("_tail->prev != END_PTR: " + prev);
+          throw new IllegalStateException("cachedTail->prev != END_PTR: " + prev);
         }
-        long next = getNext(_tail);
+        long next = getNext(cachedTail);
         if (next != END_PTR) {
-          throw new IllegalStateException("_tail->next != END_PTR: " + next);
+          throw new IllegalStateException("cachedTail->next != END_PTR: " + next);
         }
-        setHead(_tail);
+        setHead(cachedTail);
       }
-      // if _tail == END_PTR then _head == END_PTR
-      if (_tail == END_PTR && _head != END_PTR) {
+      // if cachedTail == END_PTR then cachedHead == END_PTR
+      if (cachedTail == END_PTR && cachedHead != END_PTR) {
         if (!autoCorrect) {
-          throw new IllegalStateException("_tail == END_PTR && _head != END_PTR: _head=" + _head);
+          throw new IllegalStateException("cachedTail == END_PTR && cachedHead != END_PTR: cachedHead=" + cachedHead);
         }
         // Partial delete or add, recover
-        logger.info("_tail == END_PTR && _head != END_PTR: _head=" + _head + " - recovering partial add or remove");
-        long prev = getPrev(_head);
+        logger.info("cachedTail == END_PTR && cachedHead != END_PTR: cachedHead=" + cachedHead + " - recovering partial add or remove");
+        long prev = getPrev(cachedHead);
         if (prev != END_PTR) {
-          throw new IllegalStateException("_head->prev != END_PTR: " + prev);
+          throw new IllegalStateException("cachedHead->prev != END_PTR: " + prev);
         }
-        long next = getNext(_head);
+        long next = getNext(cachedHead);
         if (next != END_PTR) {
-          throw new IllegalStateException("_head->next != END_PTR: " + next);
+          throw new IllegalStateException("cachedHead->next != END_PTR: " + next);
         }
-        setTail(_head);
+        setTail(cachedHead);
       }
-      if (_head != END_PTR) {
-        // _head->prev == END_PTR
-        long prev = getPrev(_head);
+      if (cachedHead != END_PTR) {
+        // cachedHead->prev == END_PTR
+        long prev = getPrev(cachedHead);
         if (prev != END_PTR) {
           if (!autoCorrect) {
-            throw new IllegalStateException("_head->prev != END_PTR: _head=" + _head + ", _head->prev=" + prev);
+            throw new IllegalStateException("cachedHead->prev != END_PTR: cachedHead=" + cachedHead + ", cachedHead->prev=" + prev);
           }
           if (!allocatedIds.containsKey(prev)) {
-            throw new IllegalStateException("_head->prev points to unallocated block: _head=" + _head + ", _head->prev=" + prev);
+            throw new IllegalStateException("cachedHead->prev points to unallocated block: cachedHead=" + cachedHead + ", cachedHead->prev=" + prev);
           }
-          logger.info("_head->prev != END_PTR: " + prev + " - recovering partial add or remove");
-          // Recoverable if _head->prev.prev == END_PTR and _head->prev.next=_head
+          logger.info("cachedHead->prev != END_PTR: " + prev + " - recovering partial add or remove");
+          // Recoverable if cachedHead->prev.prev == END_PTR and cachedHead->prev.next=cachedHead
           long prevPrev = getPrev(prev);
           if (prevPrev != END_PTR) {
-            throw new IllegalStateException("_head->prev != END_PTR: _head=" + _head + ", _head->prev=" + prev + " - unrecoverable because _head->prev.prev != END_PTR: " + prevPrev);
+            throw new IllegalStateException("cachedHead->prev != END_PTR: cachedHead=" + cachedHead + ", cachedHead->prev=" + prev
+                + " - unrecoverable because cachedHead->prev.prev != END_PTR: " + prevPrev);
           }
           long prevNext = getNext(prev);
-          if (prevNext != _head) {
-            throw new IllegalStateException("_head->prev != END_PTR: _head=" + _head + ", _head->prev=" + prev + " - unrecoverable because _head->prev.next != _head: " + prevNext);
+          if (prevNext != cachedHead) {
+            throw new IllegalStateException("cachedHead->prev != END_PTR: cachedHead=" + cachedHead + ", cachedHead->prev=" + prev
+                + " - unrecoverable because cachedHead->prev.next != cachedHead: " + prevNext);
           }
           setHead(prev);
         }
       }
-      if (_tail != END_PTR) {
-        // _tail->next == END_PTR
-        long next = getNext(_tail);
+      if (cachedTail != END_PTR) {
+        // cachedTail->next == END_PTR
+        long next = getNext(cachedTail);
         if (next != END_PTR) {
           if (!autoCorrect) {
-            throw new IllegalStateException("_tail->next != END_PTR: _tail=" + _tail + ", _tail->next=" + next);
+            throw new IllegalStateException("cachedTail->next != END_PTR: cachedTail=" + cachedTail + ", cachedTail->next=" + next);
           }
           if (!allocatedIds.containsKey(next)) {
-            throw new IllegalStateException("_tail->next points to unallocated block: _tail=" + _tail + ", _tail->next=" + next);
+            throw new IllegalStateException("cachedTail->next points to unallocated block: cachedTail=" + cachedTail + ", cachedTail->next=" + next);
           }
-          logger.info("_tail->next != END_PTR: " + next + " - recovering partial add or remove");
-          // Recoverable if _tail->next.next == END_PTR and _tail->next.prev=_tail
+          logger.info("cachedTail->next != END_PTR: " + next + " - recovering partial add or remove");
+          // Recoverable if cachedTail->next.next == END_PTR and cachedTail->next.prev=cachedTail
           long nextNext = getNext(next);
           if (nextNext != END_PTR) {
-            throw new IllegalStateException("_tail->next != END_PTR: _tail=" + _tail + ", _tail->next=" + next + " - unrecoverable because _tail->next.next != END_PTR: " + nextNext);
+            throw new IllegalStateException("cachedTail->next != END_PTR: cachedTail=" + cachedTail + ", cachedTail->next=" + next
+                + " - unrecoverable because cachedTail->next.next != END_PTR: " + nextNext);
           }
           long nextPrev = getPrev(next);
-          if (nextPrev != _tail) {
-            throw new IllegalStateException("_tail->next != END_PTR: _tail=" + _tail + ", _tail->next=" + next + " - unrecoverable because _tail->next.prev != _tail: " + nextPrev);
+          if (nextPrev != cachedTail) {
+            throw new IllegalStateException("cachedTail->next != END_PTR: cachedTail=" + cachedTail + ", cachedTail->next=" + next
+                + " - unrecoverable because cachedTail->next.prev != cachedTail: " + nextPrev);
           }
           setTail(next);
         }
       }
       // For each node:
       long count = 0;
-      long ptr = _head;
+      long ptr = cachedHead;
       while (ptr != END_PTR) {
         // Points to allocated block
         Boolean seen = allocatedIds.get(ptr);
@@ -715,10 +723,10 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
         long prev = getPrev(ptr);
         if (prev == END_PTR) {
           // head must point to this node
-          if (_head != ptr) {
+          if (cachedHead != ptr) {
             // TODO: Recovery?  Can this happen given our previous checks?
             dumpPointer(ptr);
-            throw new IllegalStateException("ptr.prev == END_PTR while _head != ptr: ptr=" + ptr + ", _head=" + _head);
+            throw new IllegalStateException("ptr.prev == END_PTR while cachedHead != ptr: ptr=" + ptr + ", cachedHead=" + cachedHead);
           }
         } else {
           // make sure ptr.prev is allocated
@@ -737,23 +745,26 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
         long next = getNext(ptr);
         if (next == END_PTR) {
           // tail must point to this node
-          if (_tail != ptr) {
+          if (cachedTail != ptr) {
             if (!autoCorrect) {
-              throw new IllegalStateException("ptr.next == END_PTR while _tail != ptr: ptr=" + ptr + ", _tail=" + _tail);
+              throw new IllegalStateException("ptr.next == END_PTR while cachedTail != ptr: ptr=" + ptr + ", cachedTail=" + cachedTail);
             }
-            logger.info("ptr.next == END_PTR while _tail != ptr: ptr=" + ptr + ", _tail=" + _tail + " - recovering partial add or remove");
-            if (_tail == END_PTR) {
-              throw new IllegalStateException("ptr.next == END_PTR while _tail != ptr: ptr=" + ptr + ", _tail=" + _tail + " - unrecoverable because _tail == END_PTR");
+            logger.info("ptr.next == END_PTR while cachedTail != ptr: ptr=" + ptr + ", cachedTail=" + cachedTail + " - recovering partial add or remove");
+            if (cachedTail == END_PTR) {
+              throw new IllegalStateException("ptr.next == END_PTR while cachedTail != ptr: ptr=" + ptr + ", cachedTail=" + cachedTail
+                  + " - unrecoverable because cachedTail == END_PTR");
             }
-            long tailPrev = getPrev(_tail);
+            long tailPrev = getPrev(cachedTail);
             if (tailPrev != ptr) {
-              throw new IllegalStateException("ptr.next == END_PTR while _tail != ptr: ptr=" + ptr + ", _tail=" + _tail + " - unrecoverable because _tail->prev != ptr: " + tailPrev);
+              throw new IllegalStateException("ptr.next == END_PTR while cachedTail != ptr: ptr=" + ptr + ", cachedTail=" + cachedTail
+                  + " - unrecoverable because cachedTail->prev != ptr: " + tailPrev);
             }
-            long tailNext = getNext(_tail);
+            long tailNext = getNext(cachedTail);
             if (tailNext != END_PTR) {
-              throw new IllegalStateException("ptr.next == END_PTR while _tail != ptr: ptr=" + ptr + ", _tail=" + _tail + " - unrecoverable because _tail->next != END_PTR: " + tailNext);
+              throw new IllegalStateException("ptr.next == END_PTR while cachedTail != ptr: ptr=" + ptr + ", cachedTail=" + cachedTail
+                  + " - unrecoverable because cachedTail->next != END_PTR: " + tailNext);
             }
-            setNext(ptr, next = _tail);
+            setNext(ptr, next = cachedTail);
           }
         } else {
           // make sure ptr.next is allocated
@@ -764,11 +775,15 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
           long nextPrev = getPrev(next);
           if (nextPrev != ptr) {
             if (!autoCorrect) {
-              throw new IllegalStateException("ptr.next->prev != ptr: ptr=" + ptr + ", ptr.prev=" + prev + ", ptr.next=" + next + ", ptr.next->prev=" + nextPrev);
+              throw new IllegalStateException("ptr.next->prev != ptr: ptr=" + ptr + ", ptr.prev=" + prev
+                  + ", ptr.next=" + next + ", ptr.next->prev=" + nextPrev);
             }
-            logger.info("ptr.next->prev != ptr: ptr=" + ptr + ", ptr.prev=" + prev + ", ptr.next=" + next + ", ptr.next->prev=" + nextPrev + " - recovering partial add or remove");
+            logger.info("ptr.next->prev != ptr: ptr=" + ptr + ", ptr.prev=" + prev + ", ptr.next=" + next
+                + ", ptr.next->prev=" + nextPrev + " - recovering partial add or remove");
             if (nextPrev != prev) {
-              throw new IllegalStateException("ptr.next->prev != ptr: ptr=" + ptr + ", ptr.prev=" + prev + ", ptr.next=" + next + ", ptr.next->prev=" + nextPrev + " - unrecoverable because ptr.next->prev != ptr.prev");
+              throw new IllegalStateException("ptr.next->prev != ptr: ptr=" + ptr + ", ptr.prev=" + prev
+                  + ", ptr.next=" + next + ", ptr.next->prev=" + nextPrev
+                  + " - unrecoverable because ptr.next->prev != ptr.prev");
             }
             setPrev(next, ptr);
           }
@@ -791,7 +806,8 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
       if (unreferencedCount > 0) {
         // Should only need to deallocate one block - higher count may indicate a more serious problem
         if (unreferencedCount > 1) {
-          throw new IllegalStateException("More than one block allocated but not referenced: firstUnreferencedBlockId=" + firstUnreferencedBlockId + ", unreferencedCount=" + unreferencedCount);
+          throw new IllegalStateException("More than one block allocated but not referenced: firstUnreferencedBlockId="
+              + firstUnreferencedBlockId + ", unreferencedCount=" + unreferencedCount);
         }
         if (!autoCorrect) {
           throw new IllegalStateException("Block allocated but not referenced: " + firstUnreferencedBlockId);
@@ -799,15 +815,15 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
         logger.info("Block allocated but not referenced: " + firstUnreferencedBlockId + " - deallocating");
         blockBuffer.deallocate(firstUnreferencedBlockId);
       }
-      // _size matches the actual size
-      if (_size != count) {
+      // cachedSize matches the actual size
+      if (cachedSize != count) {
         if (!isInit) {
           if (!autoCorrect) {
-            throw new IllegalStateException("_size != count: " + _size + " != " + count);
+            throw new IllegalStateException("cachedSize != count: " + cachedSize + " != " + count);
           }
-          logger.info("_size != count: " + _size + " != " + count + " - correcting");
+          logger.info("cachedSize != count: " + cachedSize + " != " + count + " - correcting");
         }
-        _size = count;
+        cachedSize = count;
       }
     } else {
       if (!autoCorrect) {
@@ -822,7 +838,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
       setHead(END_PTR);
       setTail(END_PTR);
       blockBuffer.barrier(true);
-      _size = 0;
+      cachedSize = 0;
     }
   }
 
@@ -966,12 +982,13 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   /**
    * Gets the pointer for the provided index.
-   *
+   * <p>
    * This runs in linear time.
+   * </p>
    */
   private long getPointerForIndex(long index) throws IOException {
-    assert _size > 0;
-    if (index < (_size >> 1)) {
+    assert cachedSize > 0;
+    if (index < (cachedSize >> 1)) {
       long ptr = getHead();
       assert ptr != END_PTR;
       for (int i = 0; i < index; i++) {
@@ -983,7 +1000,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
       // Search backwards
       long bptr = getTail();
       assert bptr != END_PTR;
-      for (long i = _size - 1; i > index; i--) {
+      for (long i = cachedSize - 1; i > index; i--) {
         bptr = getPrev(bptr);
         assert bptr != END_PTR;
       }
@@ -1035,14 +1052,14 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   @Override
   public boolean addAll(int index, Collection<? extends E> c) {
-    if (index == _size) {
+    if (index == cachedSize) {
       return addAll(c);
     }
     if (c.isEmpty()) {
       return false;
     }
-    if (index < 0 || index > _size) {
-      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + _size);
+    if (index < 0 || index > cachedSize) {
+      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + cachedSize);
     }
     modCount++;
     try {
@@ -1064,7 +1081,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    */
   @Override
   public int size() {
-    return _size > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) _size;
+    return cachedSize > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) cachedSize;
   }
 
   @Override
@@ -1092,7 +1109,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
       }
       setHead(END_PTR);
       setTail(END_PTR);
-      _size = 0;
+      cachedSize = 0;
       blockBuffer.barrier(false);
       // Deallocate all except first block
       while (ids.hasNext()) {
@@ -1117,8 +1134,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   /**
    * Replaces the element at the specified position in this list with the
    * specified element.
-   *
+   * <p>
    * TODO: First try to replace at the current position?  Impact on atomicity?
+   * </p>
    *
    * @param index index of the element to replace
    * @param element element to be stored at the specified position
@@ -1207,7 +1225,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   @Override
   public int lastIndexOf(Object o) {
     try {
-      long index = _size;
+      long index = cachedSize;
       if (o == null) {
         for (long ptr = getTail(); ptr != END_PTR; ptr = getPrev(ptr)) {
           --index;
@@ -1237,7 +1255,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   @Override
   public E peek() {
-    if (_size == 0) {
+    if (cachedSize == 0) {
       return null;
     }
     return getFirst();
@@ -1250,7 +1268,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   @Override
   public E poll() {
-    if (_size == 0) {
+    if (cachedSize == 0) {
       return null;
     }
     return removeFirst();
@@ -1280,7 +1298,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   @Override
   public E peekFirst() {
-    if (_size == 0) {
+    if (cachedSize == 0) {
       return null;
     }
     return getFirst();
@@ -1288,7 +1306,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   @Override
   public E peekLast() {
-    if (_size == 0) {
+    if (cachedSize == 0) {
       return null;
     }
     return getLast();
@@ -1296,7 +1314,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   @Override
   public E pollFirst() {
-    if (_size == 0) {
+    if (cachedSize == 0) {
       return null;
     }
     return removeFirst();
@@ -1304,7 +1322,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   @Override
   public E pollLast() {
-    if (_size == 0) {
+    if (cachedSize == 0) {
       return null;
     }
     return removeLast();
@@ -1364,14 +1382,14 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
     private int expectedModCount = modCount;
 
     ListItr(long index) {
-      if (index < 0 || index > _size) {
-        throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + _size);
+      if (index < 0 || index > cachedSize) {
+        throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + cachedSize);
       }
       try {
-        if (index == _size) {
+        if (index == cachedSize) {
           // Points one past the end
           nextPtr = END_PTR;
-          nextIndex = _size;
+          nextIndex = cachedSize;
         } else {
           // Points within the list
           nextPtr = getPointerForIndex(index);
@@ -1384,20 +1402,20 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
     @Override
     public boolean hasNext() {
-      return nextIndex != _size;
+      return nextIndex != cachedSize;
     }
 
     @Override
     public E next() throws NoSuchElementException {
       checkForComodification();
-      if (nextIndex == _size) {
+      if (nextIndex == cachedSize) {
         throw new NoSuchElementException();
       }
       try {
         lastReturned = nextPtr;
         nextPtr = getNext(nextPtr);
         nextIndex++;
-        assert (nextPtr == END_PTR && nextIndex == _size) || (nextPtr != END_PTR && nextIndex < _size);
+        assert (nextPtr == END_PTR && nextIndex == cachedSize) || (nextPtr != END_PTR && nextIndex < cachedSize);
         return getElement(lastReturned);
       } catch (IOException err) {
         throw new UncheckedIOException(err);
@@ -1418,7 +1436,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
       try {
         lastReturned = nextPtr = nextPtr == END_PTR ? getTail() : getPrev(nextPtr);
         nextIndex--;
-        assert (nextPtr == END_PTR && nextIndex == _size) || (nextPtr != END_PTR && nextIndex < _size);
+        assert (nextPtr == END_PTR && nextIndex == cachedSize) || (nextPtr != END_PTR && nextIndex < cachedSize);
         return getElement(lastReturned);
       } catch (IOException err) {
         throw new UncheckedIOException(err);
@@ -1461,7 +1479,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
         }
         lastReturned = END_PTR;
         expectedModCount++;
-        assert (nextPtr == END_PTR && nextIndex == _size) || (nextPtr != END_PTR && nextIndex < _size);
+        assert (nextPtr == END_PTR && nextIndex == cachedSize) || (nextPtr != END_PTR && nextIndex < cachedSize);
       } catch (IOException err) {
         throw new UncheckedIOException(err);
       }
@@ -1526,10 +1544,10 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   @Override
   public Object[] toArray() {
     try {
-      if (_size > Integer.MAX_VALUE) {
-        throw new RuntimeException("Too many elements in list to create Object[]: " + _size);
+      if (cachedSize > Integer.MAX_VALUE) {
+        throw new RuntimeException("Too many elements in list to create Object[]: " + cachedSize);
       }
-      Object[] result = new Object[(int) _size];
+      Object[] result = new Object[(int) cachedSize];
       int i = 0;
       for (long ptr = getHead(); ptr != END_PTR; ptr = getNext(ptr)) {
         result[i++] = getElement(ptr);
@@ -1543,12 +1561,12 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   @Override
   @SuppressWarnings("unchecked")
   public <T> T[] toArray(T[] a) {
-    if (_size > Integer.MAX_VALUE) {
-      throw new RuntimeException("Too many elements in list to fill or create array: " + _size);
+    if (cachedSize > Integer.MAX_VALUE) {
+      throw new RuntimeException("Too many elements in list to fill or create array: " + cachedSize);
     }
     try {
-      if (a.length < _size) {
-        a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), (int) _size);
+      if (a.length < cachedSize) {
+        a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), (int) cachedSize);
       }
       int i = 0;
       @SuppressWarnings("MismatchedReadAndWriteOfArray")
@@ -1556,27 +1574,13 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
       for (long ptr = getHead(); ptr != END_PTR; ptr = getNext(ptr)) {
         result[i++] = getElement(ptr);
       }
-      if (a.length > _size) {
-        a[(int) _size] = null;
+      if (a.length > cachedSize) {
+        a[(int) cachedSize] = null;
       }
 
       return a;
     } catch (IOException err) {
       throw new UncheckedIOException(err);
-    }
-  }
-
-  /**
-   * @deprecated The finalization mechanism is inherently problematic.
-   */
-  @Deprecated(since = "9")
-  @Override
-  @SuppressWarnings("FinalizeDeclaration")
-  protected void finalize() throws Throwable {
-    try {
-      close();
-    } finally {
-      super.finalize();
     }
   }
 

@@ -53,22 +53,21 @@ public final class PersistentCollections {
    */
   private static final byte[] zeros = new byte[BufferManager.BUFFER_SIZE];
 
-  /**
-   * Writes the requested number of zeros to the provided output.
-   */
-  /*
-  static void fillZeros(DataOutput out, long count) throws IOException {
-    if (count<0) {
-      throw new IllegalArgumentException("count<0: "+count);
-    }
-    while (count>BufferManager.BUFFER_SIZE) {
-      out.write(zeros, 0, BufferManager.BUFFER_SIZE);
-      count -= BufferManager.BUFFER_SIZE;
-    }
-    if (count>0) {
-      out.write(zeros, 0, (int)count);
-    }
-  }*/
+  ///**
+  // * Writes the requested number of zeros to the provided output.
+  // */
+  //static void fillZeros(DataOutput out, long count) throws IOException {
+  //  if (count<0) {
+  //    throw new IllegalArgumentException("count<0: "+count);
+  //  }
+  //  while (count>BufferManager.BUFFER_SIZE) {
+  //    out.write(zeros, 0, BufferManager.BUFFER_SIZE);
+  //    count -= BufferManager.BUFFER_SIZE;
+  //  }
+  //  if (count>0) {
+  //    out.write(zeros, 0, (int)count);
+  //  }
+  //}
 
   /**
    * Writes the requested number of zeros to the provided RandomAccessFile, but
@@ -201,36 +200,35 @@ public final class PersistentCollections {
     return modified;
   }
 
-  /**
-   * Writes the requested number of zeros to the provided buffer.
-   */
-  /*
-  static void fillZeros(ByteBuffer buffer, long count) throws IOException {
-    if (count<0) {
-      throw new IllegalArgumentException("count<0: "+count);
-    }
-    while (count>BufferManager.BUFFER_SIZE) {
-      buffer.put(zeros, 0, BufferManager.BUFFER_SIZE);
-      count -= BufferManager.BUFFER_SIZE;
-    }
-    if (count>0) {
-      buffer.put(zeros, 0, (int)count);
-    }
-  }*/
+  ///**
+  // * Writes the requested number of zeros to the provided buffer.
+  // */
+  //static void fillZeros(ByteBuffer buffer, long count) throws IOException {
+  //  if (count<0) {
+  //    throw new IllegalArgumentException("count<0: "+count);
+  //  }
+  //  while (count>BufferManager.BUFFER_SIZE) {
+  //    buffer.put(zeros, 0, BufferManager.BUFFER_SIZE);
+  //    count -= BufferManager.BUFFER_SIZE;
+  //  }
+  //  if (count>0) {
+  //    buffer.put(zeros, 0, (int)count);
+  //  }
+  //}
 
   /**
-   * Selects the most efficient temporary <code>PersistentBuffer</code> for the current
+   * Selects the most efficient temporary {@link PersistentBuffer} for the current
    * machine and the provided maximum buffer size.  The buffer will be backed by a temporary
    * file that will be deleted on buffer close or JVM shutdown.  The protection level will be
-   * <code>NONE</code>.  The order of preference is:
+   * {@link ProtectionLevel#NONE}.  The order of preference is:
    * <ol>
-   *   <li><code>MappedPersistentBuffer</code></li>
-   *   <li><code>LargeMappedPersistentBuffer</code></li>
-   *   <li><code>RandomAccessFileBuffer</code></li>
+   *   <li>{@link MappedPersistentBuffer}</li>
+   *   <li>{@link LargeMappedPersistentBuffer}</li>
+   *   <li>{@link RandomAccessFileBuffer}</li>
    * </ol>
    *
    * @param maximumCapacity The maximum size of data that may be stored in the
-   *                        buffer.  To ensure no limits, use <code>Long.MAX_VALUE</code>.
+   *                        buffer.  To ensure no limits, use {@link Long#MAX_VALUE}.
    */
   public static PersistentBuffer getPersistentBuffer(long maximumCapacity) throws IOException {
     // If < 1 GB, use mapped buffer
@@ -254,18 +252,18 @@ public final class PersistentCollections {
   }
 
   /**
-   * Selects the most efficient <code>PersistentBuffer</code> for the current
+   * Selects the most efficient {@link PersistentBuffer} for the current
    * machine and the provided maximum buffer size.  The order of preference is:
    * <ol>
-   *   <li><code>MappedPersistentBuffer</code></li>
-   *   <li><code>LargeMappedPersistentBuffer</code></li>
-   *   <li><code>RandomAccessFileBuffer</code></li>
+   *   <li>{@link MappedPersistentBuffer}</li>
+   *   <li>{@link LargeMappedPersistentBuffer}</li>
+   *   <li>{@link RandomAccessFileBuffer}</li>
    * </ol>
    *
    * @param maximumCapacity The maximum size of data that may be stored in the
    *                        buffer.  If the random access file is larger than this value,
    *                        the length of the file is used instead.
-   *                        To ensure no limits, use <code>Long.MAX_VALUE</code>.
+   *                        To ensure no limits, use {@link Long#MAX_VALUE}.
    */
   public static PersistentBuffer getPersistentBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel, long maximumCapacity) throws IOException {
     if (maximumCapacity < (1L << 30)) {
@@ -295,7 +293,7 @@ public final class PersistentCollections {
   }
 
   /**
-   * Selects the most efficient <code>Serializer</code> for the provided class.
+   * Selects the most efficient {@link Serializer} for the provided class.
    */
   @SuppressWarnings("unchecked")
   public static <E> Serializer<E> getSerializer(Class<E> type) {
@@ -338,13 +336,13 @@ public final class PersistentCollections {
   }
 
   /**
-   * Gets the most efficient <code>PersistentBlockBuffer</code> for the provided
-   * provided <code>Serializer</code>.  If using fixed record sizes, the size of
+   * Gets the most efficient {@link PersistentBlockBuffer} for the provided
+   * provided {@link Serializer}.  If using fixed record sizes, the size of
    * the block buffer is rounded up to the nearest power of two, to help
    * alignment with system page tables.
    *
-   * @param serializer            The <code>Serializer</code> that will be used to write to the blocks
-   * @param pbuffer               The <code>PersistenceBuffer</code> that will be wrapped by the block buffer
+   * @param serializer            The {@link Serializer} that will be used to write to the blocks
+   * @param pbuffer               The {@link PersistentBuffer} that will be wrapped by the block buffer
    * @param additionalBlockSpace  The maximum additional space needed beyond the space used by the serializer.  This may be used
    *                              for linked list pointers, for example.
    */
@@ -376,39 +374,38 @@ public final class PersistentCollections {
     return new DynamicPersistentBlockBuffer(pbuffer);
   }
 
-  /**
-   * Gets the most efficient <code>RandomAccessPersistentBlockBuffer</code> for the provided
-   * provided <code>Serializer</code>.  The serializer must be provide a fixed serializer size.
-   * The size of the block buffer is rounded up to the nearest power of two, to help alignment
-   * with system page tables.
-   *
-   * @param serializer            The <code>Serializer</code> that will be used to write to the blocks
-   * @param pbuffer               The <code>PersistenceBuffer</code> that will be wrapped by the block buffer
-   * @param additionalBlockSpace  The maximum additional space needed beyond the space used by the serializer.  This may be used
-   *                              for linked list pointers, for example.
-   */
-  /*
-  public static RandomAccessPersistentBlockBuffer getRandomAccessPersistentBlockBuffer(Serializer<?> serializer, PersistentBuffer pbuffer, long additionalBlockSpace) throws IOException {
-    if (additionalBlockSpace<0) {
-      throw new IllegalArgumentException("additionalBlockSpace<0: "+additionalBlockSpace);
-    }
-    // Use power-of-two fixed size blocks if possible
-    if (!serializer.isFixedSerializedSize()) {
-      throw new IllegalArgumentException("serializer does not created fixed size output");
-    }
-    long serSize = serializer.getSerializedSize(null);
-    long minimumSize = serSize + additionalBlockSpace;
-    if (minimumSize<0) {
-      throw new AssertionError("Long wraparound: "+serSize+"+"+minimumSize+"="+minimumSize);
-    }
-    long highestOneBit = Long.highestOneBit(minimumSize);
-    return new FixedPersistentBlockBuffer(
-      pbuffer,
-      highestOneBit == (1L<<62)
-      ? minimumSize           // In range 2^62-2^63-1, cannot round up to next highest, use minimum size
-      : minimumSize == highestOneBit
-      ? minimumSize           // minimumSize is a power of two
-      : (highestOneBit<<1)    // use next-highest power of two
-    );
-  }*/
+  ///**
+  // * Gets the most efficient {@link RandomAccessPersistentBlockBuffer} for the provided
+  // * provided {@link Serializer}.  The serializer must be provide a fixed serializer size.
+  // * The size of the block buffer is rounded up to the nearest power of two, to help alignment
+  // * with system page tables.
+  // *
+  // * @param serializer            The {@link Serializer} that will be used to write to the blocks
+  // * @param pbuffer               The {@link PersistenceBuffer} that will be wrapped by the block buffer
+  // * @param additionalBlockSpace  The maximum additional space needed beyond the space used by the serializer.  This may be used
+  // *                              for linked list pointers, for example.
+  // */
+  //public static RandomAccessPersistentBlockBuffer getRandomAccessPersistentBlockBuffer(Serializer<?> serializer, PersistentBuffer pbuffer, long additionalBlockSpace) throws IOException {
+  //  if (additionalBlockSpace<0) {
+  //    throw new IllegalArgumentException("additionalBlockSpace<0: "+additionalBlockSpace);
+  //  }
+  //  // Use power-of-two fixed size blocks if possible
+  //  if (!serializer.isFixedSerializedSize()) {
+  //    throw new IllegalArgumentException("serializer does not created fixed size output");
+  //  }
+  //  long serSize = serializer.getSerializedSize(null);
+  //  long minimumSize = serSize + additionalBlockSpace;
+  //  if (minimumSize<0) {
+  //    throw new AssertionError("Long wraparound: "+serSize+"+"+minimumSize+"="+minimumSize);
+  //  }
+  //  long highestOneBit = Long.highestOneBit(minimumSize);
+  //  return new FixedPersistentBlockBuffer(
+  //    pbuffer,
+  //    highestOneBit == (1L<<62)
+  //    ? minimumSize           // In range 2^62-2^63-1, cannot round up to next highest, use minimum size
+  //    : minimumSize == highestOneBit
+  //    ? minimumSize           // minimumSize is a power of two
+  //    : (highestOneBit<<1)    // use next-highest power of two
+  //  );
+  //}
 }

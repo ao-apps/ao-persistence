@@ -24,11 +24,12 @@
 package com.aoapps.persistence;
 
 import java.io.File;
+import java.util.LinkedList;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Tests the <code>LinkedFileList</code> against the standard <code>LinkedList</code>
+ * Tests the {@link PersistentLinkedList} against the standard {@link LinkedList}
  * by performing equal, random actions on each and ensuring equal results.
  *
  * @author  AO Industries, Inc.
@@ -49,26 +50,25 @@ public class PersistentLinkedListLargeMappedTest extends PersistentLinkedListTes
     return new LargeMappedPersistentBuffer(tempFile, protectionLevel);
   }
 
-  /**
-   * Test larger files.
-   */
-  /*
-  public void testLargeList() throws Exception {
-    try (
-      TempFileContext tempFileContext = new TempFileContext();
-      TempFile tempFile = tempFileContext.createTempFile("LinkedFileListTest");
-      PersistentLinkedList<byte[]> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile), false, false)
-    ) {
-      byte[] buff = new byte[1024 * 1024];
-      System.out.println("Filling list");
-      for (int c=0;c<1024;c++) {
-        linkedFileList.add(buff);
-      }
-      System.out.println("Testing as circular list");
-      for (int c=0;c<1000000;c++) {
-        linkedFileList.removeLast();
-        linkedFileList.addFirst(buff);
-      }
-    }
-  }*/
+  ///**
+  // * Test larger files.
+  // */
+  //public void testLargeList() throws Exception {
+  //  try (
+  //    TempFileContext tempFileContext = new TempFileContext();
+  //    TempFile tempFile = tempFileContext.createTempFile("PersistentLinkedListTest");
+  //    PersistentLinkedList<byte[]> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile), false, false)
+  //  ) {
+  //    byte[] buff = new byte[1024 * 1024];
+  //    System.out.println("Filling list");
+  //    for (int c=0;c<1024;c++) {
+  //      linkedFileList.add(buff);
+  //    }
+  //    System.out.println("Testing as circular list");
+  //    for (int c=0;c<1000000;c++) {
+  //      linkedFileList.removeLast();
+  //      linkedFileList.addFirst(buff);
+  //    }
+  //  }
+  //}
 }

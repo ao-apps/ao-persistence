@@ -31,7 +31,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * Serializes any <code>Serializable</code> objects.
+ * Serializes any {@link Serializable} objects.
  * This class is not thread safe.
  *
  * @author  AO Industries, Inc.
@@ -40,6 +40,9 @@ public class ObjectSerializer<E> extends BufferedSerializer<E> {
 
   private final Class<E> type;
 
+  /**
+   * Creates a new {@link Serializable} object serializer.
+   */
   public ObjectSerializer(Class<E> type) {
     if (!Serializable.class.isAssignableFrom(type)) {
       throw new IllegalArgumentException("Class is not Serializable: " + type.getName());

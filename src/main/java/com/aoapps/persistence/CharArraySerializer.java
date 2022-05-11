@@ -30,7 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Serializes <code>char[]</code> objects.
+ * Serializes {@code char[]} objects.
  * This class is not thread safe.
  *
  * @author  AO Industries, Inc.
@@ -60,10 +60,9 @@ public class CharArraySerializer implements Serializer<char[]> {
         if (len < count) {
           count = len;
         }
-        for (
-          int charsIndex = 0, bytesIndex = 0;
-          charsIndex < count;
-          charsIndex++, bytesIndex += Character.BYTES
+        for (int charsIndex = 0, bytesIndex = 0;
+            charsIndex < count;
+            charsIndex++, bytesIndex += Character.BYTES
         ) {
           IoUtils.charToBuffer(chars[pos + charsIndex], bytes, bytesIndex);
         }
@@ -90,10 +89,9 @@ public class CharArraySerializer implements Serializer<char[]> {
           count = len;
         }
         IoUtils.readFully(in, bytes, pos, len);
-        for (
-          int charsIndex = 0, bytesIndex = 0;
-          charsIndex < count;
-          charsIndex++, bytesIndex += Character.BYTES
+        for (int charsIndex = 0, bytesIndex = 0;
+            charsIndex < count;
+            charsIndex++, bytesIndex += Character.BYTES
         ) {
           chars[pos + charsIndex] = IoUtils.bufferToChar(bytes, bytesIndex);
         }

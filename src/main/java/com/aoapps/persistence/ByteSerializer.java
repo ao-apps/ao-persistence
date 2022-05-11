@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Serializes <code>Byte</code> objects.
+ * Serializes {@link Byte} objects.
  *
  * @author  AO Industries, Inc.
  */

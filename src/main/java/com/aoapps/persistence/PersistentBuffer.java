@@ -38,11 +38,11 @@ import java.nio.BufferUnderflowException;
  * communication.
  * </p>
  * <p>
- * To ensure the data integrity of higher-level data structures, the <code>barrier</code> method
+ * To ensure the data integrity of higher-level data structures, the {@link #barrier(boolean)} method
  * must be used.  A barrier ensures that all writes before the barrier happen before
  * all writes after the barrier.  It also accepts a parameter indicating it should
- * also <code>force</code> (fsync) all writes before the barrier to physical media.  Write order
- * between <code>barrier</code> calls is not maintained.
+ * also {@code force} (fsync) all writes before the barrier to physical media.  Write order
+ * between {@link #barrier(boolean)} calls is not maintained.
  * </p>
  *
  * @author  AO Industries, Inc.
@@ -68,13 +68,13 @@ public interface PersistentBuffer extends Closeable {
   /**
    * Sets the capacity of this buffer.  If the buffer is increased in size, the
    * new space will be zero-filled.  Setting the capacity may impose an
-   * automatic <code>barrier(true)</code>, depending on implementation.  This
+   * automatic {@link #barrier(boolean) barrier(true)}, depending on implementation.  This
    * should be considered an expensive operation.
    */
   void setCapacity(long newCapacity) throws IOException;
 
   /**
-   * Reads to the provided <code>byte[]</code>, starting at the provided
+   * Reads to the provided {@code byte[]}, starting at the provided
    * position and for the designated number of bytes.
    *
    * @exception  BufferUnderflowException on end of file
@@ -82,7 +82,7 @@ public interface PersistentBuffer extends Closeable {
   void get(long position, byte[] buff, int off, int len) throws IOException;
 
   /**
-   * Reads to the provided <code>byte[]</code>, may read fewer than <code>len</code>
+   * Reads to the provided {@code byte[]}, may read fewer than {@code len}
    * bytes, but will always read at least one byte.  Blocks if no data is
    * available.
    *
@@ -91,8 +91,8 @@ public interface PersistentBuffer extends Closeable {
   int getSome(long position, byte[] buff, int off, int len) throws IOException;
 
   /**
-   * Reads a boolean at the provided position, zero is considered <code>false</code>
-   * and any non-zero value is <code>true</code>.
+   * Reads a boolean at the provided position, zero is considered {@code false}
+   * and any non-zero value is {@code true}.
    */
   boolean getBoolean(long position) throws IOException;
 
@@ -159,7 +159,7 @@ public interface PersistentBuffer extends Closeable {
 
   /**
    * Ensures that all writes before this barrier occur before all writes after
-   * this barrier.  If <code>force</code> is <code>true</code>, will also
+   * this barrier.  If {@code force} is {@code true}, will also
    * commit to physical media synchronously before returning.  This request
    * may be ignored or force downgraded to barrier-only depending on the current
    * protection level.

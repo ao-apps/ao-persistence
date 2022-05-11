@@ -52,7 +52,7 @@ public class SparseBuffer extends AbstractPersistentBuffer {
   private final Map<Long, byte[]> buffers = new HashMap<>();
 
   /**
-   * Creates a read-write test buffer with protection level <code>NONE</code>.
+   * Creates a read-write test buffer with protection level {@link ProtectionLevel#NONE}.
    */
   public SparseBuffer() {
     this(ProtectionLevel.NONE);

@@ -31,7 +31,7 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 
 /**
- * Provides a base implementation of <code>PersistentBuffer</code> in terms of
+ * Provides a base implementation of {@link PersistentBuffer} in terms of
  * basic read/write methods.  This class is not thread safe.
  *
  * @author  AO Industries, Inc.
@@ -51,7 +51,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as calls to <code>getSome(long,byte[],int,int)</code>
+   * Implemented as calls to {@link #getSome(long, byte[], int, int)}.
    *
    * @see  #getSome(long, byte[], int, int)
    */
@@ -66,7 +66,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to <code>readByte(long)</code>
+   * Implemented as call to {@link #get(long)}.
    *
    * @see  #get(long)
    */
@@ -76,7 +76,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to <code>get(long,byte[],int,int)</code>.  For performance
+   * Implemented as call to {@link #get(long, byte[], int, int)}.  For performance
    * reasons, it is strongly recommended to provide a more efficient implementation
    * of this method.
    *
@@ -89,7 +89,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to <code>get(long,byte[],int,int)</code>
+   * Implemented as call to {@link #get(long, byte[], int, int)}.
    *
    * @see  #get(long, byte[], int, int)
    */
@@ -100,7 +100,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to <code>get(long,byte[],int,int)</code>
+   * Implemented as call to {@link #get(long, byte[], int, int)}.
    *
    * @see  #get(long, byte[], int, int)
    */
@@ -111,7 +111,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to <code>put(long,byte[],int,int)</code>.  For performance
+   * Implemented as call to {@link #put(long, byte[], int, int)}.  For performance
    * reasons, it is strongly recommended to provide a more efficient implementation
    * of this method.
    *
@@ -124,7 +124,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to <code>write(long,byte[],int,int)</code>
+   * Implemented as call to {@link #put(long, byte[], int, int)}.
    *
    * @see  #put(long, byte[], int, int)
    */
@@ -135,7 +135,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to <code>write(long,byte[],int,int)</code>
+   * Implemented as call to {@link #put(long, byte[], int, int)}.
    *
    * @see  #put(long, byte[], int, int)
    */
@@ -146,7 +146,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as calls to <code>get(long)</code> and <code>getSome(long,byte[],int,int)</code>
+   * Implemented as calls to {@link #get(long)} and {@link #getSome(long, byte[], int, int)}.
    *
    * @see  #get(long)
    * @see  #getSome(long, byte[], int, int)
@@ -234,8 +234,7 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as calls to <code>put(long,byte)</code>
-   * and <code>put(long,byte[],int,int)</code>.
+   * Implemented as calls to {@link #put(long, byte)} and {@link #put(long, byte[], int, int)}.
    *
    * @see  #put(long, byte)
    * @see  #put(long, byte[], int, int)

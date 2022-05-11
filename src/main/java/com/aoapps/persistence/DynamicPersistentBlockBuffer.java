@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 /**
  * <p>
- * Treats a <code>PersistentBuffer</code> as a set of allocatable blocks.
+ * Treats a {@link PersistentBuffer} as a set of allocatable blocks.
  * Each block is stored in a 2^n area of the buffer, where the usable
  * space is 2^n-1 (the first byte of that area of the buffer indicates
  * the block size and allocated status).
@@ -58,7 +58,7 @@ import java.util.logging.Logger;
  * </p>
  * <p>
  * Each entry has a one-byte header:
- *     bits 0-5: maxBits     (0-63) the power of two of the size of this block (max data size is <code>(2^maxBits)-1</code>).
+ *     bits 0-5: maxBits     (0-63) the power of two of the size of this block (max data size is {@code (2^maxBits)-1}).
  *     bit  6:   reserved, should be 0
  *     bit  7:   allocated flag
  * </p>
@@ -173,7 +173,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   }
 
   /**
-   * Makes sure the id is in the valid range: <code>0 &lt;= id &lt; capacity</code>
+   * Makes sure the id is in the valid range: {@code 0 &lt;= id &lt; capacity}.
    */
   private boolean isValidRange(long id) throws IOException {
     return id >= 0 && id < pbuffer.capacity();
@@ -190,7 +190,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   }
 
   /**
-   * Makes sure a block is complete: <code>(id + blockSize) &lt;= capacity</code>
+   * Makes sure a block is complete: {@code (id + blockSize) &lt;= capacity}.
    */
   private boolean isBlockComplete(long id, int blockSizeBits) throws IOException {
     assert isValidRange(id);
@@ -319,7 +319,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    * it will look for a larger free space and split it into two smaller pieces, returning
    * the first of the two pieces.
    *
-   * @return  the address of the block or <code>-1</code> if no free space can be found
+   * @return  the address of the block or {@code -1} if no free space can be found
    */
   private long splitAllocate(int blockSizeBits, long capacity) throws IOException {
     return splitAllocate(blockSizeBits, capacity, 0);
@@ -414,7 +414,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   }
 
   /**
-   * This will call <code>barrier</code> as necessary during block splitting.
+   * This will call {@link #barrier(boolean)} as necessary during block splitting.
    */
   @Override
   public long allocate(long minimumSize) throws IOException {
@@ -613,7 +613,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    */
   @Override
   protected void ensureCapacity(long capacity) throws IOException {
-    assert pbuffer.capacity() >= capacity: "pbuffer.capacity()<capacity";
+    assert pbuffer.capacity() >= capacity : "pbuffer.capacity() < capacity";
   }
   // </editor-fold>
 }

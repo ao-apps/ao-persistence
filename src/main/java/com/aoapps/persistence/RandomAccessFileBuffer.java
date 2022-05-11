@@ -32,7 +32,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.channels.FileChannel;
 
 /**
- * Uses <code>RandomAccessFile</code> for persistence.  Obtains a shared lock
+ * Uses {@link RandomAccessFile} for persistence.  Obtains a shared lock
  * on the channel for read-only mode or an exclusive lock for write mode.  The
  * lock is held until the buffer is closed.
  *
@@ -47,7 +47,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
 
   /**
    * Creates a read-write buffer backed by a temporary file.  The protection level
-   * is set to <code>NONE</code>.  The temporary file will be deleted when this
+   * is set to {@link ProtectionLevel#NONE}.  The temporary file will be deleted when this
    * buffer is closed or on JVM shutdown.
    */
   public RandomAccessFileBuffer() throws IOException {
@@ -60,7 +60,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   * Creates a read-write buffer with {@link ProtectionLevel#BARRIER} protection level.
    */
   public RandomAccessFileBuffer(String name) throws IOException {
     this(new RandomAccessFile(name, "rw"), ProtectionLevel.BARRIER);
@@ -74,7 +74,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a read-write buffer with <code>BARRIER</code> protection level.
+   * Creates a read-write buffer with {@link ProtectionLevel#BARRIER} protection level.
    */
   public RandomAccessFileBuffer(File file) throws IOException {
     this(new RandomAccessFile(file, "rw"), ProtectionLevel.BARRIER);
@@ -88,7 +88,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a buffer using the provided <code>RandomAccessFile</code>.
+   * Creates a buffer using the provided {@link RandomAccessFile}.
    */
   public RandomAccessFileBuffer(RandomAccessFile raf, ProtectionLevel protectionLevel) throws IOException {
     super(protectionLevel);
@@ -102,20 +102,6 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
   @Override
   public boolean isClosed() {
     return closed;
-  }
-
-  /**
-   * @deprecated The finalization mechanism is inherently problematic.
-   */
-  @Deprecated(since = "9")
-  @Override
-  @SuppressWarnings("FinalizeDeclaration")
-  protected void finalize() throws Throwable {
-    try {
-      close();
-    } finally {
-      super.finalize();
-    }
   }
 
   @Override
@@ -189,7 +175,7 @@ public class RandomAccessFileBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * There is not currently a way to provide a barrier without using <code>force</code>.
+   * There is not currently a way to provide a barrier without using {@code force}.
    * This just uses force for each case.
    */
   @Override

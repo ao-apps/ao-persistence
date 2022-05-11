@@ -30,6 +30,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
+ * Tests {@link RandomFailBuffer} and {@link DynamicPersistentBlockBuffer}.
+ *
  * @author  AO Industries, Inc.
  */
 public class BlockBufferRandomFailBufferNoFailTest extends BlockBufferTestParent {

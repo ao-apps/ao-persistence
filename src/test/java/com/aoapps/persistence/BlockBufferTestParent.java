@@ -44,6 +44,8 @@ import java.util.TreeSet;
 import junit.framework.TestCase;
 
 /**
+ * Tests {@link PersistentBlockBuffer}.
+ *
  * @author  AO Industries, Inc.
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -67,6 +69,9 @@ public abstract class BlockBufferTestParent extends TestCase {
 
   public abstract long getAllocationSize() throws IOException;
 
+  /**
+   * Tests allocation and deallocation.
+   */
   public void testAllocateDeallocate() throws Exception {
     try (
         TempFileContext tempFileContext = new TempFileContext();
@@ -117,6 +122,7 @@ public abstract class BlockBufferTestParent extends TestCase {
   }
 
   /**
+   * Compares allocation IDs.
    * <ol>
    *   <li>Everything in recoveredIds must be in allocatedIds, if not add to allocatedIds.</li>
    *   <li>Everything in allocatedIds must be in either recoveredIds or partialIds, if in partialIds remove from allocatedIds.</li>
@@ -139,11 +145,13 @@ public abstract class BlockBufferTestParent extends TestCase {
         //System.out.println("DEBUG: Removing "+id+" from allocatedIds");
         ids.remove();
       }
-      assertTrue("partialIds.size()=" + partialIds.size() + ", recoveredIds.contains(" + id + ")=" + recoveryContains + ", partialIds.contains(" + id + ")=" + partialContains, recoveryContains || partialContains);
+      assertTrue("partialIds.size()=" + partialIds.size() + ", recoveredIds.contains(" + id + ")=" + recoveryContains
+          + ", partialIds.contains(" + id + ")=" + partialContains, recoveryContains || partialContains);
     }
   }
 
   /**
+   * Compares deallocation IDs.
    * <ol>
    *   <li>Everything in allocatedIds must be in recoveredIds.</li>
    *   <li>Everything in recoveredIds must be in allocatedIds or partialIds, if in partialIds add to allocatedIds.</li>
@@ -160,7 +168,8 @@ public abstract class BlockBufferTestParent extends TestCase {
         //System.out.println("DEBUG: Adding "+id+" to allocatedIds");
         allocatedIds.add(id);
       }
-      assertTrue("partialIds.size()=" + partialIds.size() + ", allocatedIds.contains(" + id + ")=" + allocatedContains + ", partialIds.contains(" + id + ")=" + partialContains, allocatedContains || partialContains);
+      assertTrue("partialIds.size()=" + partialIds.size() + ", allocatedIds.contains(" + id + ")=" + allocatedContains
+          + ", partialIds.contains(" + id + ")=" + partialContains, allocatedContains || partialContains);
     }
   }
 

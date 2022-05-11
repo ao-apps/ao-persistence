@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Serializes <code>Boolean</code> objects.
+ * Serializes {@link Boolean} objects.
  *
  * @author  AO Industries, Inc.
  */

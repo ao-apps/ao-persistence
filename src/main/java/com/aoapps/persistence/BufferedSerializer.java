@@ -28,12 +28,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Serializes any objects by using a buffer between the <code>getSerializedSize</code>
- * and <code>serialize</code> calls.  This avoids serializing the object twice in the
- * common sequence of getSerializedSize followed by serialize.  This and all subclasses
- * are not fixed size.
- *
+ * Serializes any objects by using a buffer between the {@link Serializer#getSerializedSize(java.lang.Object)} and
+ * {@link Serializer#serialize(java.lang.Object, java.io.OutputStream)} calls.  This avoids serializing the object twice
+ * in the common sequence of getSerializedSize followed by serialize.  This and all subclasses are not fixed size.
+ * <p>
  * This class is not thread safe.
+ * </p>
  *
  * @author  AO Industries, Inc.
  */
