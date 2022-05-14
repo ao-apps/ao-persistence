@@ -29,6 +29,7 @@ def upstreamProjects = [
 
   // Direct
   'collections', // <groupId>com.aoapps</groupId><artifactId>ao-collections</artifactId>
+  'hodgepodge', // <groupId>com.aoapps</groupId><artifactId>ao-hodgepodge</artifactId>
   'lang', // <groupId>com.aoapps</groupId><artifactId>ao-lang</artifactId>
   'tempfiles', // <groupId>com.aoapps</groupId><artifactId>ao-tempfiles</artifactId>
   // No Jenkins: <groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId>
