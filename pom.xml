@@ -29,7 +29,7 @@ along with ao-persistence.  If not, see <https://www.gnu.org/licenses/>.
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>com.aoapps</groupId><artifactId>ao-persistence</artifactId><version>2.0.3-SNAPSHOT</version>
+  <groupId>com.aoapps</groupId><artifactId>ao-persistence</artifactId><version>2.0.3</version>
   <packaging>bundle</packaging>
 
   <properties>
@@ -76,7 +76,7 @@ along with ao-persistence.  If not, see <https://www.gnu.org/licenses/>.
     <connection>scm:git:git://github.com/ao-apps/ao-persistence.git</connection>
     <developerConnection>scm:git:git@github.com:ao-apps/ao-persistence.git</developerConnection>
     <url>https://github.com/ao-apps/ao-persistence</url>
-    <tag>HEAD</tag>
+    <tag>ao-persistence-2.0.3</tag>
   </scm>
 
   <issueManagement>
