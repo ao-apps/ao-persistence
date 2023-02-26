@@ -22,7 +22,7 @@ Highly efficient persistent collections for Java.
 * [Project Home](https://oss.aoapps.com/persistence/)
 * [Changelog](https://oss.aoapps.com/persistence/changelog)
 * [API Docs](https://oss.aoapps.com/persistence/apidocs/)
-* [Maven Central Repository](https://search.maven.org/artifact/com.aoapps/ao-persistence)
+* [Maven Central Repository](https://central.sonatype.com/search?namespace=com.aoapps&q=a%3Aao-persistence)
 * [GitHub](https://github.com/ao-apps/ao-persistence)
 
 ## Contact Us
