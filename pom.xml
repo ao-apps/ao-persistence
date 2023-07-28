@@ -38,7 +38,7 @@ along with ao-persistence.  If not, see <https://www.gnu.org/licenses/>.
     <javadoc.breadcrumbs><![CDATA[<a target="${javadoc.target}" href="https://oss.aoapps.com/">AO OSS</a>
 / <a target="${javadoc.target}" href="${project.url}">Persistence</a>]]></javadoc.breadcrumbs>
     <!-- Dependencies -->
-    <commons-lang3.version>3.12.0</commons-lang3.version>
+    <commons-lang3.version>3.13.0</commons-lang3.version>
   </properties>
 
   <name>AO Persistence</name>
