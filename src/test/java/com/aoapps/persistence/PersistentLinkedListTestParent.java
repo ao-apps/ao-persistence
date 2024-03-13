@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -589,7 +589,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
         LinkedList<String> heapList = new LinkedList<>();
         final int iterations = TEST_LOOPS;
         for (int c = 0; c < iterations; c++) {
-          long startNanos = System.nanoTime();
+          final long startNanos = System.nanoTime();
           // addFirst
           String partial = null;
           try {
