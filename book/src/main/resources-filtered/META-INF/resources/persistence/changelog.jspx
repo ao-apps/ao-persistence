@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ao-persistence - Highly efficient persistent collections for Java.
-Copyright (C) 2020, 2021, 2022, 2023  AO Industries, Inc.
+Copyright (C) 2020, 2021, 2022, 2023, 2024  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -38,7 +38,7 @@ along with ao-persistence.  If not, see <https://www.gnu.org/licenses/>.
     shortTitle="Changelog"
     tocLevels="1"
     datePublished="2020-03-15T21:00:26-05:00"
-    dateModified="2022-05-16T05:44:43-05:00"
+    dateModified="2024-08-31T19:37:53Z"
   >
     <c:set var="latestRelease" value="2.0.3" />
     <c:if test="${
@@ -53,7 +53,11 @@ along with ao-persistence.  If not, see <https://www.gnu.org/licenses/>.
         artifactId="@{documented.artifactId}"
         repository="@{nexusUrl}content/repositories/snapshots/"
         scmUrl="@{project.scm.url}"
-      />
+      >
+        <ul>
+          <li>Updated to <ao:a href="https://checkstyle.org/releasenotes.html#Release_10.18.1">Checkstyle 10.18.1</ao:a>.</li>
+        </ul>
+      </changelog:release>
     </c:if>
 
     <changelog:release

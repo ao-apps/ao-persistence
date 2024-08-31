@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2017, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2017, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -1521,7 +1521,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
     return new DescendingIterator();
   }
 
-  /** Adapter to provide descending iterators via ListItr.previous */
+  /** Adapter to provide descending iterators via ListItr.previous. */
   private class DescendingIterator implements Iterator<E> {
     final ListItr itr = new ListItr(size());
 
