@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -73,60 +73,50 @@ public interface PersistentBlockBuffer extends Closeable {
   void barrier(boolean force) throws IOException;
 
   /**
-   * <p>
    * Iterates over the allocated block IDs in no specific order, with one
    * exception: the first block allocated must be the first block iterated.
    * This block may contain critical higher-level data structure meta data.
    * If all blocks are deallocated, then the first one added has this same
    * requirement.
-   * </p>
-   * <p>
-   * The {@link Iterator#remove()} method may be used from the iterator in order
+   *
+   * <p>The {@link Iterator#remove()} method may be used from the iterator in order
    * to deallocate a block.  The block allocation should not be modified
    * during the iteration through any means other than the iterator itself.
    * An attempt will be made to throw {@link ConcurrentModificationException}
-   * in this case, but this is only intended to catch bugs.
-   * </p>
+   * in this case, but this is only intended to catch bugs.</p>
    */
   Iterator<Long> iterateBlockIds() throws IOException;
 
   /**
-   * <p>
    * Allocates a new block buffer that is at least as large as the requested space.
    * The id should always be {@code >= 0}, higher level data structures may use the
    * negative values for other purposes, such as indicating {@code null}
    * with {@code -1}.
-   * </p>
-   * <p>
-   * In order to ensure the block allocation is completely in persistent storage,
+   *
+   * <p>In order to ensure the block allocation is completely in persistent storage,
    * {@link #barrier(boolean) barrier} must be called.  This allows
    * the contents of the block to be written and combined into a single {@link #barrier(boolean)}
    * call.  If the system fails before {@link #barrier(boolean)} is called, the block
    * may either be allocated or deallocated - it is up to higher-level data
    * structures to determine which is the case.  In no event, however, will failing
    * to call {@link #barrier(boolean)} after {@link #allocate(long)} cause corruption
-   * beyond that just described.
-   * </p>
-   * <p>
-   * This call may fail after the id is allocated and before the id is returned.
-   * This will manifest itself as an extra allocated block after recovery.
-   * </p>
+   * beyond that just described.</p>
+   *
+   * <p>This call may fail after the id is allocated and before the id is returned.
+   * This will manifest itself as an extra allocated block after recovery.</p>
    */
   long allocate(long minimumSize) throws IOException;
 
   /**
-   * <p>
    * Deallocates the block with the provided id.  The ids of other blocks
    * will not be altered.  The space may later be reallocated with the same,
    * or possibly different id.  The space may also be reclaimed.
-   * </p>
-   * <p>
-   * {@link #barrier(boolean) barrier} does not need to be called
+   *
+   * <p>{@link #barrier(boolean) barrier} does not need to be called
    * after a deallocation, but if not called previously deallocated blocks
    * may reappear after a system failure.  It is up to higher-level data structures
    * to detect this.  In no event, however, will failing to call {@link #barrier(boolean)}
-   * after {@link #deallocate(long)} cause corruption beyond that just described.
-   * </p>
+   * after {@link #deallocate(long)} cause corruption beyond that just described.</p>
    *
    * @throws IllegalStateException if the block is not allocated.
    */

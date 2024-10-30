@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -31,9 +31,8 @@ import java.io.OutputStream;
  * Serializes any objects by using a buffer between the {@link Serializer#getSerializedSize(java.lang.Object)} and
  * {@link Serializer#serialize(java.lang.Object, java.io.OutputStream)} calls.  This avoids serializing the object twice
  * in the common sequence of getSerializedSize followed by serialize.  This and all subclasses are not fixed size.
- * <p>
- * This class is not thread safe.
- * </p>
+ *
+ * <p>This class is not thread safe.</p>
  *
  * @author  AO Industries, Inc.
  */

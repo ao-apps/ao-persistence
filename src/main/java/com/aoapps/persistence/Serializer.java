@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2016, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2016, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -50,19 +50,20 @@ public interface Serializer<E> {
   boolean isFixedSerializedSize();
 
   /**
-   * <p>
    * Determines the size of the object after serialization.
    * This allows some optimizations avoiding unnecessary copying of data.
-   * </p>
-   * The common pattern is:
+   *
+   * <p>The common pattern is:</p>
+   *
    * <ol>
    *   <li>Get size from {@link #getSerializedSize(java.lang.Object)}</li>
    *   <li>Allocate appropriate space</li>
    *   <li>Write serialized object with {@link #serialize(java.lang.Object, java.io.OutputStream)}</li>
    * </ol>
-   * It may be best to remember the most recently used object between calls
+   *
+   * <p>It may be best to remember the most recently used object between calls
    * to {@link #getSerializedSize(java.lang.Object)} and {@link #serialize(java.lang.Object, java.io.OutputStream)}
-   * when it can reduce processing time.
+   * when it can reduce processing time.</p>
    *
    * @return  the exact number of bytes the object will take to serialize
    */

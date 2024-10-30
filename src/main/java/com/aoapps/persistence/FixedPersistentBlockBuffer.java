@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -32,32 +32,27 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * <p>
  * Treats a {@link PersistentBuffer} as a set of allocatable blocks.
  * Each block is stored in a block of fixed size.  The first block has an id
  * of zero, and the blocks go up by ones.  The storage address is determined
  * from this logical id on the fly.  The storage address and the block address
  * are not the same.
- * </p>
- * <p>
- * One block of free space map preceeds a set of blocks.  However, with exceptionally
+ *
+ * <p>One block of free space map preceeds a set of blocks.  However, with exceptionally
  * large block sizes, the free space map will be smaller.  The free space map is the
  * maximum size of the block size and 2^n, where n+(ceil(log(2)(blockSize)))=63.
  * The result is that the minimum free space map size will be used to address the
- * entire 2^63-1 address space.
- * </p>
- * <p>
- * The switchover point is at one gigabyte block size (2^30).  The total of 2^63
+ * entire 2^63-1 address space.</p>
+ *
+ * <p>The switchover point is at one gigabyte block size (2^30).  The total of 2^63
  * address space may contain a maximum of 2^33 of these blocks.  Each block
  * consumes one bit of the space, the 2^30 bitmap block may contain a total of
- * 2^33 bits, an exact match for the number of blocks.
- * </p>
- * <p>
- * A final example is for a 16 GB block size (2^34).  The total of 2^63
+ * 2^33 bits, an exact match for the number of blocks.</p>
+ *
+ * <p>A final example is for a 16 GB block size (2^34).  The total of 2^63
  * address space may contain a maximum of 2^29 of these blocks.  Each block
  * consumes one bit of the space, thus the free space map only needs to contain
- * 2^26 bytes to cover the entire address space.
- * </p>
+ * 2^26 bytes to cover the entire address space.</p>
  *
  * @author  AO Industries, Inc.
  */

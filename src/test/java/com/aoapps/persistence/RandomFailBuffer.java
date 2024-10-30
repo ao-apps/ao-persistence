@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -43,10 +43,10 @@ import org.apache.commons.lang3.NotImplementedException;
  * blocks of the cached writes will be written.  Once a failure has occurred, every
  * other access to this buffer will throw an exception.  This is to simulate a
  * complete power failure.
- * <p>
- * To simulate power failures, assumptions about the underlying operating system
- * and hardware include:
- * </p>
+ *
+ * <p>To simulate power failures, assumptions about the underlying operating system
+ * and hardware include:</p>
+ *
  * <ol>
  *   <li>Writes of a single sector will either be completely written or not written at all - no in-between states.</li>
  *   <li>Writes of different sectors between {@code force} calls can occur in any order</li>

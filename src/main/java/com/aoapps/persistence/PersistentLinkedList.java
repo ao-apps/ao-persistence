@@ -46,51 +46,40 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * <p>
  * Serializes and stores objects in a persistent buffer.  Unlike {@link com.aoapps.hodgepodge.io.FileList} which
  * is intended for efficient {@link RandomAccess},
  * this is a linked list implementation and has the expected benefits and costs.
  * There are no size limits to the stored data.
- * </p>
- * <p>
- * This class is not thread-safe.  It is absolutely critical that external
- * synchronization be applied.
- * </p>
- * <p>
- * The objects are serialized using the standard Java serialization, unless a
+ *
+ * <p>This class is not thread-safe.  It is absolutely critical that external
+ * synchronization be applied.</p>
+ *
+ * <p>The objects are serialized using the standard Java serialization, unless a
  * {@link Serializer} is provided.  If an object that is not {@link Serializable}
  * is to be stored, a {@link Serializer} must be provided.  {@link Serializer Serializers}
- * may also provide a more efficient or more compact representation of an object.
- * </p>
- * <p>
- * This class is intended for scalability and persistence, not for intra-process
- * or intra-thread shared data.
- * </p>
- * <p>
- * The first block allocated is a header:
- * </p>
- * <pre>
- *     Offset   Type  Description
+ * may also provide a more efficient or more compact representation of an object.</p>
+ *
+ * <p>This class is intended for scalability and persistence, not for intra-process
+ * or intra-thread shared data.</p>
+ *
+ * <p>The first block allocated is a header:</p>
+ *
+ * <pre>    Offset   Type  Description
  *      0- 3    ASCII "PLL\n"
  *      4- 7    int   version
  *      8-15    long  block id of the head or {@code END_PTR} if empty.
- *     16-23    long  block id of the tail or {@code END_PTR} if empty.
- * </pre>
- * <p>
- * Each entry consists of:
- * </p>
- * <pre>
- *     Offset   Name        Type     Description
+ *     16-23    long  block id of the tail or {@code END_PTR} if empty.</pre>
+ *
+ * <p>Each entry consists of:</p>
+ *
+ * <pre>    Offset   Name        Type     Description
  *       0- 7   next        long     block id of next, {@code END_PTR} for last element
  *       8-15   prev        long     block id of prev, {@code END_PTR} for first element
  *      16-23   dataSize    long     the size of the serialized data, {@code -1} means null element
- *      24+     data        data     the binary data
- * </pre>
+ *      24+     data        data     the binary data</pre>
  *
- * <pre>
- * TODO: Add corrupt flag, set on exceptions?  Cause immediate crash recovery?
- * TODO: Similar thing for the underlying block buffers and byte buffers?
- * </pre>
+ * <pre>TODO: Add corrupt flag, set on exceptions?  Cause immediate crash recovery?
+ * TODO: Similar thing for the underlying block buffers and byte buffers?</pre>
  *
  * @author  AO Industries, Inc.
  */
@@ -493,9 +482,9 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    *   <li>No unreferenced allocated blocks</li>
    *   <li>cachedSize matches the actual size</li>
    * </ol>
-   * <p>
-   * Assumptions used in this implementation:
-   * </p>
+   *
+   * <p>Assumptions used in this implementation:</p>
+   *
    * <ol>
    *   <li>Blocks that are allocated but not referenced may contain incomplete data.</li>
    *   <li>A block with any reference to it is both allocated and has complete data.</li>
@@ -982,9 +971,8 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
 
   /**
    * Gets the pointer for the provided index.
-   * <p>
-   * This runs in linear time.
-   * </p>
+   *
+   * <p>This runs in linear time.</p>
    */
   private long getPointerForIndex(long index) throws IOException {
     assert cachedSize > 0;
@@ -1134,9 +1122,8 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
   /**
    * Replaces the element at the specified position in this list with the
    * specified element.
-   * <p>
-   * TODO: First try to replace at the current position?  Impact on atomicity?
-   * </p>
+   *
+   * <p>TODO: First try to replace at the current position?  Impact on atomicity?</p>
    *
    * @param index index of the element to replace
    * @param element element to be stored at the specified position

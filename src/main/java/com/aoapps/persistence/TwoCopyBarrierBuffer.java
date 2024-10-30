@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -54,70 +54,58 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.NotImplementedException;
 
 /**
- * <p>
  * Java does not support write barriers without a complete {@code force} call,
  * this class works-around this issue by maintaining two copies of the file and
  * updating the older copy to be the newer copy occasionally on {@link #barrier(boolean) barrier(false)}
  * and immediately on {@link #barrier(boolean) barrier(true)} (if protectionLevel is high enough).
- * </p>
- * <p>
- * All instances also share a {@link Timer Timer} to perform automatic
+ *
+ * <p>All instances also share a {@link Timer Timer} to perform automatic
  * background flushing of caches.  Automatic flushing is single-threaded to favor
- * low load averages over timely flushes.
- * </p>
- * <p>
- * This class also acts as a write cache that may batch or delay writes for potentially
+ * low load averages over timely flushes.</p>
+ *
+ * <p>This class also acts as a write cache that may batch or delay writes for potentially
  * long periods of time.  This is useful for media such as flash memory where write
  * throughput is quite limited and the number of writes on the media is also limited.
  * This also turns many random writes into fewer, sequential writes.  This may help
- * spinning platter-based media.
- * </p>
- * <p>
- * Since this class is intended for flash-based media, it will not rewrite the
+ * spinning platter-based media.</p>
+ *
+ * <p>Since this class is intended for flash-based media, it will not rewrite the
  * same data to a section of a file.  Even if this means that it has to read the
  * section of the file, compare the values, and then write only when changed.  This
  * is an attempt to help the wear leveling technology built into the media by
- * dispatching a minimum number of writes.
- * </p>
- * <p>
- * An additional benefit may be that reads from cached data are performed directly
+ * dispatching a minimum number of writes.</p>
+ *
+ * <p>An additional benefit may be that reads from cached data are performed directly
  * from the write cache, although this is not the purpose of this buffer.  Writes that
  * would not change anything, however, are not cached and would not help as a
- * read cache.
- * </p>
- * <p>
- * Two copies of the file are maintained.  The most recent version of the file
+ * read cache.</p>
+ *
+ * <p>Two copies of the file are maintained.  The most recent version of the file
  * will normally be named with the regular name, but other versions will exist
- * with .old or .new appended to the filename.  The exact order of update is:
- * </p>
+ * with .old or .new appended to the filename.  The exact order of update is:</p>
+ *
  * <ol>
  *   <li>Rename <code><i>filename</i>.old</code> to <code><i>filename</i>.new</code></li>
  *   <li>Write new version of all data to <code><i>filename</i>.new</code></li>
  *   <li>Rename <code><i>filename</i></code> to <code><i>filename</i>.old</code></li>
  *   <li>Rename <code><i>filename</i>.new</code> to <code><i>filename</i></code></li>
  * </ol>
- * <p>
- * The filename states, in order:
- * </p>
- * <pre>
- *          Complete      Complete Old  Partial
+ *
+ * <p>The filename states, in order:</p>
+ *
+ * <pre>         Complete      Complete Old  Partial
  * Normal:  filename      filename.old
  *          filename                    filename.new
  *          filename.new  filename.old
- * Normal:  filename      filename.old
+ * Normal:  filename      filename.old</pre>
  *
- * </pre>
- * <p>
- * This implementation assumes an atomic file rename for correct recovery.
- * </p>
- * <p>
- * To reduce the chance of data loss, this registers a JVM shutdown hook to flush
+ * <p>This implementation assumes an atomic file rename for correct recovery.</p>
+ *
+ * <p>To reduce the chance of data loss, this registers a JVM shutdown hook to flush
  * all caches on JVM shutdown.  If it takes a long time to flush the data this
- * can cause significant delays when stopping a JVM.
- * </p>
- * <p>
- * TODO: Should we run on top of RandomAccessBuffer/LargeMappedPersistentBuffer/MappedPersistentBuffer for memory-mapped read performance?
- * </p>
+ * can cause significant delays when stopping a JVM.</p>
+ *
+ * <p>TODO: Should we run on top of RandomAccessBuffer/LargeMappedPersistentBuffer/MappedPersistentBuffer for memory-mapped read performance?</p>
  *
  * @author  AO Industries, Inc.
  */
@@ -153,17 +141,15 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 
   /**
    * Flushes all cached writes on shutdown.
-   * <p>
-   * TODO: Is there a way we can combine the force calls between all buffers?
+   *
+   * <p>TODO: Is there a way we can combine the force calls between all buffers?
    * 1) Use recursion to get lock on all individual buffers - or use newer locks
    * 2) Write new versions of all files.
    * 3) Perform a single sync (will this take as long as individual fsync's?)
    * 4) Rename all files.
-   * Deadlock concerns?  Performance benefits?
-   * </p>
-   * <p>
-   * Could the background commit thread take a similar strategy?
-   * </p>
+   * Deadlock concerns?  Performance benefits?</p>
+   *
+   * <p>Could the background commit thread take a similar strategy?</p>
    */
   @SuppressWarnings({"UseSpecificCatch", "TooBroadCatch"})
   private static final Thread shutdownHook = new Thread("TwoCopyBarrierBuffer.shutdownHook") {

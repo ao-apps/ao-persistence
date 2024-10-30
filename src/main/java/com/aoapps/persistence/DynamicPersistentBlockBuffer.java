@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -35,36 +35,29 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
- * <p>
  * Treats a {@link PersistentBuffer} as a set of allocatable blocks.
  * Each block is stored in a 2^n area of the buffer, where the usable
  * space is 2^n-1 (the first byte of that area of the buffer indicates
  * the block size and allocated status).
- * </p>
- * <p>
- * Free space maps are generated upon instantiation.  This means that startup
- * costs can be fairly high.  This class is designed for long-lifetime situations.
- * </p>
- * <p>
- * Blocks that are allocated take no space in memory, while blocks that are deallocated
+ *
+ * <p>Free space maps are generated upon instantiation.  This means that startup
+ * costs can be fairly high.  This class is designed for long-lifetime situations.</p>
+ *
+ * <p>Blocks that are allocated take no space in memory, while blocks that are deallocated
  * consume space.  Adjacent blocks are automatically merged into a larger free block of
  * twice the size.  Blocks are also split into smaller blocks before allocating additional
- * space.
- * </p>
- * <p>
- * Fragmentation may occur in the file over time, but is minimized by the use of
+ * space.</p>
+ *
+ * <p>Fragmentation may occur in the file over time, but is minimized by the use of
  * per-block size free space maps along with block merging and splitting.  There
- * is currently no compaction tool.
- * </p>
- * <p>
- * Each entry has a one-byte header:
+ * is currently no compaction tool.</p>
+ *
+ * <p>Each entry has a one-byte header:
  *     bits 0-5: maxBits     (0-63) the power of two of the size of this block (max data size is {@code (2^maxBits)-1}).
  *     bit  6:   reserved, should be 0
- *     bit  7:   allocated flag
- * </p>
- * <p>
- * This class is not thread-safe.
- * </p>
+ *     bit  7:   allocated flag</p>
+ *
+ * <p>This class is not thread-safe.</p>
  *
  * @author  AO Industries, Inc.
  */
