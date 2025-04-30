@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -761,29 +761,29 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
         }
         if (curValue != value) {
           byte[] readBuff = new byte[sectorSize];
-            // Scoping block
-            {
-              int offset = 0;
-              int bytesLeft = sectorSize;
-              while (bytesLeft > 0) {
-                long seek = sector + offset;
-                if (seek < rafLength) {
-                  raf.seek(seek);
-                  long readEnd = seek + bytesLeft;
-                  if (readEnd > rafLength) {
-                    readEnd = rafLength;
-                  }
-                  int readLen = (int) (readEnd - seek);
-                  raf.readFully(readBuff, offset, readLen);
-                  offset += readLen;
-                  bytesLeft -= readLen;
-                } else {
-                  // Assume zeros that are already in readBuff
-                  offset += bytesLeft;
-                  bytesLeft = 0;
+          // Scoping block
+          {
+            int offset = 0;
+            int bytesLeft = sectorSize;
+            while (bytesLeft > 0) {
+              long seek = sector + offset;
+              if (seek < rafLength) {
+                raf.seek(seek);
+                long readEnd = seek + bytesLeft;
+                if (readEnd > rafLength) {
+                  readEnd = rafLength;
                 }
+                int readLen = (int) (readEnd - seek);
+                raf.readFully(readBuff, offset, readLen);
+                offset += readLen;
+                bytesLeft -= readLen;
+              } else {
+                // Assume zeros that are already in readBuff
+                offset += bytesLeft;
+                bytesLeft = 0;
               }
             }
+          }
           markFirstWriteTime();
           currentWriteCache.put(sector, readBuff); // Shares the byte[] buffer
           oldWriteCache.put(sector, readBuff); // Shares the byte[] buffer
@@ -848,32 +848,32 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
           if (isNewBuff) {
             readBuff = new byte[sectorSize];
           }
-            // Scoping block
-            {
-              int offset = 0;
-              int bytesLeft = sectorSize;
-              while (bytesLeft > 0) {
-                long seek = sector + offset;
-                if (seek < rafLength) {
-                  raf.seek(seek);
-                  long readEnd = seek + bytesLeft;
-                  if (readEnd > rafLength) {
-                    readEnd = rafLength;
-                  }
-                  int readLen = (int) (readEnd - seek);
-                  raf.readFully(readBuff, offset, readLen);
-                  offset += readLen;
-                  bytesLeft -= readLen;
-                } else {
-                  // Assume zeros
-                  if (!isNewBuff) {
-                    Arrays.fill(readBuff, offset, sectorSize, (byte) 0);
-                  }
-                  offset += bytesLeft;
-                  bytesLeft = 0;
+          // Scoping block
+          {
+            int offset = 0;
+            int bytesLeft = sectorSize;
+            while (bytesLeft > 0) {
+              long seek = sector + offset;
+              if (seek < rafLength) {
+                raf.seek(seek);
+                long readEnd = seek + bytesLeft;
+                if (readEnd > rafLength) {
+                  readEnd = rafLength;
                 }
+                int readLen = (int) (readEnd - seek);
+                raf.readFully(readBuff, offset, readLen);
+                offset += readLen;
+                bytesLeft -= readLen;
+              } else {
+                // Assume zeros
+                if (!isNewBuff) {
+                  Arrays.fill(readBuff, offset, sectorSize, (byte) 0);
+                }
+                offset += bytesLeft;
+                bytesLeft = 0;
               }
             }
+          }
           // Only add to caches when data changed (save flash writes)
           if (!AoArrays.equals(buff, off, readBuff, (int) (position - sector), bytesToWrite)) {
             markFirstWriteTime();

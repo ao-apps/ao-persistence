@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2017, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2017, 2019, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -542,31 +542,31 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
     // Meta data block is present and complete
     Iterator<Long> ids = blockBuffer.iterateBlockIds();
     if (ids.hasNext()) {
-        // metaDataBlockId is the correct value
-        {
-          long correctMetaDataBlockId = ids.next();
-          if (metaDataBlockId != correctMetaDataBlockId) {
-            if (!isInit) {
-              if (!autoCorrect) {
-                throw new IllegalStateException("metaDataBlockId != correctMetaDataBlockId: " + metaDataBlockId + " != " + correctMetaDataBlockId);
-              }
-              logger.info("metaDataBlockId != correctMetaDataBlockId: " + metaDataBlockId + " != " + correctMetaDataBlockId + " - correcting");
+      // metaDataBlockId is the correct value
+      {
+        long correctMetaDataBlockId = ids.next();
+        if (metaDataBlockId != correctMetaDataBlockId) {
+          if (!isInit) {
+            if (!autoCorrect) {
+              throw new IllegalStateException("metaDataBlockId != correctMetaDataBlockId: " + metaDataBlockId + " != " + correctMetaDataBlockId);
             }
-            metaDataBlockId = correctMetaDataBlockId;
+            logger.info("metaDataBlockId != correctMetaDataBlockId: " + metaDataBlockId + " != " + correctMetaDataBlockId + " - correcting");
           }
+          metaDataBlockId = correctMetaDataBlockId;
         }
+      }
       blockBuffer.get(metaDataBlockId, 0, ioBuffer, 0, MAGIC.length);
       // Magic value is correct
       if (!AoArrays.equals(ioBuffer, MAGIC, 0, MAGIC.length)) {
         throw new IllegalStateException("File does not appear to be a PersistentLinkedList (MAGIC mismatch)");
       }
-        // File version is supported
-        {
-          int version = blockBuffer.getInt(metaDataBlockId, MAGIC.length);
-          if (version != VERSION) {
-            throw new IllegalStateException("Unsupported file version: " + version);
-          }
+      // File version is supported
+      {
+        int version = blockBuffer.getInt(metaDataBlockId, MAGIC.length);
+        if (version != VERSION) {
+          throw new IllegalStateException("Unsupported file version: " + version);
         }
+      }
 
       // Get the set of all allocated ids (except the meta data id).
       Map<Long, Boolean> allocatedIds = new HashMap<>();
@@ -574,36 +574,36 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
         allocatedIds.put(ids.next(), false);
       }
 
-        // cachedHead is the correct value
-        {
-          long correctHead = blockBuffer.getLong(metaDataBlockId, HEAD_OFFSET);
-          if (cachedHead != correctHead) {
-            if (!isInit) {
-              if (!autoCorrect) {
-                throw new IllegalStateException("cachedHead != correctHead: " + cachedHead + " != " + correctHead);
-              }
-              logger.info("cachedHead != correctMetaDataBlockId: " + cachedHead + " != " + correctHead + " - correcting");
+      // cachedHead is the correct value
+      {
+        long correctHead = blockBuffer.getLong(metaDataBlockId, HEAD_OFFSET);
+        if (cachedHead != correctHead) {
+          if (!isInit) {
+            if (!autoCorrect) {
+              throw new IllegalStateException("cachedHead != correctHead: " + cachedHead + " != " + correctHead);
             }
-            cachedHead = correctHead;
+            logger.info("cachedHead != correctMetaDataBlockId: " + cachedHead + " != " + correctHead + " - correcting");
           }
+          cachedHead = correctHead;
         }
+      }
       // Make sure head points to an allocated block.
       if (cachedHead != END_PTR && !allocatedIds.containsKey(cachedHead)) {
         throw new IllegalStateException("cachedHead points to unallocated block: " + cachedHead);
       }
-        // cachedTail is the correct value
-        {
-          long correctTail = blockBuffer.getLong(metaDataBlockId, TAIL_OFFSET);
-          if (cachedTail != correctTail) {
-            if (!isInit) {
-              if (!autoCorrect) {
-                throw new IllegalStateException("cachedTail != correctTail: " + cachedTail + " != " + correctTail);
-              }
-              logger.info("cachedTail != correctMetaDataBlockId: " + cachedTail + " != " + correctTail + " - correcting");
+      // cachedTail is the correct value
+      {
+        long correctTail = blockBuffer.getLong(metaDataBlockId, TAIL_OFFSET);
+        if (cachedTail != correctTail) {
+          if (!isInit) {
+            if (!autoCorrect) {
+              throw new IllegalStateException("cachedTail != correctTail: " + cachedTail + " != " + correctTail);
             }
-            cachedTail = correctTail;
+            logger.info("cachedTail != correctMetaDataBlockId: " + cachedTail + " != " + correctTail + " - correcting");
           }
+          cachedTail = correctTail;
         }
+      }
       // Make sure tail points to an allocated block.
       if (cachedTail != END_PTR && !allocatedIds.containsKey(cachedTail)) {
         throw new IllegalStateException("cachedTail points to unallocated block: " + cachedTail);

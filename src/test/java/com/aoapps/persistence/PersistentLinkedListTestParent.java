@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -614,12 +614,12 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
           } catch (IOException err) {
             System.out.println(protectionLevel + ": " + (c + 1) + " of " + iterations + ": addFirst: Caught failure: " + err.toString());
           }
-            // Check consistency
-            {
-              try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), protectionLevel), String.class)) {
-                checkRecoveryConsistency(heapList, linkedFileList, partial);
-              }
+          // Check consistency
+          {
+            try (PersistentLinkedList<String> linkedFileList = new PersistentLinkedList<>(getPersistentBuffer(tempFile.getFile(), protectionLevel), String.class)) {
+              checkRecoveryConsistency(heapList, linkedFileList, partial);
             }
+          }
           // removeLast
           partial = null;
           try {
