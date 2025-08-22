@@ -42,7 +42,7 @@ import java.nio.channels.FileChannel;
  */
 public class MappedPersistentBuffer extends AbstractPersistentBuffer {
 
-  //private static final Logger logger = Logger.getLogger(MappedPersistentBuffer.class.getName());
+  // private static final Logger logger = Logger.getLogger(MappedPersistentBuffer.class.getName());
 
   private final TempFileContext tempFileContext;
   private final RandomAccessFile raf;

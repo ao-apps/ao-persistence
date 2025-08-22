@@ -375,7 +375,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    * Operates in constant time.
    */
   private long addEntry(long next, long prev, E element) throws IOException {
-    //System.err.println("DEBUG: addEntry: element="+element);
+    // System.err.println("DEBUG: addEntry: element="+element);
     assert next == END_PTR || isValidRange(next);
     assert prev == END_PTR || isValidRange(prev);
     if (cachedSize == Long.MAX_VALUE) {
@@ -994,10 +994,10 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
       }
       return bptr;
     }
-    //if (ptr != bptr) {
-    //  throw new AssertionError("ptr != bptr: "+ptr+" != "+bptr);
-    //}
-    //return ptr;
+    // if (ptr != bptr) {
+    //   throw new AssertionError("ptr != bptr: "+ptr+" != "+bptr);
+    // }
+    // return ptr;
   }
 
   @Override

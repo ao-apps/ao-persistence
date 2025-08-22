@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class LargeMappedPersistentBuffer extends AbstractPersistentBuffer {
 
-  //private static final Logger logger = Logger.getLogger(LargeMappedPersistentBuffer.class.getName());
+  // private static final Logger logger = Logger.getLogger(LargeMappedPersistentBuffer.class.getName());
 
   // For testing, change this value to something smaller, like 12.  This will
   // allow the testing of the buffer boundary conditions.

@@ -102,13 +102,13 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       }
       if (!isAllocated(header)) {
         addFreeSpaceMap(id, blockSizeBits, capacity, true);
-        //SortedSet<Long> fsm = freeSpaceMaps.get(blockSizeBits);
-        //if (fsm == null) {
-        //  freeSpaceMaps.set(blockSizeBits, fsm = new TreeSet<>());
-        //}
-        //if (!fsm.add(id)) {
-        //  throw new AssertionError("Free space map already contains entry: "+id);
-        //}
+        // SortedSet<Long> fsm = freeSpaceMaps.get(blockSizeBits);
+        // if (fsm == null) {
+        //   freeSpaceMaps.set(blockSizeBits, fsm = new TreeSet<>());
+        // }
+        // if (!fsm.add(id)) {
+        //   throw new AssertionError("Free space map already contains entry: "+id);
+        // }
       }
       id = blockEnd;
     }
@@ -294,7 +294,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       assert !isAllocated(pbuffer.get(id)) : "Block is allocated: " + id;
       assert pbuffer.get(id) != blockSizeBits;
       pbuffer.put(id, (byte) blockSizeBits);
-      //pbuffer.barrier(false); // Not required because if this write fails either side will still be consistent?
+      // pbuffer.barrier(false); // Not required because if this write fails either side will still be consistent?
     }
     SortedSet<Long> fsm = freeSpaceMaps.get(blockSizeBits);
     if (fsm == null) {
@@ -303,7 +303,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
     if (!fsm.add(id)) {
       throw new AssertionError("Free space map already contains entry: " + id);
     }
-    //System.out.println("DEBUG: Added to fsm: fsm["+blockSizeBits+"].size()="+fsm.size());
+    // System.out.println("DEBUG: Added to fsm: fsm["+blockSizeBits+"].size()="+fsm.size());
   }
 
   /**
@@ -372,8 +372,8 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
    * Adds newly allocated space to the free space maps.
    */
   private void configureNewAllocation(long start, long capacity) throws IOException {
-    //System.out.println("DEBUG: start="+start+", capacity="+capacity+", capacity/start="+((float)capacity/(float)start));
-    //long iterations = 0;
+    // System.out.println("DEBUG: start="+start+", capacity="+capacity+", capacity/start="+((float)capacity/(float)start));
+    // long iterations = 0;
     // TODO: Do not combine to the first block of size blockSizeBits and return it directly, avoiding call to addFSM and splitAllocate?
     while (start < capacity) {
       // Find the largest power of two block that aligns with the start and fits between start and end
@@ -396,13 +396,13 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       if (bits > 0) {
         assert pbuffer.get(start) != (byte) bits;
         pbuffer.put(start, (byte) bits);
-        //pbuffer.barrier(false); // Not necessary because free space will be combined an recovery for TIGHT.  BALANCED will combine when needed, and FAST allocates minimally
+        // pbuffer.barrier(false); // Not necessary because free space will be combined an recovery for TIGHT.  BALANCED will combine when needed, and FAST allocates minimally
       }
       addFreeSpaceMap(start, bits, capacity, true);
       start += 1L << bits;
-      //iterations++;
+      // iterations++;
     }
-    //System.out.println("DEBUG: Completed in "+iterations+" iterations");
+    // System.out.println("DEBUG: Completed in "+iterations+" iterations");
     assert start == capacity;
   }
 
@@ -427,7 +427,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       assert !isAllocated(pbuffer.get(id)) : "Block is allocated: " + id;
       assert pbuffer.get(id) != (byte) (0x80 | blockSizeBits);
       pbuffer.put(id, (byte) (0x80 | blockSizeBits));
-      //pbuffer.barrier(false); // TODO: necessary?
+      // pbuffer.barrier(false); // TODO: necessary?
     } else {
       // No block available and no blocks may be combined to fulfill allocation, increase capacity
       long blockSize = getBlockSize(blockSizeBits);
@@ -468,7 +468,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
       assert !isAllocated(pbuffer.get(id)) : "Block is allocated: " + id;
       assert pbuffer.get(id) != (byte) (0x80 | blockSizeBits);
       pbuffer.put(id, (byte) (0x80 | blockSizeBits));
-      //pbuffer.barrier(false); // TODO: necessary?
+      // pbuffer.barrier(false); // TODO: necessary?
     }
     // These assertions cause a failure that is unexpected
     assert isValidRange(id);
@@ -493,7 +493,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
     modCount++;
     assert pbuffer.get(id) != (byte) (header & 0x7f);
     pbuffer.put(id, (byte) (header & 0x7f));
-    //pbuffer.barrier(false); // TODO: necessary?
+    // pbuffer.barrier(false); // TODO: necessary?
     addFreeSpaceMap(id, blockSizeBits, pbuffer.capacity(), false);
   }
 

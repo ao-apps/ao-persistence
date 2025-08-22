@@ -47,7 +47,7 @@ public class BlockBufferMultiBitmapFixedMappedTest extends BlockBufferTestParent
   @Override
   public PersistentBuffer getBuffer(File tempFile, ProtectionLevel protectionLevel) throws IOException {
     return new MappedPersistentBuffer(tempFile, protectionLevel);
-    //return new RandomAccessFileBuffer(tempFile, protectionLevel);
+    // return new RandomAccessFileBuffer(tempFile, protectionLevel);
   }
 
   @Override

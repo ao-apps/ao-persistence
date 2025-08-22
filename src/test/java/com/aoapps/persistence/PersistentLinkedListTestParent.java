@@ -535,7 +535,7 @@ public abstract class PersistentLinkedListTestParent extends TestCase {
       String heapValue = heapIter.hasNext() ? heapIter.next() : null;
       String fileValue = fileIter.hasNext() ? fileIter.next() : null;
       if (heapValue != null) {
-        //System.err.println("DEBUG: heapValue="+heapValue+", fileValue="+fileValue);
+        // System.err.println("DEBUG: heapValue="+heapValue+", fileValue="+fileValue);
         if (!heapValue.equals(fileValue)) {
           assertTrue("Must be an exact match when partial is null: heapValue=" + heapValue + ", fileValue=" + fileValue, partial != null);
           if (fileValue != null) {

@@ -53,21 +53,21 @@ public final class PersistentCollections {
    */
   private static final byte[] zeros = new byte[BufferManager.BUFFER_SIZE];
 
-  ///**
-  // * Writes the requested number of zeros to the provided output.
-  // */
-  //static void fillZeros(DataOutput out, long count) throws IOException {
-  //  if (count<0) {
-  //    throw new IllegalArgumentException("count<0: "+count);
-  //  }
-  //  while (count>BufferManager.BUFFER_SIZE) {
-  //    out.write(zeros, 0, BufferManager.BUFFER_SIZE);
-  //    count -= BufferManager.BUFFER_SIZE;
-  //  }
-  //  if (count>0) {
-  //    out.write(zeros, 0, (int)count);
-  //  }
-  //}
+  // /**
+  //  * Writes the requested number of zeros to the provided output.
+  //  */
+  // static void fillZeros(DataOutput out, long count) throws IOException {
+  //   if (count<0) {
+  //     throw new IllegalArgumentException("count<0: "+count);
+  //   }
+  //   while (count>BufferManager.BUFFER_SIZE) {
+  //     out.write(zeros, 0, BufferManager.BUFFER_SIZE);
+  //     count -= BufferManager.BUFFER_SIZE;
+  //   }
+  //   if (count>0) {
+  //     out.write(zeros, 0, (int)count);
+  //   }
+  // }
 
   /**
    * Writes the requested number of zeros to the provided RandomAccessFile, but
@@ -200,21 +200,21 @@ public final class PersistentCollections {
     return modified;
   }
 
-  ///**
-  // * Writes the requested number of zeros to the provided buffer.
-  // */
-  //static void fillZeros(ByteBuffer buffer, long count) throws IOException {
-  //  if (count<0) {
-  //    throw new IllegalArgumentException("count<0: "+count);
-  //  }
-  //  while (count>BufferManager.BUFFER_SIZE) {
-  //    buffer.put(zeros, 0, BufferManager.BUFFER_SIZE);
-  //    count -= BufferManager.BUFFER_SIZE;
-  //  }
-  //  if (count>0) {
-  //    buffer.put(zeros, 0, (int)count);
-  //  }
-  //}
+  // /**
+  //  * Writes the requested number of zeros to the provided buffer.
+  //  */
+  // static void fillZeros(ByteBuffer buffer, long count) throws IOException {
+  //   if (count<0) {
+  //     throw new IllegalArgumentException("count<0: "+count);
+  //   }
+  //   while (count>BufferManager.BUFFER_SIZE) {
+  //     buffer.put(zeros, 0, BufferManager.BUFFER_SIZE);
+  //     count -= BufferManager.BUFFER_SIZE;
+  //   }
+  //   if (count>0) {
+  //     buffer.put(zeros, 0, (int)count);
+  //   }
+  // }
 
   /**
    * Selects the most efficient temporary {@link PersistentBuffer} for the current
@@ -374,38 +374,38 @@ public final class PersistentCollections {
     return new DynamicPersistentBlockBuffer(pbuffer);
   }
 
-  ///**
-  // * Gets the most efficient {@link RandomAccessPersistentBlockBuffer} for the provided
-  // * provided {@link Serializer}.  The serializer must be provide a fixed serializer size.
-  // * The size of the block buffer is rounded up to the nearest power of two, to help alignment
-  // * with system page tables.
-  // *
-  // * @param serializer            The {@link Serializer} that will be used to write to the blocks
-  // * @param pbuffer               The {@link PersistenceBuffer} that will be wrapped by the block buffer
-  // * @param additionalBlockSpace  The maximum additional space needed beyond the space used by the serializer.  This may be used
-  // *                              for linked list pointers, for example.
-  // */
-  //public static RandomAccessPersistentBlockBuffer getRandomAccessPersistentBlockBuffer(Serializer<?> serializer, PersistentBuffer pbuffer, long additionalBlockSpace) throws IOException {
-  //  if (additionalBlockSpace<0) {
-  //    throw new IllegalArgumentException("additionalBlockSpace<0: "+additionalBlockSpace);
-  //  }
-  //  // Use power-of-two fixed size blocks if possible
-  //  if (!serializer.isFixedSerializedSize()) {
-  //    throw new IllegalArgumentException("serializer does not created fixed size output");
-  //  }
-  //  long serSize = serializer.getSerializedSize(null);
-  //  long minimumSize = serSize + additionalBlockSpace;
-  //  if (minimumSize<0) {
-  //    throw new AssertionError("Long wraparound: "+serSize+"+"+minimumSize+"="+minimumSize);
-  //  }
-  //  long highestOneBit = Long.highestOneBit(minimumSize);
-  //  return new FixedPersistentBlockBuffer(
-  //    pbuffer,
-  //    highestOneBit == (1L<<62)
-  //    ? minimumSize           // In range 2^62-2^63-1, cannot round up to next highest, use minimum size
-  //    : minimumSize == highestOneBit
-  //    ? minimumSize           // minimumSize is a power of two
-  //    : (highestOneBit<<1)    // use next-highest power of two
-  //  );
-  //}
+  // /**
+  //  * Gets the most efficient {@link RandomAccessPersistentBlockBuffer} for the provided
+  //  * provided {@link Serializer}.  The serializer must be provide a fixed serializer size.
+  //  * The size of the block buffer is rounded up to the nearest power of two, to help alignment
+  //  * with system page tables.
+  //  *
+  //  * @param serializer            The {@link Serializer} that will be used to write to the blocks
+  //  * @param pbuffer               The {@link PersistenceBuffer} that will be wrapped by the block buffer
+  //  * @param additionalBlockSpace  The maximum additional space needed beyond the space used by the serializer.  This may be used
+  //  *                              for linked list pointers, for example.
+  //  */
+  // public static RandomAccessPersistentBlockBuffer getRandomAccessPersistentBlockBuffer(Serializer<?> serializer, PersistentBuffer pbuffer, long additionalBlockSpace) throws IOException {
+  //   if (additionalBlockSpace<0) {
+  //     throw new IllegalArgumentException("additionalBlockSpace<0: "+additionalBlockSpace);
+  //   }
+  //   // Use power-of-two fixed size blocks if possible
+  //   if (!serializer.isFixedSerializedSize()) {
+  //     throw new IllegalArgumentException("serializer does not created fixed size output");
+  //   }
+  //   long serSize = serializer.getSerializedSize(null);
+  //   long minimumSize = serSize + additionalBlockSpace;
+  //   if (minimumSize<0) {
+  //     throw new AssertionError("Long wraparound: "+serSize+"+"+minimumSize+"="+minimumSize);
+  //   }
+  //   long highestOneBit = Long.highestOneBit(minimumSize);
+  //   return new FixedPersistentBlockBuffer(
+  //     pbuffer,
+  //     highestOneBit == (1L<<62)
+  //     ? minimumSize           // In range 2^62-2^63-1, cannot round up to next highest, use minimum size
+  //     : minimumSize == highestOneBit
+  //     ? minimumSize           // minimumSize is a power of two
+  //     : (highestOneBit<<1)    // use next-highest power of two
+  //   );
+  // }
 }

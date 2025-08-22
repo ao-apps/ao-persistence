@@ -527,7 +527,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
     synchronized (cacheLock) {
       flushWriteCache(true);
       isClosed = true;
-      //raf.close(); // Now closed by flushWriteCache
+      // raf.close(); // Now closed by flushWriteCache
       if (tempFileContext != null) {
         tempFileContext.close();
       }

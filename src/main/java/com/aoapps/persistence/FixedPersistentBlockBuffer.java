@@ -95,7 +95,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
       long smallestPowerOfTwo = 1L << (64 - 1 - numZeros);
       assert smallestPowerOfTwo == Long.highestOneBit(blockSize);
       if (smallestPowerOfTwo != blockSize) {
-        //smallestPowerOfTwo <<= 1;
+        // smallestPowerOfTwo <<= 1;
         numZeros--;
       }
       if (numZeros <= (64 - 1 - 30)) {
@@ -314,7 +314,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
     if ((newCapacity & 0xfff) != 0) {
       newCapacity = (newCapacity & 0xfffffffffffff000L) + 4096L;
     }
-    //System.out.println("DEBUG: newCapacity="+newCapacity);
+    // System.out.println("DEBUG: newCapacity="+newCapacity);
     pbuffer.setCapacity(newCapacity);
   }
 

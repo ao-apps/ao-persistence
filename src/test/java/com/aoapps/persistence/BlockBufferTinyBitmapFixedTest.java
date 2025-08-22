@@ -98,14 +98,14 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
       }
       long endNanos = System.nanoTime();
       System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Allocating " + HOW_MANY + " blocks in " + BigDecimal.valueOf((endNanos - startNanos) / 1000, 3) + " ms");
-      //System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Getting "+HOW_MANY+" ids.");
-      //Iterator<Long> iter = blockBuffer.iterateBlockIds();
-      //int count = 0;
-      //while (iter.hasNext()) {
-      //    ids.add(iter.next());
-      //    count++;
-      //}
-      //assertEquals(HOW_MANY, count);
+      // System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Getting "+HOW_MANY+" ids.");
+      // Iterator<Long> iter = blockBuffer.iterateBlockIds();
+      // int count = 0;
+      // while (iter.hasNext()) {
+      //     ids.add(iter.next());
+      //     count++;
+      // }
+      // assertEquals(HOW_MANY, count);
       long deallocCount = 0;
       long deallocTime = 0;
       long allocCount = 0;
@@ -120,8 +120,8 @@ public class BlockBufferTinyBitmapFixedTest extends BlockBufferTestParent {
           ids.set(index, ids.get(ids.size() - 1));
           ids.remove(ids.size() - 1);
         }
-        //System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Shuffling.");
-        //Collections.shuffle(ids, fastRandom);
+        // System.out.println("BlockBufferTinyBitmapFixedTest: testAllocateDeallocateOneMillion: Shuffling.");
+        // Collections.shuffle(ids, fastRandom);
         startNanos = System.nanoTime();
         for (Long id : removeList) {
           blockBuffer.deallocate(id);

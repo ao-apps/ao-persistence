@@ -56,7 +56,7 @@ public abstract class BlockBufferTestParent extends TestCase {
   }
 
   private static final int TEST_LOOPS = 2; // 20;
-  private static final int TEST_REPORT_INTERVAL = 1; //5;
+  private static final int TEST_REPORT_INTERVAL = 1; // 5;
 
   /**
    * A fast pseudo-random number generator for non-cryptographic purposes.
@@ -131,10 +131,10 @@ public abstract class BlockBufferTestParent extends TestCase {
   private static void compareAllocatedIds(SortedSet<Long> allocatedIds, SortedSet<Long> recoveredIds, SortedSet<Long> partialIds) throws Exception {
     for (Long id : recoveredIds) {
       if (!allocatedIds.contains(id)) {
-        //System.out.println("DEBUG: Adding "+id+" to allocatedIds");
+        // System.out.println("DEBUG: Adding "+id+" to allocatedIds");
         allocatedIds.add(id);
       }
-      //assertTrue("allocatedIds.contains("+id+") == false", allocatedIds.contains(id));
+      // assertTrue("allocatedIds.contains("+id+") == false", allocatedIds.contains(id));
     }
     Iterator<Long> ids = allocatedIds.iterator();
     while (ids.hasNext()) {
@@ -142,7 +142,7 @@ public abstract class BlockBufferTestParent extends TestCase {
       boolean recoveryContains = recoveredIds.contains(id);
       boolean partialContains = partialIds.contains(id);
       if (!recoveryContains && partialContains) {
-        //System.out.println("DEBUG: Removing "+id+" from allocatedIds");
+        // System.out.println("DEBUG: Removing "+id+" from allocatedIds");
         ids.remove();
       }
       assertTrue("partialIds.size()=" + partialIds.size() + ", recoveredIds.contains(" + id + ")=" + recoveryContains
@@ -165,7 +165,7 @@ public abstract class BlockBufferTestParent extends TestCase {
       boolean allocatedContains = allocatedIds.contains(id);
       boolean partialContains = partialIds.contains(id);
       if (!allocatedContains && partialContains) {
-        //System.out.println("DEBUG: Adding "+id+" to allocatedIds");
+        // System.out.println("DEBUG: Adding "+id+" to allocatedIds");
         allocatedIds.add(id);
       }
       assertTrue("partialIds.size()=" + partialIds.size() + ", allocatedIds.contains(" + id + ")=" + allocatedContains
@@ -215,7 +215,7 @@ public abstract class BlockBufferTestParent extends TestCase {
             while (ids.hasNext()) {
               long recoveredId = ids.next();
               recoveredIds.add(recoveredId);
-              //System.out.println("recoveredId="+recoveredId);
+              // System.out.println("recoveredId="+recoveredId);
             }
             compareAllocatedIds(allocatedIds, recoveredIds, partialIds);
           } finally {
@@ -261,7 +261,7 @@ public abstract class BlockBufferTestParent extends TestCase {
             while (ids.hasNext()) {
               long recoveredId = ids.next();
               recoveredIds.add(recoveredId);
-              //System.out.println("recoveredId="+recoveredId);
+              // System.out.println("recoveredId="+recoveredId);
             }
             compareDeallocatedIds(allocatedIds, recoveredIds, partialIds);
           } finally {
