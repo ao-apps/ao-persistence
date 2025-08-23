@@ -31,3 +31,6 @@ f0190780909ff6ac4aab1e8e4b74a83a23ea3c09
 
 # Performed manual checkstyle clean-up
 15049dfb7d4467128351697380a779ecfe0edecd
+
+# checkstyle-11.0.0 compatibility
+f2af67504c27e6523a06d26ea499f2f65320bd7c
