@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ao-persistence - Highly efficient persistent collections for Java.
+Copyright (C) 2020, 2021, 2022, 2023, 2024, 2025  AO Industries, Inc.
+    support@aoindustries.com
+    7262 Bull Pen Cir
+    Mobile, AL 36695
+
+This file is part of ao-persistence.
+
+ao-persistence is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ao-persistence is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with ao-persistence.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<jsp:root
+  xmlns:ao="https://oss.aoapps.com/taglib/"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:changelog="https://semanticcms.com/changelog/taglib/"
+  xmlns:core="https://semanticcms.com/core/taglib/"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:jsp="http://java.sun.com/JSP/Page"
+  xmlns:section="https://semanticcms.com/section/taglib/"
+  version="2.1"
+>
+  <jsp:directive.page language="java" pageEncoding="UTF-8" />
+  <jsp:directive.page session="false" />
+  <core:page
+    title="@{documented.name} Changelog"
+    shortTitle="Changelog"
+    tocLevels="1"
+    datePublished="2020-03-15T21:00:26-05:00"
+    dateModified="2025-07-02T23:05:45Z"
+  >
+    <c:set var="latestRelease" value="2.0.3" />
+    <c:if test="${
+      fn:endsWith('@{project.version}', '-SNAPSHOT')
+      and !fn:endsWith('@{project.version}', '-POST-SNAPSHOT')
+      and '@{project.version}' != (latestRelease.concat('-SNAPSHOT'))
+    }">
+      <changelog:release
+        projectName="@{documented.name}"
+        version="@{project.version}"
+        groupId="@{project.groupId}"
+        artifactId="@{documented.artifactId}"
+        scmUrl="@{project.scm.url}"
+      >
+        <ul>
+          <li>Updated to <ao:a href="https://checkstyle.org/releasenotes.html#Release_10.21.1">Checkstyle 10.21.1</ao:a>.</li>
+        </ul>
+      </changelog:release>
+    </c:if>
+
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.0.3"
+      datePublished="2022-05-16T05:44:43-05:00"
+      groupId="@{project.groupId}"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>Removed all implementations of <code>Object.finalize()</code>.</li>
+      </ul>
+    </changelog:release>
+
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.0.2"
+      datePublished="2022-02-16T19:35:27-06:00"
+      groupId="@{project.groupId}"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>Now properly restoring Thread interrupted state on <code>InterruptedException</code>.</li>
+      </ul>
+    </changelog:release>
+
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.0.1"
+      datePublished="2021-10-19T22:25:21-05:00"
+      groupId="@{project.groupId}"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>Fixed potential integer overflow on large array-backed buffers.</li>
+      </ul>
+    </changelog:release>
+
+    <changelog:release
+      projectName="@{documented.name}"
+      version="2.0.0"
+      datePublished="2021-07-21T09:01:36-05:00"
+      groupId="@{project.groupId}"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>Minimum Java version changed from 1.8 to 11.</li>
+        <li>Now supports Java 9+ modules with included <code>module-info.class</code>.</li>
+        <li>Maven artifact relocated from <code>com.aoindustries:ao-persistence</code> to <code>com.aoapps:ao-persistence</code>.</li>
+        <li>Package renamed from <code>com.aoindustries.persistence</code> to <code>com.aoapps.persistence</code>.</li>
+      </ul>
+    </changelog:release>
+
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.1.0"
+      datePublished="2020-11-30T01:00:15-06:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Implemented <code>java.io.Closeable</code> where appropriate for compatibility with
+          try-with-resources in Java 1.7+.
+        </li>
+        <li>Updated dependencies.</li>
+        <li>Temporary files are now created with more secure default permissions.</li>
+        <li>Resolved editor warnings.</li>
+        <li>Now using <code>java.io.UncheckedIOException</code> instead of <code>WrappedException</code>.</li>
+      </ul>
+    </changelog:release>
+
+    <changelog:release
+      projectName="@{documented.name}"
+      version="1.0.0"
+      datePublished="2020-03-28T21:08:28-05:00"
+      groupId="com.aoindustries"
+      artifactId="@{documented.artifactId}"
+      scmUrl="@{project.scm.url}"
+    >
+      <ul>
+        <li>
+          Pulled persistent Java collections package out of
+          <core:link book="/hodgepodge" page="/index.jspx" />
+          into a new <core:link page="index.jspx" /> project.
+        </li>
+        <li>
+          Renamed package from <code>com.aoindustries.util.persistent</code> to
+          <code>com.aoindustries.persistence</code>.
+        </li>
+      </ul>
+    </changelog:release>
+  </core:page>
+</jsp:root>
