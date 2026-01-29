@@ -119,7 +119,7 @@ public class RandomFailBuffer extends AbstractPersistentBuffer {
 
   /**
    * Keeps track of the last version of all sectors that have been written.  Each
-   * entry will be {@link #SECTOR_SIZE} in length, even if at the end of the
+   * entry will be {@link RandomFailBuffer#SECTOR_SIZE} in length, even if at the end of the
    * capacity.
    */
   private final Map<Long, byte[]> writeCache = new HashMap<>();

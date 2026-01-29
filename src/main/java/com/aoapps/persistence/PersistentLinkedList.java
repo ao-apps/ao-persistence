@@ -493,7 +493,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    * </ol>
    *
    * @param autoCorrect Will correct inconsistencies that arise from an unclean shutdown.
-   *                    Logs any corrections made to {@link #logger} with level {@link Level#INFO}.
+   *                    Logs any corrections made to {@link PersistentLinkedList#logger} with level {@link Level#INFO}.
    *
    * @exception  IOException if IO error occurs during check
    * @exception  IllegalStateException when in an inconsistent state and, if autoCorrect, is uncorrectable
@@ -945,7 +945,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    * Appends the specified element to the end of this list.
    * Operates in log time for free space.
    *
-   * <p>This method is equivalent to {@link #add}.
+   * <p>This method is equivalent to {@link PersistentLinkedList#add}.
    *
    * @param element the element to add
    */

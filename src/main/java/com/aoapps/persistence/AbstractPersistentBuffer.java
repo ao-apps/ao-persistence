@@ -51,9 +51,9 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as calls to {@link #getSome(long, byte[], int, int)}.
+   * Implemented as calls to {@link AbstractPersistentBuffer#getSome(long, byte[], int, int)}.
    *
-   * @see  #getSome(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#getSome(long, byte[], int, int)
    */
   @Override
   public void get(long position, byte[] buff, int off, int len) throws IOException {
@@ -66,9 +66,9 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to {@link #get(long)}.
+   * Implemented as call to {@link AbstractPersistentBuffer#get(long)}.
    *
-   * @see  #get(long)
+   * @see  AbstractPersistentBuffer#get(long)
    */
   @Override
   public boolean getBoolean(long position) throws IOException {
@@ -76,11 +76,11 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to {@link #get(long, byte[], int, int)}.  For performance
+   * Implemented as call to {@link AbstractPersistentBuffer#get(long, byte[], int, int)}.  For performance
    * reasons, it is strongly recommended to provide a more efficient implementation
    * of this method.
    *
-   * @see  #get(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#get(long, byte[], int, int)
    */
   @Override
   public byte get(long position) throws IOException {
@@ -89,9 +89,9 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to {@link #get(long, byte[], int, int)}.
+   * Implemented as call to {@link AbstractPersistentBuffer#get(long, byte[], int, int)}.
    *
-   * @see  #get(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#get(long, byte[], int, int)
    */
   @Override
   public int getInt(long position) throws IOException {
@@ -100,9 +100,9 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to {@link #get(long, byte[], int, int)}.
+   * Implemented as call to {@link AbstractPersistentBuffer#get(long, byte[], int, int)}.
    *
-   * @see  #get(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#get(long, byte[], int, int)
    */
   @Override
   public long getLong(long position) throws IOException {
@@ -111,11 +111,11 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to {@link #put(long, byte[], int, int)}.  For performance
+   * Implemented as call to {@link AbstractPersistentBuffer#put(long, byte[], int, int)}.  For performance
    * reasons, it is strongly recommended to provide a more efficient implementation
    * of this method.
    *
-   * @see  #put(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#put(long, byte[], int, int)
    */
   @Override
   public void put(long position, byte value) throws IOException {
@@ -124,9 +124,9 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to {@link #put(long, byte[], int, int)}.
+   * Implemented as call to {@link AbstractPersistentBuffer#put(long, byte[], int, int)}.
    *
-   * @see  #put(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#put(long, byte[], int, int)
    */
   @Override
   public void putInt(long position, int value) throws IOException {
@@ -135,9 +135,9 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as call to {@link #put(long, byte[], int, int)}.
+   * Implemented as call to {@link AbstractPersistentBuffer#put(long, byte[], int, int)}.
    *
-   * @see  #put(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#put(long, byte[], int, int)
    */
   @Override
   public void putLong(long position, long value) throws IOException {
@@ -146,10 +146,10 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as calls to {@link #get(long)} and {@link #getSome(long, byte[], int, int)}.
+   * Implemented as calls to {@link AbstractPersistentBuffer#get(long)} and {@link AbstractPersistentBuffer#getSome(long, byte[], int, int)}.
    *
-   * @see  #get(long)
-   * @see  #getSome(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#get(long)
+   * @see  AbstractPersistentBuffer#getSome(long, byte[], int, int)
    */
   @Override
   public InputStream getInputStream(final long position, final long length) throws IOException, BufferUnderflowException {
@@ -234,10 +234,10 @@ public abstract class AbstractPersistentBuffer implements PersistentBuffer {
   }
 
   /**
-   * Implemented as calls to {@link #put(long, byte)} and {@link #put(long, byte[], int, int)}.
+   * Implemented as calls to {@link AbstractPersistentBuffer#put(long, byte)} and {@link AbstractPersistentBuffer#put(long, byte[], int, int)}.
    *
-   * @see  #put(long, byte)
-   * @see  #put(long, byte[], int, int)
+   * @see  AbstractPersistentBuffer#put(long, byte)
+   * @see  AbstractPersistentBuffer#put(long, byte[], int, int)
    */
   @Override
   public OutputStream getOutputStream(final long position, final long length) throws IOException, BufferOverflowException {

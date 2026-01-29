@@ -147,7 +147,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 
   /**
    * Allocates a block.
-   * This does not directly cause any {@linkplain #barrier(boolean) barriers}.
+   * This does not directly cause any {@linkplain FixedPersistentBlockBuffer#barrier(boolean) barriers}.
    */
   @Override
   public long allocate(long minimumSize) throws IOException {
@@ -196,7 +196,7 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
 
   /**
    * Deallocates the block for the provided id.
-   * This does not directly cause any {@linkplain #barrier(boolean) barriers}.
+   * This does not directly cause any {@linkplain FixedPersistentBlockBuffer#barrier(boolean) barriers}.
    */
   @Override
   public void deallocate(long id) throws IOException {

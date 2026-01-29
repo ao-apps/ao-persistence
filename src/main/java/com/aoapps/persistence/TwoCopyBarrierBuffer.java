@@ -56,8 +56,8 @@ import org.apache.commons.lang3.NotImplementedException;
 /**
  * Java does not support write barriers without a complete {@code force} call,
  * this class works-around this issue by maintaining two copies of the file and
- * updating the older copy to be the newer copy occasionally on {@link #barrier(boolean) barrier(false)}
- * and immediately on {@link #barrier(boolean) barrier(true)} (if protectionLevel is high enough).
+ * updating the older copy to be the newer copy occasionally on {@link TwoCopyBarrierBuffer#barrier(boolean) barrier(false)}
+ * and immediately on {@link TwoCopyBarrierBuffer#barrier(boolean) barrier(true)} (if protectionLevel is high enough).
  *
  * <p>All instances also share a {@link Timer Timer} to perform automatic
  * background flushing of caches.  Automatic flushing is single-threaded to favor
@@ -257,7 +257,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
 
   /*
    * Keeps track of the last version of all sectors that have been written.  Each
-   * entry will be {@link #sectorSize} in length, even if at the end of the
+   * entry will be {@link TwoCopyBarrierBuffer#sectorSize} in length, even if at the end of the
    * capacity.
    *
    * Each copy of the file has its own write cache, which is flushed separately.
@@ -271,7 +271,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   private SortedMap<Long, byte[]> currentWriteCache = new TreeMap<>();
   /**
    * Changes since the old (previous version) file was last updated.  This
-   * is a superset of {@link #currentWriteCache}.
+   * is a superset of {@link TwoCopyBarrierBuffer#currentWriteCache}.
    */
   private SortedMap<Long, byte[]> oldWriteCache = new TreeMap<>();
   /**
@@ -343,7 +343,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
   }
 
   /**
-   * Creates a buffer.  Synchronizes the two copies of the file.  Populates the {@link #oldWriteCache} with
+   * Creates a buffer.  Synchronizes the two copies of the file.  Populates the {@link TwoCopyBarrierBuffer#oldWriteCache} with
    * any data the doesn't match the newer version of the file.  This means that both files are read completely
    * at start-up in order to provide the most efficient synchronization later.
    *

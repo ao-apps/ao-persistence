@@ -39,7 +39,7 @@ public interface Serializer<E> {
   /**
    * If a serializer always creates the same number of bytes, containers can
    * choose a fixed-size block for higher performance.  If this method
-   * returns {@code true}, {@link #getSerializedSize(java.lang.Object)} must return
+   * returns {@code true}, {@link Serializer#getSerializedSize(java.lang.Object)} must return
    * the same value for every access, it may be accessed with a {@code null}
    * parameter, and it may be accessed less than once per serialized object.
    *
@@ -56,13 +56,13 @@ public interface Serializer<E> {
    * <p>The common pattern is:</p>
    *
    * <ol>
-   *   <li>Get size from {@link #getSerializedSize(java.lang.Object)}</li>
+   *   <li>Get size from {@link Serializer#getSerializedSize(java.lang.Object)}</li>
    *   <li>Allocate appropriate space</li>
-   *   <li>Write serialized object with {@link #serialize(java.lang.Object, java.io.OutputStream)}</li>
+   *   <li>Write serialized object with {@link Serializer#serialize(java.lang.Object, java.io.OutputStream)}</li>
    * </ol>
    *
    * <p>It may be best to remember the most recently used object between calls
-   * to {@link #getSerializedSize(java.lang.Object)} and {@link #serialize(java.lang.Object, java.io.OutputStream)}
+   * to {@link Serializer#getSerializedSize(java.lang.Object)} and {@link Serializer#serialize(java.lang.Object, java.io.OutputStream)}
    * when it can reduce processing time.</p>
    *
    * @return  the exact number of bytes the object will take to serialize

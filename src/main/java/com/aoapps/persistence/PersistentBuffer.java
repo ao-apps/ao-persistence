@@ -36,11 +36,11 @@ import java.nio.BufferUnderflowException;
  * virtual machine.  They are meant for persistence only, not interprocess
  * communication.
  *
- * <p>To ensure the data integrity of higher-level data structures, the {@link #barrier(boolean)} method
+ * <p>To ensure the data integrity of higher-level data structures, the {@link PersistentBuffer#barrier(boolean)} method
  * must be used.  A barrier ensures that all writes before the barrier happen before
  * all writes after the barrier.  It also accepts a parameter indicating it should
  * also {@code force} (fsync) all writes before the barrier to physical media.  Write order
- * between {@link #barrier(boolean)} calls is not maintained.</p>
+ * between {@link PersistentBuffer#barrier(boolean)} calls is not maintained.</p>
  *
  * @author  AO Industries, Inc.
  */
@@ -65,7 +65,7 @@ public interface PersistentBuffer extends Closeable {
   /**
    * Sets the capacity of this buffer.  If the buffer is increased in size, the
    * new space will be zero-filled.  Setting the capacity may impose an
-   * automatic {@link #barrier(boolean) barrier(true)}, depending on implementation.  This
+   * automatic {@link PersistentBuffer#barrier(boolean) barrier(true)}, depending on implementation.  This
    * should be considered an expensive operation.
    */
   void setCapacity(long newCapacity) throws IOException;
@@ -150,7 +150,7 @@ public interface PersistentBuffer extends Closeable {
   /**
    * Gets the protection level currently enforced by the buffer.
    *
-   * @see  #barrier(boolean)
+   * @see  PersistentBuffer#barrier(boolean)
    */
   ProtectionLevel getProtectionLevel();
 
@@ -161,7 +161,7 @@ public interface PersistentBuffer extends Closeable {
    * may be ignored or force downgraded to barrier-only depending on the current
    * protection level.
    *
-   * @see  #getProtectionLevel()
+   * @see  PersistentBuffer#getProtectionLevel()
    */
   void barrier(boolean force) throws IOException;
 

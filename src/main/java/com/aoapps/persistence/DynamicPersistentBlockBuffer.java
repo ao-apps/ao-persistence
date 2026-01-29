@@ -407,7 +407,7 @@ public class DynamicPersistentBlockBuffer extends AbstractPersistentBlockBuffer 
   }
 
   /**
-   * This will call {@link #barrier(boolean)} as necessary during block splitting.
+   * This will call {@link DynamicPersistentBlockBuffer#barrier(boolean)} as necessary during block splitting.
    */
   @Override
   public long allocate(long minimumSize) throws IOException {

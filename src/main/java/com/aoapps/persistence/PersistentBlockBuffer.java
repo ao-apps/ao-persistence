@@ -57,7 +57,7 @@ public interface PersistentBlockBuffer extends Closeable {
   /**
    * Gets the protection level currently implemented by the buffer.
    *
-   * @see  #barrier(boolean)
+   * @see  PersistentBlockBuffer#barrier(boolean)
    */
   ProtectionLevel getProtectionLevel();
 
@@ -68,7 +68,7 @@ public interface PersistentBlockBuffer extends Closeable {
    * may be ignored or force downgraded to barrier-only depending on the current
    * protection level.
    *
-   * @see  #getProtectionLevel()
+   * @see  PersistentBlockBuffer#getProtectionLevel()
    */
   void barrier(boolean force) throws IOException;
 
@@ -94,12 +94,12 @@ public interface PersistentBlockBuffer extends Closeable {
    * with {@code -1}.
    *
    * <p>In order to ensure the block allocation is completely in persistent storage,
-   * {@link #barrier(boolean) barrier} must be called.  This allows
-   * the contents of the block to be written and combined into a single {@link #barrier(boolean)}
-   * call.  If the system fails before {@link #barrier(boolean)} is called, the block
+   * {@link PersistentBlockBuffer#barrier(boolean) barrier} must be called.  This allows
+   * the contents of the block to be written and combined into a single {@link PersistentBlockBuffer#barrier(boolean)}
+   * call.  If the system fails before {@link PersistentBlockBuffer#barrier(boolean)} is called, the block
    * may either be allocated or deallocated - it is up to higher-level data
    * structures to determine which is the case.  In no event, however, will failing
-   * to call {@link #barrier(boolean)} after {@link #allocate(long)} cause corruption
+   * to call {@link PersistentBlockBuffer#barrier(boolean)} after {@link PersistentBlockBuffer#allocate(long)} cause corruption
    * beyond that just described.</p>
    *
    * <p>This call may fail after the id is allocated and before the id is returned.
@@ -112,11 +112,11 @@ public interface PersistentBlockBuffer extends Closeable {
    * will not be altered.  The space may later be reallocated with the same,
    * or possibly different id.  The space may also be reclaimed.
    *
-   * <p>{@link #barrier(boolean) barrier} does not need to be called
+   * <p>{@link PersistentBlockBuffer#barrier(boolean) barrier} does not need to be called
    * after a deallocation, but if not called previously deallocated blocks
    * may reappear after a system failure.  It is up to higher-level data structures
-   * to detect this.  In no event, however, will failing to call {@link #barrier(boolean)}
-   * after {@link #deallocate(long)} cause corruption beyond that just described.</p>
+   * to detect this.  In no event, however, will failing to call {@link PersistentBlockBuffer#barrier(boolean)}
+   * after {@link PersistentBlockBuffer#deallocate(long)} cause corruption beyond that just described.</p>
    *
    * @throws IllegalStateException if the block is not allocated.
    */
