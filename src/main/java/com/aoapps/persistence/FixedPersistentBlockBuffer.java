@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2019, 2020, 2021, 2022, 2024, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -330,12 +330,11 @@ public class FixedPersistentBlockBuffer extends AbstractPersistentBlockBuffer /*
     }
   }
 
-  /*
-  public long getBlockCount() throws IOException {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  public long getBlockId(long index) throws IOException {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }*/
+  // public long getBlockCount() throws IOException {
+  //   throw new UnsupportedOperationException("Not supported yet.");
+  // }
+  //
+  // public long getBlockId(long index) throws IOException {
+  //   throw new UnsupportedOperationException("Not supported yet.");
+  // }
 }

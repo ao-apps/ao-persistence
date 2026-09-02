@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2017, 2019, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2016, 2017, 2019, 2020, 2021, 2022, 2024, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -862,7 +862,7 @@ public class PersistentLinkedList<E> extends AbstractSequentialList<E> implement
    * @throws NoSuchElementException if this list is empty
    */
   @Override
-  public E getLast()  {
+  public E getLast() {
     long tail = getTail();
     if (tail == END_PTR) {
       throw new NoSuchElementException();

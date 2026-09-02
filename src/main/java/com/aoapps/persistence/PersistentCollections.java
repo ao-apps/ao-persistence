@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2019, 2020, 2021, 2022, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -124,33 +124,31 @@ public final class PersistentCollections {
       throw new IllegalArgumentException("count<0: " + count);
     }
     boolean modified = false;
-    /*
-    byte[] buff = BufferManager.getBytes();
-    try {
-      while (count>BufferManager.BUFFER_SIZE) {
-        byteBuffer.position(position);
-        byteBuffer.get(buff, 0, BufferManager.BUFFER_SIZE);
-        if (!Arrays.equals(buff, zeros)) {
-          byteBuffer.position(position);
-          byteBuffer.put(zeros, 0, BufferManager.BUFFER_SIZE);
-          modified = true;
-        }
-        position += BufferManager.BUFFER_SIZE;
-        count -= BufferManager.BUFFER_SIZE;
-      }
-      if (count>0) {
-        byteBuffer.position(position);
-        byteBuffer.get(buff, 0, count);
-        if (!com.aoapps.collections.AoArrays.equals(buff, zeros, 0, count)) {
-          byteBuffer.position(position);
-          byteBuffer.put(zeros, 0, count);
-          modified = true;
-        }
-      }
-    } finally {
-      BufferManager.release(buff);
-    }
-     */
+    // byte[] buff = BufferManager.getBytes();
+    // try {
+    //   while (count>BufferManager.BUFFER_SIZE) {
+    //     byteBuffer.position(position);
+    //     byteBuffer.get(buff, 0, BufferManager.BUFFER_SIZE);
+    //     if (!Arrays.equals(buff, zeros)) {
+    //       byteBuffer.position(position);
+    //       byteBuffer.put(zeros, 0, BufferManager.BUFFER_SIZE);
+    //       modified = true;
+    //     }
+    //     position += BufferManager.BUFFER_SIZE;
+    //     count -= BufferManager.BUFFER_SIZE;
+    //   }
+    //   if (count>0) {
+    //     byteBuffer.position(position);
+    //     byteBuffer.get(buff, 0, count);
+    //     if (!com.aoapps.collections.AoArrays.equals(buff, zeros, 0, count)) {
+    //       byteBuffer.position(position);
+    //       byteBuffer.put(zeros, 0, count);
+    //       modified = true;
+    //     }
+    //   }
+    // } finally {
+    //   BufferManager.release(buff);
+    // }
     ByteOrder previousByteOrder = byteBuffer.order();
     ByteOrder nativeByteOrder = ByteOrder.nativeOrder();
     try {
