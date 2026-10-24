@@ -1,6 +1,6 @@
 /*
  * ao-persistence - Highly efficient persistent collections for Java.
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2024, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -198,7 +198,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
               } catch (ThreadDeath td) {
                 throw td;
               } catch (Throwable t) {
-                logger.log(Level.WARNING, null, t);
+                logger.log(Level.WARNING, "TODO: message here", t);
               }
             });
           }
@@ -216,7 +216,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
                 );
               }
             } catch (InterruptedException err) {
-              logger.log(Level.WARNING, null, err);
+              logger.log(Level.WARNING, "TODO: message here", err);
               // Restore the interrupted status
               Thread.currentThread().interrupt();
             }
@@ -593,7 +593,7 @@ public class TwoCopyBarrierBuffer extends AbstractPersistentBuffer {
                   try {
                     flushWriteCache(false);
                   } catch (IOException err) {
-                    logger.log(Level.SEVERE, null, err);
+                    logger.log(Level.SEVERE, "TODO: message here", err);
                   }
                 } else {
                   // Resubmit timer task
